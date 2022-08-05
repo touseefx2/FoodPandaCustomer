@@ -61,6 +61,10 @@ export const styles = StyleSheet.create({
     marginTop: 5,
   },
 
+  back: {
+    width: responsiveWidth(12),
+    justifyContent: 'center',
+  },
   titleSection: {
     width: '100%',
     marginTop: 20,
@@ -272,6 +276,19 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
 
+  Input: {
+    width: '100%',
+    color: theme.color.title,
+    backgroundColor: theme.color.background,
+    fontSize: 12,
+    fontFamily: theme.fonts.fontNormal,
+    height: 40,
+    borderRadius: 5,
+    borderWidth: 0.6,
+    borderColor: theme.color.subTitle,
+
+    paddingHorizontal: 10,
+  },
   MobileInput: {
     width: '100%',
     flexDirection: 'row',
@@ -354,9 +371,9 @@ export const styles = StyleSheet.create({
   },
   header: {
     width: responsiveWidth(100),
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     backgroundColor: theme.color.background,
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   htitle: {
     fontSize: 18,
@@ -365,65 +382,5 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     textTransform: 'capitalize',
-  },
-
-  inputFieldConatiner: {marginBottom: 10},
-  inputTitle: {
-    fontSize: 15,
-    lineHeight: 20,
-    color: theme.color.title,
-    fontFamily: theme.fonts.fontNormal,
-    textTransform: 'capitalize',
-    marginBottom: 5,
-  },
-  InputContainer: {
-    width: '100%',
-    backgroundColor: theme.color.background,
-    height: 40,
-    borderRadius: 0,
-    borderWidth: 0.7,
-    borderColor: theme.color.subTitle,
-    paddingHorizontal: 10,
-  },
-  textInputStyle: {
-    width: '100%',
-    color: theme.color.title,
-    fontSize: 12,
-    fontFamily: theme.fonts.fontNormal,
-    height: '100%',
-  },
-
-  bottomButton: {
-    backgroundColor: theme.color.button1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: 45,
-    alignSelf: 'center',
-    elevation: 2,
-    borderRadius: 0,
-  },
-
-  bottomButtonText: {
-    color: theme.color.buttonText,
-    fontSize: 17,
-    fontFamily: theme.fonts.fontNormal,
-  },
-  inputRightIcon: {},
-  logoTitle: {
-    fontSize: 26,
-    color: theme.color.title,
-    fontFamily: theme.fonts.fontMedium,
-    marginBottom: 30,
-  },
-  fpt: {
-    fontSize: 12,
-    color: theme.color.subTitle,
-    fontFamily: theme.fonts.fontNormal,
-  },
-  scrollContainer: {
-    width: '100%',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
   },
 });

@@ -5,42 +5,46 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
+  TouchableHighlight,
   StatusBar,
-  ScrollView,
-  ActivityIndicator,
+  BackHandler,
+  Alert,
+  Linking,
+  PermissionsAndroid,
   Platform,
+  Dimensions,
 } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+import Geocoder from 'react-native-geocoding';
 import {styles} from './styles';
 import {observer} from 'mobx-react';
 import store from '../../store/index';
 import utils from '../../utils/index';
 import theme from '../../theme';
 import DynamicTabView from 'react-native-dynamic-tab-view';
-import {responsiveHeight} from 'react-native-responsive-dimensions';
+import ImageSlider from 'react-native-image-slider';
+import FastImage from 'react-native-fast-image';
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from 'react-native-responsive-dimensions';
 import NetInfo from '@react-native-community/netinfo';
 import Toast from 'react-native-easy-toast';
 import MaskedView from '@react-native-community/masked-view';
 import Svg, {Path} from 'react-native-svg';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {TextInput} from 'react-native-paper';
-import VersionCheck from 'react-native-version-check';
+import {ActivityIndicator} from 'react-native-paper';
 
 export default observer(Home);
 function Home(props) {
-  let tagLine = '';
-  let coverImage = require('../../assets/images/homeCover/img.jpg');
   const rbSheet = useRef(null);
-  const rbSheet2 = useRef(null);
-  const toast = useRef(null);
-  let internet = store.General.isInternet;
-  const user = store.User.user;
-  const getBooksLoader = store.User.AdverbookLoader;
-  const adverBooks = store.User.adverBooks;
-  const bookCat = store.User.bookCat;
-  let getDataOnce = store.User.isGetAllDatainSplash;
-  let isServerError = store.General.isServerError;
-  const selectedFilter = store.General.selectedFilter;
-  const isUpdateNeeded = store.General.isUpdateNeeded;
+  // const gapikey = 'AIzaSyAJeMjKbTTRvoZJe0YoJc48VhaqbtoTmug';
+  const gapikey = 'AIzaSyC75RWT0q9xkASq2YhX2vGi1R-e_p2pnWU';
+  const window = Dimensions.get('window');
+  const {width, height} = window;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA + width / height;
 
   const windowWidth = theme.window.Width;
   const imageAspectWidth = 375;
@@ -53,33 +57,99 @@ function Home(props) {
   const controlPointY = scaledHeight + curveAdjustment;
   const curveCenterPointY = (controlPointY - maskHeight) / 2;
 
-  const [search, setsearch] = useState('');
-  const [data, setData] = useState(false);
-  const [category, setCategory] = useState([]);
-  const [selectedTab, setselectedTab] = useState('');
-  const [numOfSelFilter, setnumOfSelFilter] = useState(0);
-  const [filter, setfilter] = useState([]);
-  const [load, setload] = useState(false);
+  let city = store.User.location.city;
+  let cart = store.User.cart;
+  let area = store.User.location.area;
+  let sliderImages = store.Food.sliderImages;
+  let food = store.Food.food;
+  let loader = store.Food.loader;
+  let load = store.User.loader;
+  let internet = store.General.isInternet;
+  let getDataOnce = store.Food.getDataOnce;
 
-  //hook
+  let cl = store.User.cl;
+
+  let islOCATION = store.General.isLocation;
+
+  let contact = store.Food.sliderImages;
+
+  let tagLine = contact.tagLine;
+
+  const [resturantName, setresturantName] = useState('Cheezious');
+
+  const [distance, setdistance] = useState(0);
+
+  const [rs, setrs] = useState('$$');
+
+  let resturant = store.User.rd;
+
+  const [deliverTime, setdeliverTime] = useState(
+    contact.estimatedDeliveryTime || '0',
+  );
 
   useEffect(() => {
-    if (internet) {
-      checkUpdateNeeded();
+    setdeliverTime(contact.estimatedDeliveryTime || '0');
+  }, [contact]);
+
+  useEffect(() => {
+    Geocoder.init(gapikey, {language: 'en'});
+  }, []);
+
+  // let isaddVarModal = store.User.isAddModal;
+  // let issubVarModal = store.User.isSubModal;
+  // let isVariationDtail = store.User.isVarModal;
+  // let isLoginModalchlk = store.User.isChkLoginModal;
+
+  const toast = useRef(null);
+  const toastduration = 700;
+
+  const [isReferesh, setisReferesh] = useState(true);
+
+  const [loadd, setloadd] = useState(false);
+
+  const [img, setImg] = useState(
+    sliderImages.appCover ? sliderImages.appCover : [],
+  );
+  const [foodCategory, setfoodCategory] = useState(false);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackButtonClick,
+    );
+
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonClick,
+      );
+      subscription.remove();
+    };
+  }, []);
+
+  function handleBackButtonClick() {
+    if (!props.navigation.isFocused()) {
+      return false;
     }
-  }, [internet]);
+
+    Alert.alert('', 'Are you sure you want to exit the app?', [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'Yes', onPress: () => BackHandler.exitApp()},
+    ]);
+    return true;
+  }
 
   useEffect(() => {
-    if (isUpdateNeeded) {
-      goToUpdate();
-    }
-  }, [isUpdateNeeded]);
-
-  useEffect(() => {
-    if (!getDataOnce && internet) {
+    if (isReferesh && !getDataOnce) {
       NetInfo.fetch().then(state => {
         if (state.isConnected) {
-          setData(false);
+          setfoodCategory(false);
+          // setImg([]);
+          store.Food.getSliderImages(city);
           let isLogin = store.User.user !== false ? true : false;
           if (isLogin) {
             store.User.getAllData('user');
@@ -89,201 +159,373 @@ function Home(props) {
         }
       });
     }
-  }, [internet, getDataOnce]);
+  }, [internet, isReferesh, getDataOnce]);
 
   useEffect(() => {
-    setload(true);
-    if (adverBooks.length > 0) {
-      let dd = [];
-      dd.push({title: 'KleverBook', key: 'item1', data: adverBooks});
-      setData(dd);
-    } else {
-      setData([]);
+    if (islOCATION) {
+      getCurrentLocationOne();
     }
-  }, [adverBooks]);
+    if (!islOCATION) {
+      requestPermissions();
+    }
+  }, [islOCATION]);
+
+  const fetchDistanceBetweenPointsOnline = (p1, p2) => {
+    console.log('fetchdsistancematric p1 cl: ', p1);
+    console.log('fetchdsistancematric p2 rl: ', p2);
+    var urlToFetchDistance =
+      'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric?mode=driving&origins=' +
+      p1.latitude +
+      ',' +
+      p1.longitude +
+      '&destinations=' +
+      p2.latitude +
+      '%2C' +
+      p2.longitude +
+      '&key=' +
+      gapikey;
+
+    try {
+      fetch(urlToFetchDistance)
+        .then(res => {
+          return res.json();
+        })
+        .then(res => {
+          if (res) {
+            console.log('fetchdsistancematric res true ', res);
+            if (res?.rows.length > 0) {
+              let distanceInMeter = res.rows[0].elements[0].distance.value; //in meter
+              let distanceInKm = distanceInMeter / 1000; //in meter to km
+
+              setdistance(distanceInKm);
+            }
+
+            return;
+          }
+        })
+        .catch(error => {
+          // utils.AlertMessage(
+          //   "fetchdsistancematric api error ",
+          //   "Network request failed"
+          // );
+          console.log('fetchdsistancematric catch error : ', error);
+          return;
+        });
+    } catch (error) {
+      console.log('fetchdsistancematric catch error ', error);
+    }
+  };
 
   useEffect(() => {
-    if (data !== false) {
-      setTimeout(() => {
-        setload(false);
-      }, 1000);
-    }
-    if (data !== false && data.length > 0) {
-      setselectedTab(data[0].title);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (bookCat.length > 0) {
-      let dd = bookCat.slice();
-      setCategory(dd);
-    }
-  }, [bookCat]);
-
-  useEffect(() => {
-    if (category.length > 0) {
-      let dd = category.slice();
-      let ar = [];
-      ar.push({section: 'categories', items: dd, isShowMore: false});
-      setfilter(ar);
-    }
-  }, [category]);
-
-  useEffect(() => {
-    if (selectedFilter.length > 0) {
-      let num = 0;
-      selectedFilter.map((e, i, a) => {
-        let itm = e.items;
-        if (itm.length > 0) {
-          num = num + itm.length;
+    if (cl) {
+      NetInfo.fetch().then(state => {
+        if (state.isConnected) {
+          //  calculate distance btw two points
+          let crntloctn = cl.coords;
+          let resturantloc = resturant.loc.coords;
+          fetchDistanceBetweenPointsOnline(crntloctn, resturantloc);
         }
       });
-      setnumOfSelFilter(num);
-    } else {
-      setnumOfSelFilter(0);
     }
-  }, [selectedFilter]);
+  }, [store.User.cl, internet]);
 
-  //method
+  const getCurrentLocationOne = c => {
+    Geolocation.getCurrentPosition(
+      //Will give you the current location
+      async position => {
+        const cl = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        };
 
-  const goToUpdate = () => {
-    props.navigation.navigate('Update');
-  };
+        console.log('get c loc one res true');
 
-  const checkUpdateNeeded = async () => {
-    try {
-      let updateNeeded = await VersionCheck.needUpdate();
+        const loc = {
+          city_name: '',
+          coords: cl,
+        };
 
-      if (updateNeeded.isNeeded) {
-        console.log('UPDATE Needed');
-        store.General.setisUpdateNeeded(true);
-      } else {
-        console.log('UPDATE NOT Needed');
-        store.General.setisUpdateNeeded(false);
-      }
-    } catch (error) {
-      console.log('Update check error : ', error);
-    }
-  };
+        store.User.setcl(loc);
 
-  const onChangeTab = e => {
-    setselectedTab(data[e].title);
-  };
+        Geocoder.from({
+          latitude: cl.latitude,
+          longitude: cl.longitude,
+        })
+          .then(json => {
+            let results = json.results;
 
-  const onPressFilter = () => {
-    let selFilter = selectedFilter;
+            console.log('geocoder json data true : ');
+            let cityName = '';
+            if (results[0]) {
+              var add = results[0].formatted_address;
+              var value = add.split(',');
+              let count = value.length;
+              let country = value[count - 1];
+              let state = value[count - 2];
+              let city = value[count - 3];
+              cityName = city;
+            } else {
+              console.log(' geocoder json  res : ', 'address not found');
+            }
 
-    if (category.length > 0) {
-      let dt = category.slice();
-      let ar = [];
-      if (dt.length > 0) {
-        dt.map((e, i, a) => {
-          ar.push({name: e.name, isSel: false});
-        });
-      }
+            const locc = {
+              city_name: cityName,
+              coords: cl,
+            };
+            store.User.setcl(locc);
 
-      let arr = [];
-      if (ar.length > 0) {
-        arr.push({section: 'categories', items: ar, isShowMore: false});
-      }
-
-      if (selFilter.length <= 0) {
-        setfilter(arr);
-        rbSheet2?.current?.open();
-        return;
-      }
-
-      if (arr.length > 0) {
-        arr.map((e, i, a) => {
-          if (selFilter.length > 0) {
-            selFilter.map((ee, ii, a) => {
-              if (e.section == ee.section) {
-                let it1 = e.items;
-                let it2 = ee.items;
-
-                if (it1.length > 0) {
-                  it1.map((eee, iii, a) => {
-                    if (it2.length > 0) {
-                      it2.map((eeee, iiii, a) => {
-                        if (eee.name == eeee.name) {
-                          arr[i].items[iii].isSel = true;
-                        }
-                      });
-                    }
-                  });
-                }
-              }
-            });
+            return;
+          })
+          .catch(error => {
+            // if (error.code == 4) {
+            //   Alert.alert(
+            //     '',
+            //     'Please enable billing account on your google map api key',
+            //   );
+            // }
+            console.warn('geocoder error : ', error);
+            return;
+          });
+      },
+      error => {
+        if (error.code == 3) {
+          if (!store.User.cl) {
+            getCurrentLocationOne(c);
           }
-        });
-        setfilter(arr);
-        rbSheet2?.current?.open();
-        return;
-      }
-    }
+        }
+
+        if (error.code == 1) {
+          // locationEnabler()
+        }
+
+        console.log('get crnt loc one error : ', error.message);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 10000,
+      },
+    );
   };
 
-  //render
+  const hasPermissionIOS = async () => {
+    console.log('In request iOS permissions');
+    const status = await Geolocation.requestAuthorization('whenInUse');
+    console.log(status);
+    if (status === 'granted') {
+      store.General.setLocation(true);
+
+      return true;
+    }
+
+    store.General.setLocation(false);
+    if (status === 'denied') {
+      Alert.alert('Location permission denied');
+    }
+
+    if (status === 'disabled') {
+      Alert.alert(
+        `Turn on Location Services to allow Karblock to determine your location.`,
+        '',
+        [
+          {
+            text: 'Go to Settings',
+            onPress: () => {
+              openSetting();
+            },
+          },
+          {text: "Don't Use Location", onPress: () => {}},
+        ],
+      );
+    }
+    const openSetting = () => {
+      Linking.openSettings().catch(() => {
+        Alert.alert('Unable to open settings');
+      });
+    };
+
+    return false;
+  };
+
+  const androidLocationEnablerDialog = () => {
+    RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
+      interval: 10000,
+      fastInterval: 5000,
+    })
+      .then(data => {
+        store.General.setLocation(true);
+      })
+      .catch(err => {
+        toast?.current?.show('Please turn on location');
+        console.log('location enabler popup error : ', err);
+      });
+  };
+
+  const hasPermissionAndroid = async () => {
+    let g = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    console.log('permission result : ', g);
+
+    if (g === PermissionsAndroid.RESULTS.GRANTED) {
+      androidLocationEnablerDialog();
+      return;
+    }
+
+    store.General.setLocation(false);
+    let msg = 'permisiion location';
+    if (g === 'denied') {
+      msg = 'Please allow permision to use location';
+    }
+
+    if (g === 'never_ask_again') {
+      msg =
+        'Please allow permision to use location in  app setting in device allow location permission to continue';
+    }
+
+    Alert.alert(``, msg, [
+      {
+        text: 'Go to Settings',
+        onPress: () => {
+          openSetting();
+        },
+      },
+      {text: "Don't Use Location", onPress: () => {}},
+    ]);
+
+    const openSetting = () => {
+      Linking.openSettings().catch(() => {
+        Alert.alert('Unable to open settings');
+      });
+    };
+
+    return;
+  };
+
+  async function requestPermissions() {
+    if (Platform.OS === 'ios') {
+      console.log('Requesting iOS Permissions');
+      hasPermissionIOS();
+      return;
+    }
+    if (Platform.OS === 'android') {
+      console.log('Requesting Android Permissions');
+      hasPermissionAndroid();
+    }
+  }
+
+  useEffect(() => {
+    let arr = [];
+    if (food.length > 0) {
+      setloadd(true);
+      food.map((e, i, a) => {
+        let title = e.name;
+        let key = e._id;
+        let products = e.products;
+        let branch = e.branch;
+
+        const obj = {
+          title: title,
+          key: key,
+          data: products,
+          branch: branch,
+        };
+        arr.push(obj);
+      });
+    }
+    setTimeout(() => {
+      setloadd(false);
+    }, 100);
+    setfoodCategory(arr);
+  }, [food]);
+
+  useEffect(() => {
+    setImg(sliderImages.appCover ? sliderImages.appCover : []);
+  }, [sliderImages]);
 
   const renderTab = e => {
     let d = e;
 
     if (d.name != 'empty') {
-      if (selectedFilter.length <= 0) {
-        return (
-          <utils.BookCard
-            data={d}
-            nav={props.navigation}
-            screen="home"
-            toast={toast}
+      return (
+        <utils.FoodCard
+          data={d}
+          nav={props.navigation}
+          call="home"
+          toast={toast}
+          screen=""
+        />
+      );
+    } else {
+      return (
+        <View style={styles.emptySECTION}>
+          <Image
+            style={styles.emptyImg}
+            source={require('../../assets/images/empty/img.png')}
           />
-        );
-      } else {
-        let chk = false;
-
-        selectedFilter.map((e, i, a) => {
-          if (e.section == 'categories') {
-            e.items.map((e, i, a) => {
-              if (e.name == d.book_category.category_name) {
-                chk = true;
-              }
-            });
-          }
-        });
-
-        if (chk) {
-          return (
-            <utils.BookCard
-              data={d}
-              nav={props.navigation}
-              screen="home"
-              toast={toast}
-            />
-          );
-        }
-      }
+          <Text style={styles.emptyText}>Sorry!</Text>
+          <Text style={[styles.emptyText, {marginTop: -5}]}>
+            Currently no items are available here
+          </Text>
+        </View>
+      );
     }
   };
 
+  const onChangeTab = e => {
+    console.log('selected tab : ', e);
+  };
+
+  const gotoChangeLocation = () => {
+    store.User.setcl(false);
+    setisReferesh(false);
+    store.Food.setgetDataOnce(false);
+    props.navigation.navigate('Location', {
+      screen: 'home',
+      setisReferesh: c => setisReferesh(c),
+    });
+  };
+
+  const gotoSearch = () => {
+    props.navigation.navigate('Search', {data: foodCategory});
+  };
+
+  const gotoHelp = () => {
+    props.navigation.navigate('Help');
+  };
+
+  const gotoSetting = () => {
+    console.log('user : ', store.User.user);
+    if (!store.User.user) {
+      rbSheet?.current?.open();
+      // props.navigation.navigate('CheckLogin', {screen: 'home'});
+      return;
+    }
+    props.navigation.navigate('Setting');
+  };
+
+  useEffect(() => {
+    if (cart.data.length <= 0) {
+      cart.totalbill = 0;
+      cart.totalitems = 0;
+    }
+    if (cart.data.length > 0) {
+      let tb = 0;
+      let ti = 0;
+
+      cart.data.map((e, i, a) => {
+        tb = tb + parseFloat(e.bill);
+        ti = ti + parseFloat(e.quantity);
+      });
+
+      cart.totalbill = tb;
+      cart.totalitems = ti;
+    }
+  }, [cart]);
+
   const renderHeader = () => {
-    const gotoSearch = () => {
-      // props.navigation.navigate('Search', {data: foodCategory});
-    };
-
-    const gotoHelp = () => {
-      // props.navigation.navigate('Help');
-    };
-
-    const gotoSetting = () => {
-      if (!store.User.user) {
-        rbSheet?.current?.open();
-        return;
-      }
-      props.navigation.navigate('Setting');
-    };
-
-    const iconColor = 'black';
-
     return (
       <View
         style={[
@@ -291,34 +533,41 @@ function Home(props) {
           {
             marginTop:
               internet && tagLine == ''
-                ? theme.window.STATUSBAR_HEIGHT + 12
-                : 12,
+                ? theme.window.STATUSBAR_HEIGHT + 10
+                : 10,
           },
         ]}>
-        <View style={{width: 30}} />
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={gotoChangeLocation}
+          style={[styles.icon, {marginLeft: 0}]}>
+          <utils.vectorIcon.Entypo
+            name="chevron-down"
+            color={theme.color.button1}
+            size={22}
+          />
+        </TouchableOpacity>
 
         <View style={styles.headerSection2}>
           <TouchableOpacity
-            disabled
             onPress={gotoSearch}
             activeOpacity={0.5}
-            style={{width: 30, height: 30}}>
-            {/* <utils.vectorIcon.AntDesign
+            style={styles.icon}>
+            <utils.vectorIcon.AntDesign
               name="search1"
-              color={iconColor}
+              color={theme.color.button1}
               size={20}
-            /> */}
+            />
           </TouchableOpacity>
           <TouchableOpacity
-            disabled
             onPress={gotoHelp}
             activeOpacity={0.5}
-            style={{width: 30, height: 30}}>
-            {/* <utils.vectorIcon.Feather
+            style={styles.icon}>
+            <utils.vectorIcon.Feather
               name="help-circle"
-              color={iconColor}
+              color={theme.color.button1}
               size={20}
-            /> */}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={gotoSetting}
@@ -326,8 +575,8 @@ function Home(props) {
             style={styles.icon}>
             <utils.vectorIcon.AntDesign
               name="user"
-              color={iconColor}
-              size={22}
+              color={theme.color.button1}
+              size={20}
             />
           </TouchableOpacity>
         </View>
@@ -352,59 +601,222 @@ function Home(props) {
             />
           </Svg>
         }>
-        <Image
+        <ImageSlider
+          autoPlayWithInterval={2000}
+          images={img}
           style={{
-            width: '100%',
-            height: '100%',
-            flex: 1,
+            backgroundColor: theme.color.background,
+            elevation: 5,
           }}
-          resizeMode="stretch"
-          source={coverImage}
+          customSlide={({index, item, style, width}) => (
+            <TouchableOpacity
+              style={style}
+              activeOpacity={0.7}
+              disabled
+              key={index}>
+              <FastImage
+                style={{
+                  flex: 1,
+                  resizeMode: 'stretch',
+                }}
+                source={{
+                  uri: item,
+                  priority: FastImage.priority.high,
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            </TouchableOpacity>
+          )}
         />
-
         {renderHeader()}
       </MaskedView>
     );
   };
 
   const renderTitleSection = () => {
+    const renderLine = () => {
+      return (
+        <View
+          style={{
+            width: 1,
+            height: '60%',
+            backgroundColor: theme.color.subTitle,
+            marginHorizontal: 12,
+          }}
+        />
+      );
+    };
+
+    const goToResturantDetails = () => {
+      props.navigation.navigate('ResturantDetails');
+    };
+
+    // const navigatetoGoogleMaps = () => {
+    //  let label =  restureant.name
+
+    // let dest = restureant.loc.coords
+
+    //   const scheme = Platform.select({
+    //     ios: 'maps:0,0?q=',
+    //     android:
+    //       'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=',
+    //   });
+    //   let latLng = `${dest.latitude},${dest.longitude}`;
+
+    //   const url = Platform.select({
+    //     ios: `https://www.google.com/maps/?api=1&query=${label}&center=${latLng}`,
+    //     android: `${scheme}${latLng}`,
+    //   });
+
+    //   Linking.canOpenURL(url)
+    //     .then(supported => {
+    //       console.log('start google map support', supported);
+    //       return Linking.openURL(url);
+    //       // if (supported) {
+    //       //   let browser_url =
+    //       //     "https://www.google.de/maps/@" +
+    //       //     dest.latitude +
+    //       //     "," +
+    //       //     dest.longitude +
+    //       //     "?q=" +
+    //       //     label;
+    //       //   return Linking.openURL(browser_url);
+    //       // } else {
+    //       //   return Linking.openURL(url);
+    //       // }
+    //     })
+    //     .catch(err => {
+    //       console.log('error open google map', err);
+    //       Alert.alert('', err);
+    //     });
+    // };
+
     return (
       <View
         style={{
           paddingHorizontal: 12,
           marginTop: 10,
           marginBottom: 5,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
         }}>
-        <View style={{width: '75%'}}>
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <View style={{width: '78%'}}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{
+                fontSize: 18,
+                fontFamily: theme.fonts.fontBold,
+                color: theme.color.title,
+                textTransform: 'capitalize',
+                lineHeight: 22,
+              }}>
+              {resturant.name}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={goToResturantDetails}
             style={{
-              fontSize: 18,
-              fontFamily: theme.fonts.fontMedium,
-              color: theme.color.title,
-              textTransform: 'capitalize',
-              lineHeight: 22,
+              width: '19%',
+              alignItems: 'flex-end',
             }}>
-            {store.General.AppName}
-          </Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{
+                fontSize: 13,
+                fontFamily: theme.fonts.fontBold,
+                color: theme.color.button1,
+              }}>
+              More info
+            </Text>
+          </TouchableOpacity>
         </View>
-        {!getBooksLoader &&
-          !load &&
-          data !== false &&
-          data.length > 0 &&
-          renderFilter()}
+
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: 8,
+          }}>
+          <Text
+            style={{
+              fontSize: 12,
+              fontFamily: theme.fonts.fontBold,
+              color: theme.color.subTitle,
+            }}>
+            {parseFloat(distance).toFixed(1)} km
+          </Text>
+          {renderLine()}
+          <Text
+            style={{
+              fontSize: 12,
+              fontFamily: theme.fonts.fontBold,
+              color: theme.color.subTitle,
+            }}>
+            {rs}
+          </Text>
+          {renderLine()}
+          <Text
+            style={{
+              fontSize: 12,
+              fontFamily: theme.fonts.fontBold,
+              color: theme.color.subTitle,
+            }}>
+            {deliverTime} min delivery
+          </Text>
+          {/* {renderLine()}
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <utils.vectorIcon.Entypo
+              name="star"
+              color={theme.color.rate}
+              size={15}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: theme.fonts.fontBold,
+                color: theme.color.title,
+                marginLeft: 3,
+              }}>
+              {resturant.rating.average_rating}
+            </Text>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: theme.fonts.fontBold,
+                color: theme.color.subTitle,
+                marginLeft: 3,
+              }}>
+              (
+              {resturant.rating.total_reviews <= 500
+                ? resturant.rating.total_reviews
+                : '500+'}
+              )
+            </Text>
+          </View> */}
+        </View>
       </View>
     );
   };
 
+  // console.log('cart : ', cart);
+  // console.log('cart data : ', cart.data);
+  // console.log('cart data variant : ', cart.data[0]?.variants);
+  // console.log(' selected product : ', store.Food.selectedProduct);
+  // console.log(' selected var detial : ', store.Food.selectedvariationDetail);
+  // console.log('vartns  : ', store.Food.variations);
+
   const renderBottomSheet = () => {
     const Login = () => {
       rbSheet?.current?.close();
-      props.navigation.navigate('Login', {screen: 'home'});
+      props.navigation.navigate('Login', {s: ''});
     };
 
     const Guest = () => {
@@ -421,7 +833,9 @@ function Home(props) {
               Login();
             }}
             style={styles.BottomButton}>
-            <Text style={styles.buttonTextBottom}>Login</Text>
+            <Text style={styles.buttonTextBottom}>
+              Continue with phone number
+            </Text>
           </TouchableOpacity>
         </>
       );
@@ -436,7 +850,10 @@ function Home(props) {
               Guest();
             }}
             style={styles.BottomButton2}>
-            <Text style={styles.buttonTextBottom}>Continue as Guest</Text>
+            <Text
+              style={[styles.buttonTextBottom, {color: theme.color.button1}]}>
+              Continue as Guest
+            </Text>
           </TouchableOpacity>
         </>
       );
@@ -468,72 +885,31 @@ function Home(props) {
               // backgroundColor: theme.color.cartbutton,
             },
           }}>
-          <ScrollView
-            contentContainerStyle={{paddingBottom: 20}}
-            showsVerticalScrollIndicator={false}>
-            <View
-              style={{
-                marginHorizontal: 15,
-              }}>
-              <Text
-                style={{
-                  fontFamily: theme.fonts.fontMedium,
-                  color: theme.color.title,
-                  fontSize: 18,
-                }}>
-                Sign up or log in
-              </Text>
-
-              <View style={{marginTop: 30}}>
-                {renderLoginButton()}
-
-                <Text style={styles.titleText2}>or</Text>
-                {renderGuestButton()}
-              </View>
-            </View>
-          </ScrollView>
-        </RBSheet>
-      </>
-    );
-  };
-
-  const renderFilterSheet = () => {
-    return (
-      <>
-        <RBSheet
-          ref={rbSheet2}
-          onOpen={() => {}}
-          onClose={() => {}}
-          height={responsiveHeight(70)}
-          closeOnPressBack={true}
-          openDuration={250}
-          screen={''}
-          closeOnDragDown={true}
-          closeOnPressMask={true}
-          KeyboardAvoidingView={true}
-          customStyles={{
-            wrapper: {
-              flex: 1,
-            },
-            container: {
-              backgroundColor: theme.color.background,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              elevation: 5,
-            },
-          }}>
-          <utils.FilterModal
-            data={filter}
-            cat={category}
-            closeSheet={() => {
-              rbSheet2?.current?.close();
-            }}
-            onApply={c => {
-              // console.log('filter : ', filter);
-              // closeModalFilterSeet();
-              // store.General.setselectedFilter(c);
-            }}
+          <StatusBar
+            translucent={false}
+            backgroundColor={theme.color.button1}
+            barStyle={'light-content'}
           />
+          <View
+            style={{
+              marginHorizontal: 15,
+            }}>
+            <Text
+              style={{
+                fontFamily: theme.fonts.fontBold,
+                color: theme.color.title,
+                fontSize: 18,
+              }}>
+              Sign up or log in
+            </Text>
+
+            <View style={{marginTop: 30}}>
+              {renderLoginButton()}
+
+              <Text style={styles.titleText2}>or</Text>
+              {renderGuestButton()}
+            </View>
+          </View>
         </RBSheet>
       </>
     );
@@ -554,158 +930,79 @@ function Home(props) {
       return (
         <StatusBar
           translucent={false}
-          backgroundColor={theme.color.button1}
+          backgroundColor={theme.color.background}
           barStyle={'dark-content'}
         />
       );
     }
   };
 
-  const renderFilter = () => {
-    let length = numOfSelFilter;
-
-    if (
-      (selectedTab == 'KleverBook' &&
-        data !== false &&
-        data.length > 0 &&
-        data[0]) ||
-      (selectedTab == 'Downloads' &&
-        data != false &&
-        data.length > 0 &&
-        data[1])
-    ) {
-      return (
-        <TouchableOpacity
-          activeOpacity={0.5}
-          style={{
-            width: '20%',
-            alignItems: 'flex-end',
-          }}
-          onPress={() => {
-            onPressFilter();
-          }}>
-          <Text style={styles.catTitle2}>
-            {length > 0 ? `Filter (${length > 99 ? '99+' : length})` : 'Filter'}
-          </Text>
-        </TouchableOpacity>
-      );
-    } else {
-      return <View style={{width: '20%'}} />;
-    }
-  };
-
-  const renderSearchBox = () => {
-    return (
-      <View
-        style={{
-          width: 170,
-          height: 32,
-          backgroundColor: theme.color.background,
-          // borderBottomWidth: 1,
-          borderWidth: 0,
-          borderColor: theme.color.button1,
-          position: 'absolute',
-          top: 8,
-          right: 12,
-        }}>
-        <TextInput
-          selectionColor={theme.color.button1}
-          underlineColor={'#dbdbdb'}
-          activeUnderlineColor={theme.color.button1}
-          placeholder="Search"
-          placeholderTextColor={'#c4c4c4'}
-          value={search}
-          style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: theme.color.background,
-            paddingLeft: 20,
-            color: theme.color.subTitleLight,
-            // backgroundColor: 'red',
-          }}
-          onChangeText={t => setsearch(t)}
-        />
-        <utils.vectorIcon.Ionicons
-          style={{position: 'absolute', top: 5}}
-          name="search"
-          color={'#c4c4c4'}
-          size={24}
-        />
-      </View>
-    );
-  };
-
-  const renderLoaderShow = () => {
-    return (
-      <View style={styles.emptySECTION33}>
-        <ActivityIndicator size={40} color={theme.color.button1} />
-      </View>
-    );
-  };
-
-  const renderEmptyShow = () => {
-    return (
-      <View style={styles.emptySECTION33}>
-        <Image
-          style={styles.emptyImg}
-          source={require('../../assets/images/empty/img.png')}
-        />
-        <Text style={styles.emptyText}>Sorry!</Text>
-        <Text style={[styles.emptyText, {marginTop: -3}]}>
-          Currently no books are available here
-        </Text>
-      </View>
-    );
-  };
-
-  const renderShowData = () => {
-    return (
-      <View style={{flex: 1}}>
-        <DynamicTabView
-          data={data}
-          search={search}
-          defaultIndex={0}
-          renderTab={renderTab}
-          onChangeTab={onChangeTab}
-          headerTextStyle={{
-            color: theme.color.title,
-            fontFamily: theme.fonts.fontMedium,
-          }}
-          headerBackgroundColor={theme.color.background}
-          headerUnderlayColor={theme.color.button1}
-          containerStyle={{
-            backgroundColor: theme.color.background,
-            overflow: 'hidden',
-          }}
-        />
-        {renderSearchBox()}
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      {isServerError && <utils.ServerRes />}
-      {!internet && <utils.InternetMessage color={theme.color.button1} />}
-      <Toast ref={toast} position="bottom" />
       {renderStatusBar()}
-      {renderFilterSheet()}
+      {!internet && (
+        <utils.InternetMessage
+          color={tagLine != '' ? 'red' : theme.color.button1}
+        />
+      )}
+      {tagLine != '' && <utils.TagLine tagLine={tagLine} />}
       {renderBottomSheet()}
-      <View>
-        {renderImageSliderBox()}
-        {renderTitleSection()}
-      </View>
-      {(getBooksLoader || load) && renderLoaderShow()}
-      {!getBooksLoader &&
-        !load &&
-        data !== false &&
-        data.length <= 0 &&
-        renderEmptyShow()}
-      {!getBooksLoader &&
-        !load &&
-        data !== false &&
-        data.length > 0 &&
-        renderShowData()}
+      {img.length > 0 && (
+        <View>
+          {renderImageSliderBox()}
+          {renderTitleSection()}
+        </View>
+      )}
+      <utils.Loader load={loader || load} text={loader ? 'Please wait' : ''} />
+
+      {foodCategory != false && !loadd && foodCategory.length > 0 && (
+        <>
+          <DynamicTabView
+            data={foodCategory}
+            defaultIndex={0}
+            renderTab={renderTab}
+            onChangeTab={onChangeTab}
+            headerTextStyle={{
+              color: theme.color.title,
+              fontFamily: theme.fonts.fontMedium,
+            }}
+            headerBackgroundColor={theme.color.background}
+            headerUnderlayColor={theme.color.button1}
+            containerStyle={{
+              backgroundColor: theme.color.background,
+              paddingBottom: cart.data.length > 0 ? responsiveHeight(10) : 0,
+              overflow: 'hidden',
+            }}
+          />
+        </>
+      )}
+
+      {loadd && (
+        <>
+          <ActivityIndicator
+            size={27}
+            color={theme.color.button1}
+            style={styles.emptySECTION}
+          />
+        </>
+      )}
+
+      {loader == false && foodCategory.length <= 0 && (
+        <View style={styles.emptySECTION2}>
+          <Image
+            style={styles.emptyImg}
+            source={require('../../assets/images/empty/img.png')}
+          />
+          <Text style={styles.emptyText}>Sorry!</Text>
+          <Text style={[styles.emptyText, {marginTop: -5}]}>
+            Currently no products are available here
+          </Text>
+        </View>
+      )}
+
+      {cart.data.length > 0 && <utils.FooterCart nav={props.navigation} />}
+
+      <Toast ref={toast} position="bottom" />
     </SafeAreaView>
   );
 }

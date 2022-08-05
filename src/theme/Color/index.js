@@ -1,13 +1,32 @@
+//  const  AppHeaderColor ="#232322";
+
+//  const  AppHeaderTextColor="#da8e03"
+//  const unSelectColor="gray"
+
+//  const mainColor="white"
+//  const mainTextColor="black"
+//  const mainTextTitleColor="#da8e03"
+//  const mainTextSubtitleColor="#8b8b8b"
+
+//  const mainPlaceholderColor="silver"
+
+//  const borderspilitColor="#5c5c5c"
+
+//  const buttonLinerGC1="#0e47a1"
+//  const buttonLinerGC2="#002171"
+//  const buttonLinerTextColor="white"
+
 const background = '#FCFCFC';
 const title = 'black';
-const subTitle = '#6b6b6b';
+const subTitle = '#393939';
 const subTitleLight = 'rgba(0, 0, 0, 0.5)';
-const button1 = '#fdce03';
+const button1 = '#FE774C';
 const button2 = '#39377F';
-const buttonText = 'black';
+const buttonText = 'white';
 const cartbutton = '#f27f33';
 const cartbuttonText = 'white';
 const heart = 'red';
+const rate = '#FBBC04';
 
 const footerCartbc1 = '#615EB6';
 const footerCartbc2 = '#39377F';
@@ -64,4 +83,5 @@ export default color = {
   enableField,
   disableBack,
   disableBackDark,
+  rate,
 };

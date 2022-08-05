@@ -20,17 +20,17 @@ import theme from '../../theme';
 
 export default observer(Setting);
 function Setting(props) {
+  // const data = props.route.params.food;
+
   let user = store.User.user;
 
-  console.log('user : ', user);
+  let name = user.username || '';
+  let phone = user.mobile || '';
+  let email = user.email || '';
 
-  let name = user?.user.name || '';
-  let phone = user?.phone || '';
-  let email = user?.user.email || '';
-
-  let image = user?.image
+  let image = user.image
     ? {uri: user.image}
-    : require('../../assets/images/profile/img.png');
+    : require('../../assets/images/profile/profileimage.png');
 
   const [profileImageLoader, setprofileImageLoader] = useState(false);
   const [showfullimagLoader, setshowfullimagLoader] = useState(false);
@@ -145,14 +145,13 @@ function Setting(props) {
               width: 100,
               height: 100,
               borderRadius: 50,
-              borderWidth: 0.5,
-              borderColor: theme.color.subTitleLight,
+              borderWidth: 1,
+              borderColor: theme.color.subTitle,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
             <TouchableOpacity
               activeOpacity={0.8}
-              disabled
               onPress={() => {
                 Keyboard.dismiss();
                 let i = user.image || '';
@@ -202,7 +201,7 @@ function Setting(props) {
               }}
               numberOfLines={1}
               ellipsizeMode="tail">
-              {phone}
+              +{phone}
             </Text>
             <Text
               style={{
@@ -231,41 +230,7 @@ function Setting(props) {
 
         <TouchableOpacity
           activeOpacity={0.5}
-          onPress={() => props.navigation.navigate('Profile')}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingHorizontal: 12,
-          }}>
-          <View
-            style={{width: '90%', flexDirection: 'row', alignItems: 'center'}}>
-            <utils.vectorIcon.Ionicons
-              name="person-circle"
-              color={theme.color.subTitle}
-              size={22}
-            />
-            <Text
-              style={{
-                fontSize: 15,
-                marginLeft: 7,
-                color: theme.color.title,
-                fontFamily: theme.fonts.fontMedium,
-              }}>
-              Profile
-            </Text>
-          </View>
-          <utils.vectorIcon.AntDesign
-            name="right"
-            color={theme.color.subTitle}
-            size={22}
-          />
-        </TouchableOpacity>
-        {sep()}
-
-        <TouchableOpacity
-          activeOpacity={0.5}
-          onPress={() => props.navigation.navigate('DownloadStack')}
+          onPress={() => props.navigation.navigate('OrderStack')}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -286,7 +251,7 @@ function Setting(props) {
                 color: theme.color.title,
                 fontFamily: theme.fonts.fontMedium,
               }}>
-              Downloads
+              My Orders
             </Text>
           </View>
           <utils.vectorIcon.AntDesign
@@ -297,10 +262,10 @@ function Setting(props) {
         </TouchableOpacity>
         {sep()}
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => {
-            // props.navigation.navigate('Favourite');
+            props.navigation.navigate('Favourite');
           }}
           style={{
             flexDirection: 'row',
@@ -331,7 +296,7 @@ function Setting(props) {
             size={22}
           />
         </TouchableOpacity>
-        {sep()} */}
+        {sep()}
 
         <View style={styles.section3}>
           <Text
@@ -344,7 +309,7 @@ function Setting(props) {
           </Text>
         </View>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => {
             props.navigation.navigate('ChangePassword');
@@ -378,9 +343,9 @@ function Setting(props) {
             size={22}
           />
         </TouchableOpacity>
-        {sep()}
+        {sep()} */}
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => props.navigation.navigate('PromoStack')}
           style={{
@@ -413,7 +378,7 @@ function Setting(props) {
           />
         </TouchableOpacity>
 
-        {sep()} */}
+        {sep()}
 
         <TouchableOpacity
           activeOpacity={0.5}

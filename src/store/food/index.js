@@ -5,6 +5,13 @@ import NetInfo from '@react-native-community/netinfo';
 import db from '../../database/index';
 import {Alert} from 'react-native';
 
+// import carStore from '../index';
+// import NotificationManager from '../index';
+// import db from '../../database/index';
+// import utils from '../../utils';
+// import store from '../index';
+// import auth from '@react-native-firebase/auth';
+
 class food {
   constructor() {
     makeObservable(this);

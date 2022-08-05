@@ -23,7 +23,6 @@ class user {
   @observable isChkLoginModal = false;
 
   @observable loader = false;
-  @observable fploader = false;
   @observable fvrtloader = false;
   @observable adrsloader = false;
   @observable loginLoader = false;
@@ -31,18 +30,15 @@ class user {
 
   @persist('object') @observable location = false; //set  delivery adress location
   @observable cl = false; //curemt location
-  @observable rl = false; //curemt resturant location
+  @observable rd = false; //curemt resturant detail
   @persist('object') @observable user = false;
   @persist('object') @observable polygons = [];
 
   @persist('object') @observable fvrtList = [];
   @persist('object') @observable adrsList = [];
 
-  @persist('object') @observable adverBooks = [];
-  @persist('object') @observable bookCat = [];
-
-  @observable AdverbookLoader = false;
-  @observable catLoader = false;
+  @observable CityAreaData = [];
+  @observable CityAreaLoader = false;
 
   @observable online = false;
   @observable notificationToken = '';
@@ -53,6 +49,25 @@ class user {
   @observable done = 0; //done uloaded image counter
   @observable isAllImageUploadDone = false;
 
+  @action setcart = obj => {
+    this.cart = obj;
+  };
+
+  @action setisAddModal = obj => {
+    this.isAddModal = obj;
+  };
+
+  @action setisSubModal = obj => {
+    this.isSubModal = obj;
+  };
+  @action setisChkLoginModal = obj => {
+    this.isChkLoginModal = obj;
+  };
+
+  @action setisVarModal = obj => {
+    this.isVarModal = obj;
+  };
+
   @action setloginLoader = obj => {
     this.loginLoader = obj;
   };
@@ -61,33 +76,78 @@ class user {
     this.regLoader = obj;
   };
 
-  @action setadverBooks = obj => {
-    this.adverBooks = obj;
+  @action setLocation = obj => {
+    this.location = obj;
   };
 
-  @action setbookCat = obj => {
-    this.bookCat = obj;
+  @action setfvrtList = obj => {
+    this.fvrtList = obj;
   };
 
-  @action setAdverbookLoader = obj => {
-    this.AdverbookLoader = obj;
+  @action setadrsList = obj => {
+    this.adrsList = obj;
   };
 
-  @action setcatLoader = obj => {
-    this.catLoader = obj;
+  @action setadrsloader = obj => {
+    this.adrsloader = obj;
   };
+
+  @action setfvrtloader = obj => {
+    this.fvrtloader = obj;
+  };
+
+  @action setCityAreaData = obj => {
+    this.CityAreaData = obj;
+  };
+
+  @action setCityAreaLoader = obj => {
+    this.CityAreaLoader = obj;
+  };
+
+  @action.bound
+  addPolygons(val) {
+    this.polygons = val;
+  }
 
   @action setLoader = obj => {
     this.loader = obj;
   };
 
-  @action setfpLoader = obj => {
-    this.fploader = obj;
+  @action setonline = obj => {
+    this.online = obj;
   };
+
+  @action setcl = obj => {
+    this.cl = obj;
+  };
+
+  @action setrd = obj => {
+    this.rd = obj;
+  };
+
+  @action.bound
+  setisAllImageUploadDone(c) {
+    this.isAllImageUploadDone = c;
+  }
+
+  @action.bound
+  settotal(t) {
+    this.total = t;
+  }
+
+  @action.bound
+  setdone(t) {
+    this.done = t;
+  }
 
   @action.bound
   setisGetAllDatainSplash(val) {
     this.isGetAllDatainSplash = val;
+  }
+
+  @action.bound
+  setUser(val) {
+    this.user = val;
   }
 
   @action.bound
@@ -99,11 +159,6 @@ class user {
     console.log('add user : ', token, user);
     this.addauthToken(token);
     this.setUser(user);
-    return;
-  }
-
-  setUser(user) {
-    this.user = user;
     return;
   }
 
@@ -120,95 +175,303 @@ class user {
 
         if (c == 'user') {
           this.attemptToGetUser();
+          store.Orders.getOrderById();
+          // this.attemptToGetFavtList();
+          // this.attemptToGetAdressList()
         }
-
-        // this.attemptToSubTopic();
-        this.getAdverBooks();
-        this.getBooksCat();
-        store.Downloads.getDefaultAD();
+        if (store.User.location) {
+          let city = store.User.location.city;
+          store.Food.getSliderImages(city);
+          store.Promos.getPromoById();
+        }
+        this.attemptToSubTopic();
+        this.getCitiesandAreas();
       }
     });
   };
 
   @action.bound
-  getAdverBooks() {
-    this.setAdverbookLoader(true);
-    db.hitApi(db.apis.GET_ADVERBOOKS, 'get', null, null)
+  getCitiesandAreas() {
+    this.setCityAreaLoader(true);
+    db.hitApi(db.apis.GET_CITIES_AREAS, 'get', null, null)
       ?.then((resp: any) => {
-        this.setAdverbookLoader(false);
-        console.log(`response  ${db.apis.GET_ADVERBOOKS} : `, resp.data.data);
-        this.setadverBooks(resp.data.data);
+        console.log(`response  ${db.apis.GET_CITIES_AREAS} : `, resp.data.data);
+        this.setCityAreaData(resp.data.data);
+        this.setCityAreaLoader(false);
         this.setisGetAllDatainSplash(true);
+        // this.user = resp.data.data[0];
+        // this.user.clear_account = resp.data.data[0].clear_account;
+        // this.user.status = resp.data.data[0].status;
+        // this.user.profile_image = resp.data.data[0].profile_image;
+        // this.user.rating = resp.data.data[0].rating;
       })
       .catch(err => {
-        this.setAdverbookLoader(false);
+        this.setCityAreaLoader(false);
         let msg = err.response.data.message || err.response.status;
-        console.log(`Error in ${db.apis.GET_ADVERBOOKS} : `, msg);
+        console.log(`Error in ${db.apis.GET_CITIES_AREAS} : `, msg);
         if (msg == 503 || msg == 500) {
           store.General.setisServerError(true);
           return;
         }
-        Alert.alert('', msg.toString());
-      });
-  }
-
-  @action.bound
-  getBooksCat() {
-    this.setcatLoader(true);
-    db.hitApi(db.apis.GET_ALL_CATEGORY, 'get', null, null)
-      ?.then((resp: any) => {
-        this.setcatLoader(false);
-        console.log(`response  ${db.apis.GET_ALL_CATEGORY} : `, resp.data.data);
-        let dt = resp.data.data;
-        let ar = [];
-        if (dt.length > 0) {
-          dt.map((e, i, a) => {
-            ar.push({name: e.category_name, isSel: false});
-          });
-        }
-        this.setbookCat(ar);
-      })
-      .catch(err => {
-        this.setcatLoader(false);
-        let msg = err.response.data.message || err.response.status;
-        console.log(`Error in ${db.apis.GET_ALL_CATEGORY} : `, msg);
-        if (msg == 503 || msg == 500) {
-          store.General.setisServerError(true);
-          return;
-        }
-        Alert.alert('', msg.toString());
+        Alert.alert('', msg);
       });
   }
 
   @action.bound
   attemptToGetUser() {
     db.hitApi(
-      db.apis.GET_USER_BY_ID + this.user.user._id,
+      db.apis.GET_USER_BY_ID + this.user._id,
       'get',
       null,
       this.authToken,
     )
       ?.then((resp: any) => {
         console.log(`response  ${db.apis.GET_USER_BY_ID} : `, resp.data);
-        let data = resp.data.data[0] || [];
-
-        if (data.isActive) {
-          let u = {...this.user};
-          u.user[data];
-          this.setUser(u);
-        } else {
-          Alert.alert(
-            '',
-            'Sorry, you account is inactive. Please contact customer support.',
-            [{text: 'OK', onPress: () => this.Logout('')}],
-          );
-        }
+        let u = resp.data.data[0];
+        this.setUser(u);
+        // if (u.isActive) {
+        //   this.setUser(u);
+        // } else {
+        //   alert('block');
+        // }
       })
       .catch(err => {
+        console.log(
+          `Error in ${db.apis.GET_USER_BY_ID} : `,
+          err.response.data.message,
+        );
+      });
+  }
+
+  @action.bound
+  attemptToGetFavtList() {
+    this.setfvrtloader(true);
+    db.hitApi(
+      db.apis.GET_FAVRT_FOOD_LIST_BY_USER_ID + this.user._id,
+      'get',
+      null,
+      this.authToken,
+    )
+      ?.then((resp: any) => {
+        this.setfvrtloader(false);
+        console.log(
+          `response  ${db.apis.GET_FAVRT_FOOD_LIST_BY_USER_ID} : `,
+          resp.data,
+        );
+        // this.setfvrtList(resp.data.data[0]);
+      })
+      .catch(err => {
+        this.setfvrtloader(false);
         let msg = err.response.data.message || err.response.status;
-        console.log(`Error in ${db.apis.GET_USER_BY_ID} : `, msg);
+        console.log(
+          `Error in ${db.apis.GET_FAVRT_FOOD_LIST_BY_USER_ID} : `,
+          msg,
+        );
         if (msg == 503 || msg == 500) {
           store.General.setisServerError(true);
+          return;
+        }
+        if (msg == 'No records found') {
+          // this.setfvrtList([]);
+          return;
+        }
+        Alert.alert('', msg);
+      });
+  }
+
+  @action.bound
+  attemptToGetAdressList() {
+    this.setadrsloader(true);
+    db.hitApi(
+      db.apis.GET_ADDRESS_BY_USER_ID + this.user._id,
+      'get',
+      null,
+      this.authToken,
+    )
+      ?.then((resp: any) => {
+        this.setadrsloader(false);
+        console.log(
+          `response  ${db.apis.GET_ADDRESS_BY_USER_ID} : `,
+          resp.data,
+        );
+        // this.setadrsList(resp.data.data[0]);
+      })
+      .catch(err => {
+        this.setadrsloader(false);
+        let msg = err.response.data.message || err.response.status;
+        console.log(`Error in ${db.apis.GET_ADDRESS_BY_USER_ID} : `, msg);
+        if (msg == 503 || msg == 500) {
+          store.General.setisServerError(true);
+          return;
+        }
+        if (msg == 'No records found') {
+          // this.setfvrtList([]);
+          return;
+        }
+        Alert.alert('', msg);
+      });
+  }
+
+  @action.bound
+  attemptToAddFavtList(id) {
+    this.setfvrtloader(true);
+    let fid = id;
+    db.hitApi(
+      db.apis.SET_FAVRT_FOOD_LIST_BY_USER_ID + this.user._id,
+      'post',
+      null,
+      this.authToken,
+    )
+      ?.then((resp: any) => {
+        this.setfvrtloader(false);
+
+        console.log(
+          `response  ${db.apis.SET_FAVRT_FOOD_LIST_BY_USER_ID} : `,
+          resp.data,
+        );
+        // this.setfvrtList(resp.data.data[0]);
+      })
+      .catch(err => {
+        this.setfvrtloader(false);
+
+        let msg = err.response.data.message || err.response.status;
+        console.log(
+          `Error in ${db.apis.SET_FAVRT_FOOD_LIST_BY_USER_ID} : `,
+          msg,
+        );
+        if (msg == 503 || msg == 500) {
+          store.General.setisServerError(true);
+          return;
+        }
+        Alert.alert('', msg);
+      });
+  }
+
+  @action.bound
+  attemptToRemoveFavtList(id) {
+    this.setfvrtloader(true);
+    let fid = id;
+    db.hitApi(
+      db.apis.REMOVE_FAVRT_FOOD_LIST_BY_USER_ID + this.user._id,
+      'post',
+      null,
+      this.authToken,
+    )
+      ?.then((resp: any) => {
+        this.setfvrtloader(false);
+        console.log(
+          `response  ${db.apis.REMOVE_FAVRT_FOOD_LIST_BY_USER_ID} : `,
+          resp.data,
+        );
+        // this.setfvrtList(resp.data.data[0]);
+      })
+      .catch(err => {
+        this.setfvrtloader(false);
+        let msg = err.response.data.message || err.response.status;
+        console.log(
+          `Error in ${db.apis.REMOVE_FAVRT_FOOD_LIST_BY_USER_ID} : `,
+          msg,
+        );
+        if (msg == 503 || msg == 500) {
+          store.General.setisServerError(true);
+          return;
+        }
+        Alert.alert('', msg);
+      });
+  }
+
+  @action.bound
+  attemptToAddAddressList(id) {
+    this.setadrsloader(true);
+    let fid = id;
+    db.hitApi(
+      db.apis.ADD_ADDRESS_BY_USER_ID + this.user._id,
+      'post',
+      null,
+      this.authToken,
+    )
+      ?.then((resp: any) => {
+        this.setadrsloader(false);
+        console.log(
+          `response  ${db.apis.ADD_ADDRESS_BY_USER_ID} : `,
+          resp.data,
+        );
+        // this.setadrsList(resp.data.data[0]);
+      })
+      .catch(err => {
+        this.setadrsloader(false);
+        let msg = err.response.data.message || err.response.status;
+        console.log(`Error in ${db.apis.ADD_ADDRESS_BY_USER_ID} : `, msg);
+        if (msg == 503 || msg == 500) {
+          store.General.setisServerError(true);
+          return;
+        }
+        Alert.alert('', msg);
+      });
+  }
+
+  @action.bound
+  attemptToRemoveAddressList(id) {
+    this.setadrsloader(true);
+    let fid = id;
+    db.hitApi(
+      db.apis.REMOVE_ADDRESS_BY_USER_ID + this.user._id,
+      'post',
+      null,
+      this.authToken,
+    )
+      ?.then((resp: any) => {
+        this.setadrsloader(false);
+        console.log(
+          `response  ${db.apis.REMOVE_ADDRESS_BY_USER_ID} : `,
+          resp.data,
+        );
+        // this.adrsList(resp.data.data[0]);
+      })
+      .catch(err => {
+        this.setadrsloader(false);
+        let msg = err.response.data.message || err.response.status;
+        console.log(`Error in ${db.apis.REMOVE_ADDRESS_BY_USER_ID} : `, msg);
+        if (msg == 503 || msg == 500) {
+          store.General.setisServerError(true);
+          return;
+        }
+        Alert.alert('', msg);
+      });
+  }
+  @action.bound
+  attemptToLogin(d, goHome, goSignup, goCheckout, s) {
+    this.setloginLoader(true);
+    let body = {
+      mobile: d.mobile,
+      registrationToken: d.registrationToken,
+    };
+
+    db.hitApi(db.apis.LOGIN_USER, 'post', body, null)
+      ?.then((resp: any) => {
+        console.log(`response  ${db.apis.LOGIN_USER} : `, resp.data);
+        this.setloginLoader(false);
+        this.addUser(resp.data.token, resp.data.doc);
+        store.Orders.getOrderById();
+        if (s == 'checkout') {
+          goCheckout();
+          return;
+        }
+
+        goHome();
+      })
+      .catch(err => {
+        this.setloginLoader(false);
+
+        let msg = err.response.data.message || err.response.status;
+        console.log(`Error in ${db.apis.LOGIN_USER} : `, msg);
+        if (msg == 503 || msg == 500) {
+          store.General.setisServerError(true);
+          return;
+        }
+
+        if (msg == 'User Not Registered') {
+          goSignup();
           return;
         }
 
@@ -217,149 +480,178 @@ class user {
   }
 
   @action.bound
-  attemptToLogin(body, calFunc) {
-    this.setloginLoader(true);
+  attemptToSubTopic() {
+    let body = {
+      token: this.notificationToken,
+      topic: 'contactus',
+    };
 
-    db.hitApi(db.apis.LOGIN_USER, 'post', body, null)
+    db.hitApi(db.apis.SUBSCRIBE_TOPIC, 'post', body, null)
       ?.then((resp: any) => {
-        this.setloginLoader(false);
-        console.log(`response  ${db.apis.LOGIN_USER} : `, resp.data);
-        let data = resp.data.data;
-        let token = resp.data.token;
-        this.addUser(token, data);
-
-        calFunc();
+        console.log(`response  ${db.apis.SUBSCRIBE_TOPIC} : `, resp.data);
       })
       .catch(err => {
-        this.setloginLoader(false);
         let msg = err.response.data.message || err.response.status;
-        console.log(`Error in ${db.apis.LOGIN_USER} : `, msg);
-        if (msg == 503 || msg == 500) {
-          store.General.setisServerError(true);
-          return;
-        }
-
-        Alert.alert('', msg.toString());
+        console.log(`Error in ${db.apis.SUBSCRIBE_TOPIC} : `, msg);
       });
   }
 
+  // @action.bound
+  // attempToPlaceOrder(Order, suc) {
+  //   this.setLoader(true);
+  //   db.hitApi(db.apis.PLACE_ORDER, 'post', Order, null)
+  //     ?.then(resp => {
+  //       this.setLoader(false)
+  //       console.log(`response  ${db.apis.PLACE_ORDER} : `, resp.data);
+  //       suc(resp.data);
+  //     })
+  //     .catch(err => {
+  //       console.log(
+  //         `Error in ${db.apis.PLACE_ORDER} : `,
+  //         err.response.data.message,
+  //       );
+  //       this.setLoader(false);
+  //     });
+  // }
+
   @action.bound
-  registerUser(body, funCal) {
-    this.setregLoader(true);
+  registerUser(body, goHome, goCheckout, s) {
+    console.log('rgstr user body : ', body);
+
     db.hitApi(db.apis.REGISTER_USER, 'post', body, null)
       ?.then(resp => {
-        this.setregLoader(false);
         console.log(`response  ${db.apis.REGISTER_USER} : `, resp.data);
-        let data = resp.data.data;
-        let token = resp.data.token;
-        this.addUser(token, data);
-        funCal();
+        this.setregLoader(false);
+        this.addUser(resp.data.token, resp.data.data);
+        if (s == 'checkout') {
+          goCheckout();
+          return;
+        }
+        goHome();
       })
       .catch(err => {
         this.setregLoader(false);
+
         let msg = err.response.data.message || err.response.status;
         console.log(`Error in ${db.apis.REGISTER_USER} : `, msg);
         if (msg == 503 || msg == 500) {
           store.General.setisServerError(true);
           return;
         }
-        Alert.alert('', msg.toString());
+        Alert.alert('', msg);
       });
   }
 
   @action.bound
-  updateUser(body, funCall) {
+  attemptToRegister(dataa, goHome, goCheckout, s) {
+    const {image} = dataa;
     this.setregLoader(true);
-    db.hitApi(db.apis.UPDATE_USER + this.user._id, 'put', body, this.authToken)
-      ?.then(resp => {
+    let imgArr = [];
+    if (image != '') {
+      image.chk = 'profile';
+      imgArr.push(image);
+    }
+
+    if (imgArr.length > 0) {
+      try {
+        imgArr.map((e, i, a) => {
+          const data = new FormData();
+          const newFile = {
+            uri: e.uri,
+            type: e.type,
+            name: e.fileName,
+          };
+          data.append('files', newFile);
+          fetch(db.apis.BASE_URL + db.apis.IMAGE_UPLOAD, {
+            method: 'post',
+            body: data,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+            .then(response => response.json())
+            .then(responseData => {
+              let c = '';
+              if (e.chk == 'profile') {
+                c = responseData.data[0].imgrUrl;
+              }
+              if (i == a.length - 1) {
+                const dt = {...dataa};
+                delete dt.image;
+                dt.image = c;
+                this.registerUser(dt, goHome, goCheckout, s);
+                return;
+              }
+            })
+            .catch(err => {
+              this.setregLoader(false);
+              let msg = err.response.data.message || err.response.status;
+              console.log('Error in Upload Images arr', msg);
+              if (msg == 503 || msg == 500) {
+                store.General.setisServerError(true);
+                return;
+              }
+              Alert.alert('', msg);
+            });
+        });
+      } catch (err) {
         this.setregLoader(false);
-        console.log(`response  ${db.apis.UPDATE_USER} : `, resp.data);
-        let data = resp.data.data;
-        // let token = resp.data.token;
-        this.setUser(data);
-        funCall();
-      })
-      .catch(err => {
-        this.setregLoader(false);
-        console.log(`Error in ${db.apis.UPDATE_USER} : `, err);
-        //   let msg = err.response.data.message || err.response.status;
-        //   console.log(`Error in ${db.apis.UPDATE_USER} : `, msg);
-        //   if (msg == 503 || msg == 500) {
-        //     store.General.setisServerError(true);
-        //     return;
-        //   }
-        //   Alert.alert('', msg.toString());
-      });
+        let msg = err.response.data.message || err.response.status;
+        console.log('Error in Upload Images arr', msg);
+        if (msg == 503 || msg == 500) {
+          store.General.setisServerError(true);
+          return;
+        }
+        Alert.alert('', msg);
+      }
+    } else {
+      this.registerUser(dataa, goHome, goCheckout, s);
+    }
   }
 
   @action.bound
-  ChangePassword(cp, np, suc) {
+  ChangePassword(cp, np, rp, suc) {
     this.setLoader(true);
     let body = {
-      _id: this.user.user._id,
       curr_pass: cp,
+      confirm_pass: rp,
       new_pass: np,
     };
 
+    console.log('auth token : ', this.authToken);
+
     db.hitApi(
-      db.apis.CHANGE_PASSWORD + this.user.user._id + '/password/change',
+      db.apis.CHANGE_PASSWORD + this.user._id,
       'put',
       body,
+
       this.authToken,
     )
       ?.then(resp => {
-        this.setLoader(false);
         console.log(`response  ${db.apis.CHANGE_PASSWORD} : `, resp.data);
         suc();
       })
       .catch(err => {
         this.setLoader(false);
+        console.log(
+          `Error in ${db.apis.CHANGE_PASSWORD} : `,
+          err.response.data.message,
+        );
 
-        let msg = err.response.data.message || err.response.status;
-        console.log(`Error in ${db.apis.CHANGE_PASSWORD} : `, msg);
-        if (msg == 503 || msg == 500) {
-          store.General.setisServerError(true);
-          return;
-        }
-        Alert.alert('', msg.toString());
-      });
-  }
-
-  @action.bound
-  forgotPassword(body, suc) {
-    this.setfpLoader(true);
-
-    db.hitApi(db.apis.FORGOT_PASWD, 'put', body, null)
-      ?.then(resp => {
-        this.setfpLoader(false);
-        console.log(`response  ${db.apis.FORGOT_PASWD} : `, resp.data);
-        suc();
-      })
-      .catch(err => {
-        this.setfpLoader(false);
-
-        let msg = err.response.data.message || err.response.status;
-        console.log(`Error in ${db.apis.FORGOT_PASWD} : `, msg);
-        if (msg == 503 || msg == 500) {
-          store.General.setisServerError(true);
-          return;
-        }
-        Alert.alert('', msg.toString());
+        Alert.alert('', err.response.data.message);
       });
   }
 
   // @action.bound
   Logout(goHome) {
     this.authToken = '';
-
-    store.Downloads.setdata([]);
-    store.Downloads.setpList([]);
-    store.Downloads.setdefaultAd([]);
-
-    this.setUser(false);
-    if (goHome != '') {
-      goHome();
-    }
+    this.user = false;
+    this.setfvrtList([]);
+    this.setadrsList([]);
+    store.Orders.setorders([]);
+    this.setisGetAllDatainSplash(false);
+    // this.setcart({totalbill: 0, totalitems: 0, data: []});
+    goHome();
   }
 }
 

@@ -45,16 +45,14 @@ export const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   icon: {
-    width: 33,
-    height: 33,
-    borderRadius: 33 / 2,
-    backgroundColor: theme.color.button1,
+    width: 30,
+    height: 30,
+    borderRadius: 30 / 2,
+    backgroundColor: theme.color.background,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 10,
     marginLeft: 10,
-    borderColor: theme.color.background,
-    borderWidth: 1,
   },
   imageGif: {
     width: responsiveWidth(100),
@@ -63,19 +61,9 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   emptySECTION: {
-    top: '45%',
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-  },
+    marginTop: '45%',
 
-  emptySECTION33: {
-    top: '60%',
     alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
   },
   emptySECTION2: {
     alignSelf: 'center',
@@ -86,14 +74,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emptyImg: {
-    width: responsiveWidth(12),
-    height: responsiveHeight(5),
+    width: responsiveWidth(14),
+    height: responsiveHeight(7),
     resizeMode: 'contain',
     opacity: 0.5,
   },
   emptyText: {
     fontSize: 14,
-    fontFamily: theme.fonts.fontNormal,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.subTitle,
     alignSelf: 'center',
     marginTop: 0,
@@ -121,7 +109,7 @@ export const styles = StyleSheet.create({
   buttonTextBottom: {
     color: theme.color.buttonText,
     fontSize: 16,
-    fontFamily: theme.fonts.fontNormal,
+    fontFamily: theme.fonts.fontBold,
     lineHeight: 20,
     // textTransform: 'capitalize',
   },
@@ -155,7 +143,7 @@ export const styles = StyleSheet.create({
 
   titleText2: {
     fontSize: 14,
-    fontFamily: theme.fonts.fontNormal,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.subTitle,
     alignSelf: 'center',
     marginVertical: 10,
@@ -165,17 +153,5 @@ export const styles = StyleSheet.create({
     fontFamily: theme.fonts.fontMedium,
     color: theme.color.subTitle,
     alignSelf: 'center',
-  },
-
-  catTitle1: {
-    fontSize: 13,
-    fontFamily: theme.fonts.fontNormal,
-    color: theme.color.subTitle,
-  },
-  catTitle2: {
-    fontSize: 13,
-    fontFamily: theme.fonts.fontMedium,
-    color: theme.color.subTitle,
-    textTransform: 'capitalize',
   },
 });

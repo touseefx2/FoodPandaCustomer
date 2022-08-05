@@ -7,25 +7,14 @@ class general {
     makeObservable(this);
   }
 
-  @observable AppName = 'Decade 2 Publishing';
   @observable isServerError = false;
   @observable Loading = true;
   @observable isInternet = false;
   @observable isLocation = false;
   @observable appState = AppState.currentState;
-  @observable selectedFilter = [];
-  @observable isUpdateNeeded = false;
   @persist @observable apiLevel = '';
   @persist @observable appBuildNumber = '';
   @persist @observable appVersionNumber = '';
-
-  @action setisUpdateNeeded = obj => {
-    this.isUpdateNeeded = obj;
-  };
-
-  @action setselectedFilter = obj => {
-    this.selectedFilter = obj;
-  };
 
   @action setisServerError = obj => {
     this.isServerError = obj;

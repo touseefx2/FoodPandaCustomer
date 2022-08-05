@@ -2,6 +2,7 @@ import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
+  SafeAreaView,
   TouchableOpacity,
   Image,
   Linking,
@@ -12,11 +13,9 @@ import {
   Alert,
   Keyboard,
   Modal,
-  Platform,
   StatusBar,
-  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {styles} from './styles';
 import {inject, observer} from 'mobx-react';
 import store from '../../store/index';
@@ -28,608 +27,502 @@ import {
 } from 'react-native-responsive-dimensions';
 import Toast from 'react-native-easy-toast';
 import NetInfo from '@react-native-community/netinfo';
-
-import {getCountries, getStates} from 'country-state-picker';
-import IntlPhoneInput from 'react-native-intl-phone-input';
+import Geolocation from 'react-native-geolocation-service';
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+import Geocoder from 'react-native-geocoding';
+import MultipleImagePicker from '@baronha/react-native-multiple-image-picker';
+import {Image as ImageCompressor} from 'react-native-compressor';
 
 export default observer(Signup);
 function Signup(props) {
   const toast = useRef(null);
   const toastduration = 700;
-  let screen = props.route.params.screen;
+
+  const window = Dimensions.get('window');
+  const {width, height} = window;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA + width / height;
+
   let loader = store.User.regLoader;
-  var nameReg = /^[a-zA-Z ]{2,40}$/;
   const mobileReg = /^[3]\d{9}$/ || /^[0][3]\d{9}$/;
   const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-
-  const [isDropDownCountry, setisDropDownCountry] = useState(false);
-  const [isDropDownState, setisDropDownState] = useState(false);
-  const [country, setcountry] = useState(false);
-  const [state, setstate] = useState('');
-  const [city, setcity] = useState('');
-  const [zipCode, setzipCode] = useState('');
-  const [streetAddress, setstreetAddress] = useState('');
-  const [countryList, setcountryList] = useState([]);
-  const [stateList, setstateList] = useState([]);
-  const [phone, setphone] = useState('');
-  const [isVerifyPhone, setisVerifyPhone] = useState('a');
+  const [image, setImage] = useState('');
   const [name, setname] = useState('');
-  const [email, setemail] = useState('');
+  const [phone, setphone] = useState(props.route.params.mobile.slice(3) || '');
+  const [email, setemail] = useState(''); //street adress
   const [pswd, setpswd] = useState('');
-  const [showPswd, setshowPswd] = useState(false);
-  const [confirmPswd, setconfirmPswd] = useState('');
-  const [showConfirmPswd, setshowConfirmPswd] = useState(false);
+  const [spswd, setspswd] = useState(false);
+  const [rpswd, setrpswd] = useState('');
+  const [srpswd, setsrpswd] = useState(false);
 
-  // hook
+  const [pvm, setpvm] = useState(false); //show fulll image modal
+  const [pv, setpv] = useState(''); //photo view
 
-  useEffect(() => {
-    getAllCountries();
-  }, []);
-
-  useEffect(() => {
-    if (country) {
-      getAllStates();
-    }
-  }, [country]);
-
-  // method
-
-  const getAllCountries = async () => {
-    let c = await getCountries();
-    setcountryList(c);
-  };
-
-  const getAllStates = async () => {
-    let c = await getStates(country.code);
-    setstateList(c);
-  };
+  let s = props.route.params.s;
 
   const goBack = () => {
     props.navigation.goBack();
   };
 
-  const goHome = () => {
-    props.navigation.navigate('Home');
-  };
-
-  const closeAllDropDown = () => {
-    let c = false;
-    Keyboard.dismiss();
-    setisDropDownCountry(c);
-    setisDropDownState(c);
-  };
-
-  const goLogin = () => {
-    goBack();
-  };
-
-  const Signup = () => {
-    Keyboard.dismiss();
-    closeAllDropDown();
-
+  const Register = () => {
     if (name == '') {
-      toast?.current?.show('Please enter your name', toastduration);
+      toast?.current?.show('Please enter your name');
       return;
     }
 
-    if (name != '' && nameReg.test(name) === false) {
-      toast?.current?.show('Please enter your correct name', toastduration);
-      return;
-    }
+    // if (phone == '') {
+    //   toast?.current?.show('Please enter your phone number');
+    //   return;
+    // }
 
-    if (email == '') {
-      toast?.current?.show('Please enter your email', toastduration);
-      return;
-    }
+    // if (mobileReg.test(phone) === false) {
+    //   toast?.current?.show('Your phone number is inavlid');
+    //   return;
+    // }
 
-    if (email !== '' && emailReg.test(email) === false) {
-      toast?.current?.show('Your email pattern is invalid', toastduration);
-      return;
-    }
+    // if (email == '') {
+    //   toast?.current?.show('Please enter your email');
+    //   return;
+    // }
 
-    if (phone == '') {
-      toast?.current?.show('Please enter your phone number', toastduration);
-      return;
-    }
+    // if (emailReg.test(email) === false) {
+    //   toast?.current?.show('Please enter correct email');
+    //   return;
+    // }
 
-    if (phone !== '' && !isVerifyPhone) {
-      toast?.current?.show('Your phone number is inavlid', toastduration);
-      return;
-    }
+    // if (pswd === '') {
+    //   toast?.current?.show('Please enter password');
+    //   return;
+    // }
 
-    if (!country) {
-      toast?.current?.show('Please select your country', toastduration);
-      return;
-    }
+    // if (pswd.length < 8) {
+    //   toast?.current?.show('Password must be minimum 8 characters');
+    //   return;
+    // }
 
-    if (state == '') {
-      toast?.current?.show('Please select your state', toastduration);
-      return;
-    }
+    // if (rpswd === '') {
+    //   toast?.current?.show('Please renter password');
+    //   return;
+    // }
+    // if (pswd !== rpswd) {
+    //   toast?.current?.show('Password does not match');
+    //   return;
+    // }
 
-    if (city == '') {
-      toast?.current?.show('Please enter your city', toastduration);
-      return;
-    }
+    const register = {
+      username: name,
+      mobile: '+92' + phone,
+      image: image,
+      role: 'customer',
+      city: store.User.location.city._id,
+      registrationToken: store.User.notificationToken,
+      buildNumber: store.General.appBuildNumber,
+      versionNumber: store.General.appVersionNumber,
+      // password: pswd,
+      // email: email.toLowerCase(),
+    };
 
-    if (zipCode == '') {
-      toast?.current?.show('Please enter your zip code', toastduration);
-      return;
-    }
-    if (streetAddress == '') {
-      toast?.current?.show('Please enter your street address', toastduration);
-      return;
-    }
-
-    if (pswd == '') {
-      toast?.current?.show('Please enter your password', toastduration);
-      return;
-    }
-
-    if (pswd.length < 7) {
-      toast?.current?.show(
-        'Password length must be greater than 6',
-        toastduration,
-      );
-      return;
-    }
-
-    if (confirmPswd == '') {
-      toast?.current?.show('Please enter your confirm password', toastduration);
-      return;
-    }
-
-    if (pswd != confirmPswd) {
-      toast?.current?.show('Confirm password not match', toastduration);
-      return;
-    }
-
-    NetInfo.fetch().then(statee => {
-      if (statee.isConnected) {
-        const data = {
-          name: name,
-          email: email,
-          password: pswd,
-          phone: phone,
-          address: {
-            name: streetAddress,
-            zip: zipCode,
-            city: city,
-            state: state,
-            country: country.name,
-          },
-          // registrationToken: store.User.notificationToken,
-        };
-
-        store.User.registerUser(data, goHome);
+    NetInfo.fetch().then(state => {
+      if (state.isConnected) {
+        store.User.attemptToRegister(register, goHome, goCheckout, s);
+        // store.User.attempToPlaceOrder(order, showSuccesOrder);
       } else {
         toast?.current?.show('Please connect internet', toastduration);
       }
     });
   };
 
-  const setPhoneNumber = p => {
-    console.log('p : ', p.isVerified);
-    setisVerifyPhone(p.isVerified);
-    if (p.unmaskedPhoneNumber == '') {
-      setphone('');
-    } else {
-      setphone(p.dialCode + p.unmaskedPhoneNumber);
+  const goHome = () => {
+    props.navigation.navigate('Home');
+  };
+
+  const goCheckout = () => {
+    props.navigation.navigate('Checkout', {s: s});
+  };
+
+  const MultipleImage = async button => {
+    Keyboard.dismiss();
+
+    try {
+      let options = {
+        mediaType: 'image',
+        isPreview: false,
+        singleSelectedMode: true,
+      };
+      const res = await MultipleImagePicker.openPicker(options);
+      if (res) {
+        console.log('mutipicker image res true  ');
+        const {path, fileName, mime} = res;
+        let uri = path;
+        if (Platform.OS == 'android' && store.General.apiLevel < 29) {
+          uri = 'file://' + uri;
+        }
+
+        ImageCompressor.compress(uri, {
+          compressionMethod: 'auto',
+        })
+          .then(async res => {
+            let imageObject = {
+              uri: res,
+              type: mime,
+              fileName: fileName,
+            };
+            console.log('Compress image  : ', imageObject);
+            if (button == 'Profile') {
+              setImage(imageObject);
+            } else {
+              return;
+            }
+          })
+          .catch(err => {
+            console.log('Image compress error : ', err);
+          });
+      }
+    } catch (error) {
+      console.log('multi photo picker error : ', error);
     }
   };
 
-  // render
+  const onclickImage = c => {
+    Keyboard.dismiss();
+
+    if (c == 'profileV') {
+      setpv(image.uri);
+      setpvm(true);
+      return;
+    }
+
+    MultipleImage(c);
+  };
 
   const renderBottomButton = () => {
     return (
-      <>
-        <View style={styles.bottom1}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={Signup}
-            style={styles.bottomButton}>
-            <Text style={styles.bottomButtonText}>Sign Up</Text>
-          </TouchableOpacity>
-
-          <View style={styles.bottom2}>
-            <Text style={styles.bottom3}>Already have an Account?</Text>
-            <TouchableOpacity activeOpacity={0.5} onPress={goLogin}>
-              <Text style={styles.bottom4}>Login</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </>
-    );
-  };
-
-  const textInputRightIcon = (chk, c) => {
-    return (
       <TouchableOpacity
-        activeOpacity={0.5}
-        onPress={() => {
-          if (c == 'sp') setshowPswd(!showPswd);
-          else setshowConfirmPswd(!showConfirmPswd);
-        }}
+        activeOpacity={0.7}
+        disabled={loader}
+        onPress={Register}
         style={{
-          width: '10%',
-          alignItems: 'flex-end',
+          backgroundColor: theme.color.button1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '90%',
+          alignSelf: 'center',
+          height: 46,
+          elevation: 2,
+          borderRadius: 6,
+          marginVertical: 25,
         }}>
-        <utils.vectorIcon.Entypo
-          style={styles.inputRightIcon}
-          name={chk ? 'eye-with-line' : 'eye'}
-          color={theme.color.subTitle}
-          size={20}
-        />
+        <Text
+          style={{
+            color: theme.color.buttonText,
+            fontSize: 17,
+            fontFamily: theme.fonts.fontBold,
+          }}>
+          Continue
+        </Text>
       </TouchableOpacity>
     );
   };
 
-  const textInputRightIcon2 = () => {
+  const renderFullImage = () => {
     return (
-      <TouchableOpacity
-        disabled
-        style={{
-          width: '11%',
-          alignItems: 'flex-end',
+      <Modal
+        visible={pvm}
+        transparent
+        onRequestClose={() => {
+          setpvm(false);
+          setpv('');
         }}>
-        <utils.vectorIcon.Entypo
-          style={styles.inputRightIcon}
-          name={'chevron-small-down'}
-          color={theme.color.subTitle}
-          size={20}
-        />
-      </TouchableOpacity>
-    );
-  };
-
-  const renderDropDown = c => {
-    let data = [];
-
-    if (c == 'country') {
-      data = countryList;
-    } else if (c == 'state') {
-      data = stateList;
-    }
-
-    const onclickSelect = d => {
-      console.log('on select : ', d);
-
-      if (c == 'country') {
-        setcountry(d);
-        setstate('');
-      } else if (c == 'state') {
-        setstate(d);
-      }
-    };
-
-    return (
-      <theme.DropDown
-        data={data}
-        onSelectItem={d => {
-          onclickSelect(d);
-        }}
-        setVisible={d => {
-          closeAllDropDown();
-        }}
-        search={data.length > 0 ? true : false}
-        c={c}
-        absolute={false}
-      />
-    );
-  };
-
-  const renderHeader = () => {
-    return (
-      <View style={styles.header}>
-        <TouchableOpacity activeOpacity={0.4} onPress={goBack}>
-          <utils.vectorIcon.Ionicons
-            name="chevron-back"
-            color={theme.color.subTitle}
-            size={26}
+        <View style={{flex: 1, backgroundColor: 'black'}}>
+          <Image
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              right: 0,
+            }}
+            resizeMode="contain"
+            source={{uri: pv}}
           />
-        </TouchableOpacity>
-      </View>
-    );
-  };
 
-  const renderStatusBar = () => {
-    return (
-      <StatusBar
-        translucent={false}
-        backgroundColor={theme.color.background}
-        barStyle={'dark-content'}
-      />
-    );
-  };
-
-  const renderMainContent = () => {
-    return (
-      <>
-        <Text style={styles.mcTitle}>Let's create your account!</Text>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Name</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              maxLength={40}
-              style={styles.textInputStyle}
-              placeholderTextColor={theme.color.subTitle}
-              placeholder=""
-              defaultValue={name}
-              onChangeText={val => {
-                setname(val);
-              }}
-            />
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              setpvm(!pvm);
+              setpv('');
+            }}
+            style={styles.fullImageModalCross}>
+            <utils.vectorIcon.Entypo name="cross" color="white" size={35} />
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Email</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInputStyle}
-              placeholderTextColor={theme.color.subTitle}
-              placeholder=""
-              defaultValue={email}
-              onChangeText={val => {
-                setemail(val);
-              }}
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Contact No.</Text>
-          <View style={styles.InputContainer}>
-            <IntlPhoneInput
-              onChangeText={p => {
-                setPhoneNumber(p);
-              }}
-              defaultCountry="PK"
-              lang="EN"
-              renderAction={() => (
-                <>
-                  {!isVerifyPhone && phone != '' && (
-                    <utils.vectorIcon.Entypo
-                      name="cross"
-                      color={theme.color.subTitle}
-                      size={18}
-                    />
-                  )}
-
-                  {isVerifyPhone == true && (
-                    <utils.vectorIcon.Entypo
-                      name="check"
-                      color={'green'}
-                      size={18}
-                    />
-                  )}
-                </>
-              )}
-            />
-          </View>
-        </View>
-
-        <View
-          style={[
-            styles.inputFieldConatiner,
-            {
-              flexDirection: 'row',
-
-              justifyContent: 'space-between',
-            },
-          ]}>
-          <View style={{width: '48%'}}>
-            <Text style={styles.inputTitle}>Country</Text>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              onPress={() => {
-                closeAllDropDown();
-                setisDropDownCountry(!isDropDownCountry);
-              }}
-              style={[
-                styles.InputContainer,
-                {
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                },
-              ]}>
-              <View style={{width: '85%'}}>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                    styles.textDropDown,
-                    {
-                      color: country ? theme.color.subTitle : theme.color.title,
-                    },
-                  ]}>
-                  {country ? country.name : 'Select Country'}
-                </Text>
-              </View>
-
-              {textInputRightIcon2()}
-            </TouchableOpacity>
-            {isDropDownCountry && renderDropDown('country')}
-          </View>
-
-          <View
-            style={{
-              width: '48%',
-            }}>
-            <Text style={styles.inputTitle}>State</Text>
-            <TouchableOpacity
-              disabled={!country ? true : false}
-              activeOpacity={0.6}
-              onPress={() => {
-                closeAllDropDown();
-                setisDropDownState(!isDropDownState);
-              }}
-              style={[
-                styles.InputContainer,
-                {
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  backgroundColor: country
-                    ? theme.color.background
-                    : theme.color.disableBack,
-                },
-              ]}>
-              <View style={{width: '85%'}}>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                    styles.textDropDown,
-                    {
-                      color:
-                        state == '' ? theme.color.subTitle : theme.color.title,
-                    },
-                  ]}>
-                  {state == '' ? 'Select State' : state}
-                </Text>
-              </View>
-
-              {textInputRightIcon2()}
-            </TouchableOpacity>
-            {isDropDownState && renderDropDown('state')}
-          </View>
-        </View>
-
-        <View
-          style={[
-            styles.inputFieldConatiner,
-            {
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            },
-          ]}>
-          <View style={{width: '48%'}}>
-            <Text style={styles.inputTitle}>City</Text>
-            <View style={styles.InputContainer}>
-              <TextInput
-                style={styles.textInputStyle}
-                placeholderTextColor={theme.color.subTitle}
-                placeholder=""
-                defaultValue={city}
-                onChangeText={val => {
-                  setcity(val);
-                }}
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              width: '48%',
-            }}>
-            <Text style={styles.inputTitle}>Zip Code</Text>
-            <View style={styles.InputContainer}>
-              <TextInput
-                keyboardType="number-pad"
-                style={styles.textInputStyle}
-                placeholderTextColor={theme.color.subTitle}
-                placeholder=""
-                value={zipCode}
-                maxLength={10}
-                defaultValue={zipCode}
-                onChangeText={val => {
-                  setzipCode(val.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
-                }}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Street Address</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInputStyle}
-              placeholderTextColor={theme.color.subTitle}
-              placeholder=""
-              defaultValue={streetAddress}
-              onChangeText={val => {
-                setstreetAddress(val);
-              }}
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Password</Text>
-          <View
-            style={[
-              styles.InputContainer,
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              },
-            ]}>
-            <TextInput
-              secureTextEntry={!showPswd}
-              style={[styles.textInputStyle, {width: '85%'}]}
-              placeholderTextColor={theme.color.subTitle}
-              placeholder=""
-              defaultValue={pswd}
-              onChangeText={val => {
-                setpswd(val);
-              }}
-            />
-
-            {pswd.length > 0 && textInputRightIcon(showPswd, 'sp')}
-          </View>
-        </View>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Confirm Password</Text>
-          <View
-            style={[
-              styles.InputContainer,
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              },
-            ]}>
-            <TextInput
-              secureTextEntry={!showConfirmPswd}
-              style={[styles.textInputStyle, {width: '85%'}]}
-              placeholderTextColor={theme.color.subTitle}
-              placeholder=""
-              defaultValue={confirmPswd}
-              onChangeText={val => {
-                setconfirmPswd(val);
-              }}
-            />
-
-            {confirmPswd.length > 0 &&
-              textInputRightIcon(showConfirmPswd, 'scp')}
-          </View>
-        </View>
-      </>
+      </Modal>
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {renderFullImage()}
+      <StatusBar
+        translucent={false}
+        backgroundColor={theme.color.background}
+        barStyle={'dark-content'}
+      />
       <utils.Loader text={'Please wait'} load={loader} />
-      <Toast ref={toast} position="center" />
-      {renderStatusBar()}
-      {renderHeader()}
 
-      <KeyboardAvoidingView style={{flex: 1}}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}>
-          {renderMainContent()}
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <View style={styles.header}>
+        <View style={styles.back}>
+          <TouchableOpacity activeOpacity={0.4} onPress={goBack}>
+            <utils.vectorIcon.Ionicons
+              name="arrow-back-sharp"
+              color={theme.color.subTitle}
+              size={26}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          style={{
+            width: '100%',
+            paddingHorizontal: 25,
+            marginTop: 20,
+          }}>
+          <View style={styles.Profile}>
+            <View style={styles.ProfileImageContainer}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  if (image != '') {
+                    onclickImage('profileV');
+                  }
+                }}>
+                <Image
+                  style={styles.ProfileImage}
+                  source={
+                    image != ''
+                      ? {uri: image.uri}
+                      : require('../../assets/images/profile/profileimage.png')
+                  }
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.4}
+                onPress={() => {
+                  onclickImage('Profile');
+                }}
+                style={styles.ImageUploadConatiner}>
+                <utils.vectorIcon.Ionicons
+                  name="ios-camera"
+                  color={'black'}
+                  size={19}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Text
+            style={{
+              marginTop: 20,
+              fontSize: 18,
+              lineHeight: 22,
+              color: theme.color.subTitle,
+              fontFamily: theme.fonts.fontBold,
+            }}>
+            Let’s create your account!
+          </Text>
+
+          <View style={styles.MobileInput}>
+            <Image
+              source={require('../../assets/images/flag/pakistan.png')}
+              style={styles.CountryLogo}
+            />
+
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: theme.fonts.fontNormal,
+                color: theme.color.title,
+                top: -1,
+              }}>
+              +92
+            </Text>
+
+            <TextInput
+              editable={false}
+              style={styles.MobileInput2}
+              maxLength={10}
+              placeholderTextColor={theme.color.subTitle}
+              keyboardType="phone-pad"
+              placeholder="3123456789"
+              value={phone}
+              onChangeText={val => {
+                setphone(val.replace(/[^0-9]/, ''));
+              }}
+            />
+          </View>
+
+          <TextInput
+            style={styles.Input}
+            placeholderTextColor={theme.color.subTitle}
+            placeholder="Enter your name"
+            value={name}
+            onChangeText={val => {
+              setname(val);
+            }}
+          />
+        </View>
+
+        {/* <View
+          style={{
+            backgroundColor: theme.color.background,
+            padding: 15,
+            width: responsiveWidth(90),
+            alignSelf: 'center',
+            marginTop: 30,
+            borderRadius: 5,
+            elevation: 5,
+            marginBottom: 20,
+          }}>
+          <View style={styles.Profile}>
+            <View style={styles.ProfileImageContainer}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  if (image != '') {
+                    onclickImage('profileV');
+                  }
+                }}>
+                <Image
+                  style={styles.ProfileImage}
+                  source={
+                    image != ''
+                      ? {uri: image.uri}
+                      : require('../../assets/images/profile/profileimage.png')
+                  }
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  onclickImage('Profile');
+                }}
+                style={styles.ImageUploadConatiner}>
+                <utils.vectorIcon.Ionicons
+                  name="ios-camera"
+                  color={'black'}
+                  size={19}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TextInput
+            style={styles.Input}
+            placeholderTextColor={theme.color.subTitle}
+            placeholder="Enter your name"
+            value={name}
+            onChangeText={val => {
+              setname(val);
+            }}
+          />
+
+          <View style={styles.MobileInput}>
+            <Image
+              source={require('../../assets/images/flag/pakistan.png')}
+              style={styles.CountryLogo}
+            />
+
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: theme.fonts.fontNormal,
+                color: theme.color.title,
+                top: -1,
+              }}>
+              +92
+            </Text>
+
+            <TextInput
+              style={styles.MobileInput2}
+              maxLength={10}
+              placeholderTextColor={theme.color.subTitle}
+              keyboardType="phone-pad"
+              placeholder="3123456789"
+              value={phone}
+              onChangeText={val => {
+                setphone(val.replace(/[^0-9]/, ''));
+              }}
+            />
+          </View>
+
+          <TextInput
+            style={styles.Input}
+            placeholderTextColor={theme.color.subTitle}
+            placeholder="Enter your email"
+            value={email}
+            onChangeText={val => {
+              setemail(val);
+            }}
+          />
+
+          <View style={styles.MobileInput}>
+            <TextInput
+              secureTextEntry={!spswd}
+              style={styles.pswdInput}
+              placeholderTextColor={theme.color.subTitle}
+              placeholder="Enter password"
+              value={pswd}
+              onChangeText={val => {
+                setpswd(val);
+              }}
+            />
+
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => setspswd(!spswd)}>
+              <utils.vectorIcon.Entypo
+                name={!spswd ? 'eye' : 'eye-with-line'}
+                color={theme.color.subTitle}
+                size={18}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.MobileInput}>
+            <TextInput
+              secureTextEntry={!srpswd}
+              style={styles.pswdInput}
+              placeholderTextColor={theme.color.subTitle}
+              placeholder="Re-enter password"
+              value={rpswd}
+              onChangeText={val => {
+                setrpswd(val);
+              }}
+            />
+
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => setsrpswd(!srpswd)}>
+              <utils.vectorIcon.Entypo
+                name={!srpswd ? 'eye' : 'eye-with-line'}
+                color={theme.color.subTitle}
+                size={18}
+              />
+            </TouchableOpacity>
+          </View>
+
+         
+        </View> */}
+      </ScrollView>
 
       {renderBottomButton()}
+
+      <Toast ref={toast} position="bottom" />
     </SafeAreaView>
   );
 }

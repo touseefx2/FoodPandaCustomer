@@ -1,7 +1,8 @@
 import React from 'react';
-import {View, Modal, ActivityIndicator, Text} from 'react-native';
-
+import {View, Modal, ActivityIndicator, Text, StatusBar} from 'react-native';
+import {responsiveHeight} from 'react-native-responsive-dimensions';
 import theme from '../theme/index';
+import {spinner} from 'react-native-paper';
 
 export default function Loader(props) {
   let text = props.text || '';
@@ -21,16 +22,16 @@ export default function Loader(props) {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 15,
-            backgroundColor: theme.color.button1,
+            backgroundColor: 'rgba(0,0,0,0.8)',
             padding: 15,
           }}>
-          <ActivityIndicator size={40} color={'white'} />
+          <ActivityIndicator size={50} color={'white'} />
           {text != '' && (
             <Text
               style={{
-                color: theme.color.buttonText,
+                color: 'white',
                 marginTop: 10,
-                fontSize: 14,
+                fontSize: 15,
                 fontFamily: theme.fonts.fontNormal,
               }}>
               {text}

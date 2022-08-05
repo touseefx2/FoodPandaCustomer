@@ -9,7 +9,6 @@ import {
   StyleSheet,
   Dimensions,
   KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import theme from '../index';
@@ -38,11 +37,13 @@ export default function DropDown(props) {
       let d = [];
       props.data.map((item, i, a) => {
         let n =
-          c == 'country'
+          c == 'travelcity'
             ? item.name
-            : c == 'state'
-            ? item
-            : c == 'city'
+            : c == 'make'
+            ? item.brand_name
+            : c == 'name'
+            ? item.name
+            : c == 'city' || c == 'area'
             ? item.name
             : '';
         var Name = n.toLowerCase();
@@ -99,11 +100,21 @@ export default function DropDown(props) {
 
   const renderItems = ({item, index}) => {
     let title =
-      c == 'country'
+      c == 'bookingreason'
+        ? item.reason
+        : c == 'travelcity'
         ? item.name
-        : c == 'state'
-        ? item
-        : c == 'city'
+        : c == 'days'
+        ? item.title
+        : c == 'timeslots'
+        ? item.title
+        : c == 'make'
+        ? item.brand_name
+        : c == 'name'
+        ? item.name
+        : c == 'city' || c == 'area'
+        ? item.name
+        : c == 'cancelreason'
         ? item.title
         : '';
 
@@ -125,11 +136,21 @@ export default function DropDown(props) {
 
   let abs = 0.3;
 
-  const style = {
-    height: responsiveHeight(27),
-    marginTop: responsiveHeight(c == 'timeslots' ? abs : absolute ? 6.3 : 0.3),
-    position: absolute ? 'absolute' : 'relative',
-  };
+  const style =
+    data.length > 6
+      ? {
+          height: responsiveHeight(27),
+          marginTop: responsiveHeight(
+            c == 'timeslots' ? abs : absolute ? 6.3 : 0.3,
+          ),
+          position: absolute ? 'absolute' : 'relative',
+        }
+      : {
+          marginTop: responsiveHeight(
+            c == 'timeslots' ? abs : absolute ? 6.3 : 0.3,
+          ),
+          position: absolute ? 'absolute' : 'relative',
+        };
 
   return (
     <SafeAreaView style={[styles.Container, style]}>
@@ -171,7 +192,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-
     paddingVertical: Platform.OS == 'ios' ? 5 : 0,
   },
   rowContainer: {

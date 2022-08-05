@@ -64,12 +64,12 @@ function ServerRes(props) {
             activeOpacity={0.5}
             onPress={() => {
               store.General.setisServerError(false);
-              // let isLogin = store.User.user !== false ? true : false;
-              // if (isLogin) {
-              //   store.User.getAllData('user');
-              // } else {
-              //   store.User.getAllData('');
-              // }
+              let isLogin = store.User.user !== false ? true : false;
+              if (isLogin) {
+                store.User.getAllData('user');
+              } else {
+                store.User.getAllData('');
+              }
             }}
             style={{alignItems: 'flex-end'}}>
             <Text

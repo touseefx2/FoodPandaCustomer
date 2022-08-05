@@ -2,17 +2,20 @@ import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
+  SafeAreaView,
   TouchableOpacity,
+  Image,
+  Linking,
   ScrollView,
   TextInput,
+  PermissionsAndroid,
   Dimensions,
   Alert,
   Keyboard,
+  Modal,
   Platform,
   StatusBar,
-  KeyboardAvoidingView,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {styles} from './styles';
 import {inject, observer} from 'mobx-react';
 import store from '../../store/index';
@@ -24,377 +27,323 @@ import {
 } from 'react-native-responsive-dimensions';
 import Toast from 'react-native-easy-toast';
 import NetInfo from '@react-native-community/netinfo';
-import Modal from 'react-native-modal';
 
 export default observer(Login);
 function Login(props) {
+  const toast = useRef(null);
+  const toastduration = 700;
+
+  const window = Dimensions.get('window');
+  const {width, height} = window;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA + width / height;
+
+  let loader = store.User.loader;
   const mobileReg = /^[3]\d{9}$/ || /^[0][3]\d{9}$/;
   const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-  const toast = useRef(null);
-  const toastduration = 1000;
-  let loader = store.User.loginLoader;
-  let forgotPassLoader = store.User.fploader;
-  let screen = props.route.params.screen;
 
-  const [email, setemail] = useState('');
-  const [pswd, setshowPswd] = useState('');
-  const [showPswd, setspswd] = useState(false);
-  const [forgotPassModal, setforgotPassModal] = useState(false);
-  const [forgotEmail, setforgotEmail] = useState('');
+  const [phone, setphone] = useState('');
+  const [email, setemail] = useState(''); //street adress
+  const [pswd, setpswd] = useState('');
+  const [spswd, setspswd] = useState(false);
 
-  //method
+  const [d1, setd1] = useState(false);
+  const [d2, setd2] = useState(false);
+
+  let s = props.route.params.s || '';
 
   const goBack = () => {
     props.navigation.goBack();
   };
 
-  const goSignup = () => {
-    props.navigation.navigate('Signup', {screen: screen});
-  };
-
-  const closeForgotPaswdModal = () => {
-    setforgotPassModal(false);
-    setforgotEmail('');
-    Keyboard.dismiss();
-  };
-
-  const forgotPasSuc = () => {
-    setforgotPassModal(false);
-    toast?.current?.show('Please check your email', toastduration);
-  };
-
   const Login = () => {
     Keyboard.dismiss();
-
-    if (email == '') {
-      toast?.current?.show('Please enter your email');
+    if (phone == '') {
+      toast?.current?.show('Please enter your phone number');
       return;
     }
 
-    if (email !== '' && emailReg.test(email) === false) {
-      toast?.current?.show('Your email pattern is invalid', 1000);
+    if (phone !== '' && mobileReg.test(phone) === false) {
+      toast?.current?.show('Your phone number is inavlid');
       return;
     }
 
-    if (pswd == '') {
-      toast?.current?.show('Please enter your password', 1000);
-      return;
-    }
+    const data = {
+      // email: '',
+      mobile: '+92' + phone,
+      // password: '',
+      registrationToken: store.User.notificationToken,
+    };
 
     NetInfo.fetch().then(state => {
       if (state.isConnected) {
-        const data = {
-          email: email,
-          password: pswd,
-          // registrationToken: store.User.notificationToken,
-        };
-        store.User.attemptToLogin(data, goBack);
+        props.navigation.navigate('OTP', {screen: 'login', data: data, s: s});
       } else {
         toast?.current?.show('Please connect internet', toastduration);
       }
     });
-  };
 
-  const sendForgotPaswd = () => {
-    Keyboard.dismiss();
+    // if (phone == '') {
+    //   const data = {
+    //     email: email.toLowerCase(),
+    //     mobile: '',
+    //     password: pswd,
+    //     registrationToken: store.User.notificationToken,
+    //   };
 
-    if (forgotEmail == '') {
-      toast?.current?.show('Please enter your email');
-      return;
-    }
+    //   if (email == '') {
+    //     toast?.current?.show('Please enter your email');
+    //     return;
+    //   }
 
-    if (forgotEmail !== '' && emailReg.test(forgotEmail) === false) {
-      Alert.alert('', 'Your email pattern is invalid');
-      return;
-    }
+    //   if (emailReg.test(email) === false) {
+    //     toast?.current?.show('Please enter correct email');
+    //     return;
+    //   }
 
-    NetInfo.fetch().then(state => {
-      if (state.isConnected) {
-        const data = {
-          email: email,
-        };
-        store.User.forgotPassword(data, forgotPasSuc);
-        // props.navigation.navigate('OTP', {screen: 'login', data: data, s: s});
-      } else {
-        Alert.alert('Please connect internet');
-      }
-    });
-  };
+    //   if (pswd === '') {
+    //     toast?.current?.show('Please enter password');
+    //     return;
+    //   }
 
-  // render
-
-  const rendertextInputRightIcon = () => {
-    return (
-      <TouchableOpacity
-        activeOpacity={0.5}
-        onPress={() => setspswd(!showPswd)}
-        style={{
-          width: '10%',
-          alignItems: 'flex-end',
-        }}>
-        <utils.vectorIcon.Entypo
-          style={styles.inputRightIcon}
-          name={showPswd ? 'eye-with-line' : 'eye'}
-          color={theme.color.subTitle}
-          size={20}
-        />
-      </TouchableOpacity>
-    );
+    //   NetInfo.fetch().then(state => {
+    //     if (state.isConnected) {
+    //       store.User.attemptToLogin(data, goHome);
+    //     } else {
+    //       toast?.current?.show('Please connect internet', toastduration);
+    //     }
+    //   });
+    // }
   };
 
   const renderBottomButton = () => {
     return (
-      <>
-        <View
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={Login}
+        style={{
+          backgroundColor: theme.color.button1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '90%',
+          height: 46,
+          alignSelf: 'center',
+          elevation: 2,
+          borderRadius: 6,
+          marginVertical: 20,
+        }}>
+        <Text
           style={{
-            width: '100%',
-            paddingHorizontal: 20,
-            paddingVertical: 12,
-            elevation: 20,
-            backgroundColor: theme.color.background,
+            color: theme.color.buttonText,
+            fontSize: 17,
+            fontFamily: theme.fonts.fontBold,
           }}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={Login}
-            style={styles.bottomButton}>
-            <Text style={styles.bottomButtonText}>Login</Text>
-          </TouchableOpacity>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: 7,
-              justifyContent: 'center',
-            }}>
-            <Text
-              style={{
-                fontSize: 12,
-                color: theme.color.subTitle,
-                fontFamily: theme.fonts.fontNormal,
-                textAlign: 'center',
-              }}>
-              Don't have an Account?
-            </Text>
-            <TouchableOpacity activeOpacity={0.5} onPress={goSignup}>
-              <Text
-                style={{
-                  marginLeft: 5,
-                  fontSize: 12,
-                  color: theme.color.subTitle,
-                  fontFamily: theme.fonts.fontNormal,
-                  textAlign: 'center',
-                  textDecorationLine: 'underline',
-                }}>
-                Signup
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </>
+          Continue
+        </Text>
+      </TouchableOpacity>
     );
   };
 
-  const rednerForgotPaswdModal = () => {
-    return (
-      <Modal
-        backdropOpacity={0.6}
-        animationIn={'slideInUp'}
-        animationOut={'slideOutDown'}
-        onBackButtonPress={() => {
-          closeForgotPaswdModal();
-        }}
-        isVisible={forgotPassModal}>
-        <View
-          style={{
-            width: 300,
-            backgroundColor: 'white',
-            borderRadius: 5,
-            alignSelf: 'center',
-            elevation: 3,
-            padding: 20,
-          }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontFamily: theme.fonts.fontNormal,
-              color: theme.color.title,
-            }}>
-            Please enter your email
-          </Text>
-
-          <View
-            style={{
-              width: '100%',
-              paddingHorizontal: 20,
-              marginTop: 20,
-            }}>
-            <TextInput
-              placeholderTextColor={theme.color.subTitleLight}
-              style={{
-                backgroundColor: 'white',
-                fontSize: 14,
-                color: theme.color.title,
-                borderBottomColor: theme.color.button1,
-                borderBottomWidth: 1.5,
-              }}
-              placeholder="a@a.com"
-              value={forgotEmail}
-              onChangeText={text => {
-                setforgotEmail(text);
-              }}
-            />
-          </View>
-
-          <View
-            style={{
-              marginTop: 20,
-              width: '100%',
-              flexDirection: 'row',
-              paddingHorizontal: 20,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-            <View style={{width: '73%', alignItems: 'flex-end'}}>
-              <TouchableOpacity onPress={closeForgotPaswdModal}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: theme.color.button1,
-                    fontFamily: theme.fonts.fontMedium,
-                  }}>
-                  CANCEL{' '}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View
-              style={{
-                width: '20%',
-                alignItems: 'flex-end',
-              }}>
-              <TouchableOpacity
-                disabled={forgotEmail == '' ? true : false}
-                style={{opacity: forgotEmail == '' ? 0.6 : 3}}
-                onPress={sendForgotPaswd}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: theme.color.button1,
-                    fontFamily: theme.fonts.fontMedium,
-                  }}>
-                  SEND
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    );
+  const goHome = () => {
+    props.navigation.navigate('Home');
   };
 
-  const renderHeader = () => {
-    return (
-      <View style={styles.header}>
-        <TouchableOpacity activeOpacity={0.4} onPress={goBack}>
-          <utils.vectorIcon.Ionicons
-            name="chevron-back"
-            color={theme.color.subTitle}
-            size={26}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const renderMainContent = () => {
-    return (
-      <>
-        <Text style={styles.logoTitle}>Login</Text>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Email</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInputStyle}
-              placeholderTextColor={theme.color.subTitle}
-              placeholder=""
-              defaultValue={email}
-              onChangeText={val => {
-                setemail(val);
-              }}
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputFieldConatiner}>
-          <Text style={styles.inputTitle}>Password</Text>
-          <View
-            style={[
-              styles.InputContainer,
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              },
-            ]}>
-            <TextInput
-              secureTextEntry={!showPswd}
-              style={[styles.textInputStyle, {width: '85%'}]}
-              placeholderTextColor={theme.color.subTitle}
-              placeholder=""
-              defaultValue={pswd}
-              onChangeText={val => {
-                setshowPswd(val);
-              }}
-            />
-            {pswd.length > 0 && rendertextInputRightIcon()}
-          </View>
-        </View>
-
-        {/* <View style={{alignItems: 'flex-end'}}>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => {
-                setfpModal(true);
-              }}>
-              <Text
-                style={styles.fpt}>
-                Forgot Password?
-              </Text>
-            </TouchableOpacity>
-          </View> */}
-      </>
-    );
-  };
-
-  const renderStatusBar = () => {
-    return (
+  return (
+    <SafeAreaView style={styles.container}>
       <StatusBar
         translucent={false}
         backgroundColor={theme.color.background}
         barStyle={'dark-content'}
       />
-    );
-  };
+      <utils.Loader text={'Please wait'} load={loader} />
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <utils.Loader text={'Please wait'} load={loader || forgotPassLoader} />
-      <Toast ref={toast} position="center" />
-      {renderStatusBar()}
-      {rednerForgotPaswdModal()}
-      {renderHeader()}
+      <View style={styles.header}>
+        <View style={styles.back}>
+          <TouchableOpacity activeOpacity={0.4} onPress={goBack}>
+            <utils.vectorIcon.Ionicons
+              name="arrow-back-sharp"
+              color={theme.color.subTitle}
+              size={26}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-      <KeyboardAvoidingView style={{flex: 1}}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}>
-          {renderMainContent()}
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View
+          style={{
+            width: '100%',
+            paddingHorizontal: 25,
+            marginTop: 20,
+          }}>
+          <utils.vectorIcon.FontAwesome5
+            name="phone-square-alt"
+            color={theme.color.button1}
+            size={50}
+          />
+
+          <Text
+            style={{
+              marginTop: 20,
+              fontSize: 18,
+              lineHeight: 22,
+              color: theme.color.subTitle,
+              fontFamily: theme.fonts.fontBold,
+            }}>
+            Continue with phone number
+          </Text>
+
+          <View
+            style={[
+              styles.MobileInput,
+              {
+                backgroundColor: d1
+                  ? theme.color.disableField
+                  : theme.color.background,
+              },
+            ]}>
+            <Image
+              source={require('../../assets/images/flag/pakistan.png')}
+              style={styles.CountryLogo}
+            />
+
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: theme.fonts.fontNormal,
+                color: theme.color.title,
+                top: -1,
+              }}>
+              +92
+            </Text>
+
+            <TextInput
+              editable={!d1}
+              style={styles.MobileInput2}
+              maxLength={10}
+              placeholderTextColor={theme.color.subTitle}
+              keyboardType="phone-pad"
+              placeholder="3123456789"
+              value={phone}
+              onChangeText={val => {
+                setphone(val.replace(/[^0-9]/, ''));
+              }}
+            />
+          </View>
+        </View>
+
+        {/* <View
+          style={{
+            backgroundColor: theme.color.background,
+            padding: 15,
+            width: responsiveWidth(90),
+            alignSelf: 'center',
+            marginTop: 30,
+            borderRadius: 5,
+            elevation: 5,
+            marginBottom: 20,
+          }}>
+          <Text
+            style={{
+              fontSize: 14,
+              color: theme.color.subTitle,
+              fontFamily: theme.fonts.fontNormal,
+            }}>
+            Sign in with phone number
+          </Text>
+
+        
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+
+              marginVertical: 30,
+            }}>
+            <View
+              style={{
+                height: 0.5,
+                width: '43%',
+                backgroundColor: theme.color.subTitle,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: theme.color.subTitle,
+                fontFamily: theme.fonts.fontMedium,
+              }}>
+              OR
+            </Text>
+            <View
+              style={{
+                height: 0.5,
+                width: '43%',
+                backgroundColor: theme.color.subTitle,
+              }}
+            />
+          </View>
+
+          <TextInput
+            editable={!d2}
+            style={[
+              styles.Input,
+              {
+                backgroundColor: d2
+                  ? theme.color.disableField
+                  : theme.color.background,
+              },
+            ]}
+            placeholderTextColor={theme.color.subTitle}
+            placeholder="Enter your email"
+            value={email}
+            onChangeText={val => {
+              setemail(val);
+            }}
+          />
+
+          <View
+            style={[
+              styles.MobileInput,
+              {
+                marginTop: 15,
+                backgroundColor: d2
+                  ? theme.color.disableField
+                  : theme.color.background,
+              },
+            ]}>
+            <TextInput
+              editable={!d2}
+              secureTextEntry={!spswd}
+              style={styles.pswdInput}
+              placeholderTextColor={theme.color.subTitle}
+              placeholder="Enter password"
+              value={pswd}
+              onChangeText={val => {
+                setpswd(val);
+              }}
+            />
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => setspswd(!spswd)}>
+              <utils.vectorIcon.Entypo
+                name={!spswd ? 'eye' : 'eye-with-line'}
+                color={theme.color.subTitle}
+                size={18}
+              />
+            </TouchableOpacity>
+          </View>
+
+        
+        </View> */}
+      </ScrollView>
 
       {renderBottomButton()}
+
+      <Toast ref={toast} position="center" />
     </SafeAreaView>
   );
 }
