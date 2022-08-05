@@ -14,6 +14,8 @@ import {
   PermissionsAndroid,
   StatusBar,
 } from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+
 import {styles} from './styles';
 import {observer} from 'mobx-react';
 import store from '../../store/index';
@@ -71,7 +73,7 @@ function Location(props) {
   console.log('is Loc :  ', isLocation);
 
   useEffect(() => {
-    requestPermissions();
+    // requestPermissions();
     Geocoder.init(gapikey, {language: 'en'});
   }, []);
 
@@ -769,17 +771,25 @@ function Location(props) {
     );
   };
 
+  const renderStatusBar = () => {
+    return (
+      <>
+        <StatusBar
+          translucent={false}
+          backgroundColor={theme.color.background}
+          barStyle={'dark-content'}
+        />
+      </>
+    );
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        translucent={false}
-        backgroundColor={theme.color.background}
-        barStyle={'dark-content'}
-      />
+    <SafeAreaProvider style={styles.container}>
+      {renderStatusBar()}
       <utils.ServerRes load={store.General.isServerError} />
       <utils.Loader load={loader} text="Please wait" />
       {!internet && <utils.InternetMessage />}
-      <View style={styles.cross}>
+      {/* <View style={styles.cross}>
         {store.User.location && (
           <TouchableOpacity activeOpacity={0.6} onPress={cross}>
             <utils.vectorIcon.Ionicons
@@ -789,16 +799,27 @@ function Location(props) {
             />
           </TouchableOpacity>
         )}
-      </View>
-      <ScrollView>
+      </View> */}
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.scrollContainer}>
         <View style={styles.section1}>
           <Image
             style={styles.logo}
             source={require('../../assets/images/logo/img.png')}
           />
-          <Text style={styles.title}>{title}</Text>
         </View>
+
         <View style={styles.section2}>
+          <Text style={styles.title1}>Find restaurants near you!</Text>
+          <Text style={styles.title2}>
+            By allowing location access, you can search for restaurant near you
+            and receive more accurate delivery.
+          </Text>
+        </View>
+      </ScrollView>
+
+      {/* <View style={styles.section2}>
           <Text style={styles.title2}>{title2}</Text>
           <View style={{width: '100%', marginTop: 30}}>
             <TouchableOpacity
@@ -871,9 +892,8 @@ function Location(props) {
           </View>
           {renderConfirmButton()}
           {renderLocateButton()}
-        </View>
-      </ScrollView>
+        </View> */}
       <Toast ref={toast} position="center" opacity={0.8} />
-    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }

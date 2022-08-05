@@ -17,8 +17,8 @@
 //  const buttonLinerTextColor="white"
 
 const background = '#FCFCFC';
-const title = 'black';
-const subTitle = '#393939';
+const title = '#000000';
+const subTitle = 'rgba(0, 0, 0, 0.8)';
 const subTitleLight = 'rgba(0, 0, 0, 0.5)';
 const button1 = '#FE774C';
 const button2 = '#39377F';

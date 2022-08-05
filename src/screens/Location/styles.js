@@ -19,39 +19,34 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   section1: {
+    marginTop: responsiveHeight(8),
     alignItems: 'center',
     justifyContent: 'center',
-    // backgroundColor: 'red',
-    paddingHorizontal: 10,
   },
   logo: {
-    width: responsiveWidth(30),
-    height: responsiveHeight(20),
-    resizeMode: 'cover',
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
   },
-  title: {
+  title1: {
     fontSize: 20,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.title,
-    alignSelf: 'center',
-    marginTop: -15,
-  },
-  section2: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    // backgroundColor: 'yellow',
-    alignSelf: 'center',
-    paddingHorizontal: 20,
-    width: responsiveWidth(90),
-    paddingVertical: 10,
-    marginTop: responsiveHeight(17),
+    textAlign: 'center',
   },
   title2: {
     fontSize: 14,
-    fontFamily: theme.fonts.fontMedium,
-    color: theme.color.title,
-    alignSelf: 'center',
+    fontFamily: theme.fonts.fontNormal,
+    color: theme.color.subTitle,
+    textAlign: 'center',
+    marginTop: responsiveHeight(2),
   },
+  section2: {
+    marginTop: responsiveHeight(8),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   InputLoc: {
     borderBottomWidth: 0.7,
     borderColor: theme.color.title,
@@ -115,5 +110,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  scrollContainer: {
+    flex: 1,
+    padding: 20,
   },
 });

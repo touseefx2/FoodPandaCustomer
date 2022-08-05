@@ -174,18 +174,18 @@ class user {
         console.log('get all  data  : ', c);
 
         if (c == 'user') {
-          this.attemptToGetUser();
-          store.Orders.getOrderById();
+          // this.attemptToGetUser();
+          // store.Orders.getOrderById();
           // this.attemptToGetFavtList();
           // this.attemptToGetAdressList()
         }
         if (store.User.location) {
-          let city = store.User.location.city;
-          store.Food.getSliderImages(city);
-          store.Promos.getPromoById();
+          // let city = store.User.location.city;
+          // store.Food.getSliderImages(city);
+          // store.Promos.getPromoById();
         }
-        this.attemptToSubTopic();
-        this.getCitiesandAreas();
+        // this.attemptToSubTopic();
+        // this.getCitiesandAreas();
       }
     });
   };
