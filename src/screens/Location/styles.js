@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import theme from '../../theme/index';
 import {
   responsiveHeight,
@@ -47,6 +47,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  section3: {
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: Platform.OS == 'android' ? 25 : theme.window.APPBAR_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   InputLoc: {
     borderBottomWidth: 0.7,
     borderColor: theme.color.title,
@@ -70,16 +78,21 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.color.button1,
-    height: responsiveHeight(5.5),
-    borderRadius: 7,
+    height: 47,
+    borderRadius: 10,
     alignSelf: 'center',
-    marginTop: 50,
-    elevation: 4,
+    elevation: 1.5,
   },
   buttonTextBottom: {
     color: theme.color.buttonText,
     fontSize: 15,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
+    textTransform: 'capitalize',
+  },
+  buttonTextBottom2: {
+    color: theme.color.button1,
+    fontSize: 15,
+    fontFamily: theme.fonts.fontMedium,
     textTransform: 'capitalize',
   },
   LinearGradient: {
@@ -93,14 +106,14 @@ export const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    height: responsiveHeight(5.5),
+    height: 47,
     backgroundColor: theme.color.background,
-    borderRadius: 7,
+    borderRadius: 10,
     alignSelf: 'center',
     marginTop: 20,
-    elevation: 4,
-    flexDirection: 'row',
-    borderWidth: 0.7,
+    elevation: 1.5,
+
+    borderWidth: 0.6,
     borderColor: theme.color.button1,
   },
   LinearGradient2: {
@@ -112,7 +125,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   scrollContainer: {
-    flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
   },
 });

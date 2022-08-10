@@ -110,11 +110,13 @@ const styles = StyleSheet.create({
   headerPosition: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     justifyContent: 'space-between',
     position: 'absolute',
-    top: Platform.OS == 'ios' ? 10 + theme.window.APPBAR_HEIGHT : 10,
+    top: 0,
     width: '100%',
+    backgroundColor: theme.color.background,
+    paddingVertical: Platform.OS == 'ios' ? theme.window.APPBAR_HEIGHT : 15,
   },
   crossButton: {
     width: 40,
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 5,
+    elevation: 4,
     position: 'absolute',
     zIndex: 3,
     bottom: 0,
@@ -243,6 +245,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.color.title,
     fontFamily: theme.fonts.fontMedium,
+  },
+
+  BottomButton: {
+    width: '85%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.color.button1,
+    height: 47,
+    borderRadius: 10,
+    alignSelf: 'center',
+    elevation: 1.5,
+    position: 'absolute',
+    zIndex: 3,
+    bottom: Platform.OS == 'android' ? 25 : theme.window.APPBAR_HEIGHT,
+  },
+  buttonTextBottom: {
+    color: theme.color.buttonText,
+    fontSize: 15,
+    fontFamily: theme.fonts.fontMedium,
+    textTransform: 'capitalize',
   },
 });
 

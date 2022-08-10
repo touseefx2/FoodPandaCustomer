@@ -11,6 +11,7 @@ import NetInfo from '@react-native-community/netinfo';
 import store from './src/store/index';
 import {observer} from 'mobx-react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import ConnectivityManager from 'react-native-connectivity-status';
 
 export default observer(App);
 function App(props) {
@@ -32,11 +33,22 @@ function App(props) {
         }
       },
     );
+    const unsubscribeConnectivityStatusSubscription =
+      ConnectivityManager.addStatusListener(({eventType, status}) => {
+        switch (eventType) {
+          case 'location':
+            store.General.setLocation(status);
+            break;
+        }
+      });
+
     store.General.setapiLevel(DeviceInfo.getApiLevel());
     store.General.setappBuildNumber(DeviceInfo.getBuildNumber());
     store.General.setappVersionNumber(DeviceInfo.getVersion());
     return () => {
+      unsubscribeConnectivityStatusSubscription.remove();
       unsubscribeNetinfo();
+      // unsubscribeAppState();
     };
   }, []);
 

@@ -32,7 +32,6 @@ import {isPointInPolygon, getCenterOfBounds} from 'geolib';
 export default observer(Location);
 
 function Location(props) {
-  const gapikey = 'AIzaSyC75RWT0q9xkASq2YhX2vGi1R-e_p2pnWU';
   const window = Dimensions.get('window');
   const {width, height} = window;
   const LATITUDE_DELTA = 0.0922;
@@ -71,11 +70,6 @@ function Location(props) {
   let cl = store.User.cl;
 
   console.log('is Loc :  ', isLocation);
-
-  useEffect(() => {
-    // requestPermissions();
-    Geocoder.init(gapikey, {language: 'en'});
-  }, []);
 
   useEffect(() => {
     if (coordCenter) {
@@ -482,20 +476,23 @@ function Location(props) {
   };
 
   const gotoMap = () => {
-    console.log('kasjaksj');
-    if (store.User.cl) {
-      setisCenter('nill');
-      setisCenter2('nill');
-      props.navigation.navigate('Map', {
-        city: city,
-        area: area,
-        loc: loc,
-        setloc: c => setloc(c),
-        setcity: c => setcity(c),
-        setarea: c => setarea(c),
-      });
-    } else {
-      // Alert.alert('please turn on location');
+    // console.log('kasjaksj');
+    // if (store.User.cl) {
+    //   setisCenter('nill');
+    //   setisCenter2('nill');
+    //   props.navigation.navigate('Map', {
+    //     city: city,
+    //     area: area,
+    //     loc: loc,
+    //     setloc: c => setloc(c),
+    //     setcity: c => setcity(c),
+    //     setarea: c => setarea(c),
+    //   });
+    // } else {
+    //   // Alert.alert('please turn on location');
+    // }
+    if (isLocation) {
+      props.navigation.navigate('Map');
     }
   };
 
@@ -506,9 +503,6 @@ function Location(props) {
     })
       .then(data => {
         store.General.setLocation(true);
-        if (c == 'map') {
-          gotoMap();
-        }
       })
       .catch(err => {
         toast?.current?.show('Please turn on location');
@@ -522,9 +516,7 @@ function Location(props) {
     console.log('In request iOS permissions : ', status);
     if (status === 'granted') {
       store.General.setLocation(true);
-      if (c == 'map') {
-        gotoMap();
-      }
+
       return true;
     }
 
@@ -564,7 +556,7 @@ function Location(props) {
     console.log('permission result : ', g);
 
     if (g === PermissionsAndroid.RESULTS.GRANTED) {
-      androidLocationEnablerDialog(c);
+      androidLocationEnablerDialog();
       return;
     }
 
@@ -598,16 +590,16 @@ function Location(props) {
     return;
   };
 
-  async function requestPermissions(c) {
+  async function requestPermissions() {
     if (Platform.OS === 'ios') {
       store.General.setLocation(false);
       console.log('Requesting iOS Permissions');
-      hasPermissionIOS(c);
+      hasPermissionIOS();
       return;
     }
     if (Platform.OS === 'android') {
       console.log('Requesting Android Permissions');
-      hasPermissionAndroid(c);
+      hasPermissionAndroid();
     }
   }
 
@@ -650,11 +642,11 @@ function Location(props) {
     }
   };
 
-  const locateMap = () => {
+  const locationAccessCheck = () => {
     closeAllDropDown();
     NetInfo.fetch().then(state => {
       if (state.isConnected) {
-        requestPermissions('map');
+        requestPermissions();
       } else {
         toast?.current?.show('Please connect internet', toastduration);
       }
@@ -726,18 +718,14 @@ function Location(props) {
     );
   };
 
-  const renderConfirmButton = () => {
+  const renderLocationAccessButton = () => {
     return (
       <>
         <TouchableOpacity
           activeOpacity={0.6}
-          onPress={confirm}
+          onPress={locationAccessCheck}
           style={styles.BottomButton}>
-          {/* <LinearGradient
-            colors={[theme.color.button1, theme.color.button2]}
-            style={styles.LinearGradient}> */}
-          <Text style={styles.buttonTextBottom}>Confirm</Text>
-          {/* </LinearGradient> */}
+          <Text style={styles.buttonTextBottom}>Allow Location Access</Text>
         </TouchableOpacity>
       </>
     );
@@ -747,25 +735,32 @@ function Location(props) {
     return (
       <>
         <TouchableOpacity
+          disabled={!isLocation ? true : false}
           activeOpacity={0.6}
-          onPress={locateMap}
-          style={styles.BottomButton2}>
-          {/* <LinearGradient
-            colors={[theme.color.background, theme.color.background]}
-            style={styles.LinearGradient2}> */}
-          <utils.vectorIcon.Entypo
-            name="location-pin"
-            color={theme.color.button1}
-            size={20}
-          />
+          onPress={gotoMap}
+          style={[
+            styles.BottomButton2,
+            {
+              backgroundColor: !isLocation
+                ? theme.color.disableBack
+                : theme.color.background,
+              borderWidth: !isLocation ? 0 : 0.6,
+            },
+          ]}>
           <Text
             style={[
-              styles.buttonTextBottom,
-              {color: theme.color.button1, marginLeft: 5},
+              styles.buttonTextBottom2,
+              {
+                color: !isLocation
+                  ? theme.color.subTitleLight
+                  : theme.color.button1,
+                fontFamily: !isLocation
+                  ? theme.fonts.fontNormal
+                  : theme.fonts.fontMedium,
+              },
             ]}>
-            Locate on map
+            Enter my location
           </Text>
-          {/* </LinearGradient> */}
         </TouchableOpacity>
       </>
     );
@@ -819,81 +814,11 @@ function Location(props) {
         </View>
       </ScrollView>
 
-      {/* <View style={styles.section2}>
-          <Text style={styles.title2}>{title2}</Text>
-          <View style={{width: '100%', marginTop: 30}}>
-            <TouchableOpacity
-              onPress={() => {
-                closeAllDropDown();
-                setisDropDownCity(!isDropDownCity);
-                // if (!isDropDownDays) {
-                //   scrollRef?.current?.scrollToEnd();
-                // }
-              }}
-              activeOpacity={0.4}
-              style={styles.InputLoc}>
-              <View style={{width: '90%'}}>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                    styles.ChargesTextloc,
-                    {
-                      color:
-                        city?.name || ''
-                          ? theme.color.title
-                          : theme.color.subTitle,
-                    },
-                  ]}>
-                  {city?.name ? city?.name : 'Select your city'}
-                </Text>
-              </View>
-              <utils.vectorIcon.AntDesign
-                name="caretdown"
-                color={theme.color.title}
-                size={10}
-              />
-            </TouchableOpacity>
-            {isDropDownCity && renderDropDown('city')}
-          </View>
-          <View style={{width: '100%', marginTop: 30}}>
-            <TouchableOpacity
-              onPress={() => {
-                closeAllDropDown();
-                setisDropDownArea(!isDropDownArea);
-                // if (!isDropDownDays) {
-                //   scrollRef?.current?.scrollToEnd();
-                // }
-              }}
-              activeOpacity={0.4}
-              style={styles.InputLoc}>
-              <View style={{width: '90%'}}>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                    styles.ChargesTextloc,
-                    {
-                      color: area.name
-                        ? theme.color.title
-                        : theme.color.subTitle,
-                    },
-                  ]}>
-                  {area.name ? area.name : 'Select your area'}
-                </Text>
-              </View>
-              <utils.vectorIcon.AntDesign
-                name="caretdown"
-                color={theme.color.title}
-                size={10}
-              />
-            </TouchableOpacity>
-            {isDropDownArea && renderDropDown('area')}
-          </View>
-          {renderConfirmButton()}
-          {renderLocateButton()}
-        </View> */}
-      <Toast ref={toast} position="center" opacity={0.8} />
+      <View style={styles.section3}>
+        {!isLocation && renderLocationAccessButton()}
+        {renderLocateButton()}
+      </View>
+      <Toast ref={toast} position="center" />
     </SafeAreaProvider>
   );
 }

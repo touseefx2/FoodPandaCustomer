@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.color.button1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 15,
   },
   background: {
     flex: 1,
@@ -20,8 +21,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 160,
+    height: 160,
     resizeMode: 'contain',
   },
   title1: {
