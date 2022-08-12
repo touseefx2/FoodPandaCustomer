@@ -10,7 +10,8 @@ export default HomeStack = () => {
       initialRouteName="Home"
       screenOptions={{animationEnabled: false, headerShown: false}}>
       <Stack.Screen name="Home" component={screens.Home} />
-      <Stack.Screen name="locStack" component={LocStack} />
+      <Stack.Screen name="Home2" component={screens.Home2} />
+      <Stack.Screen name="Map" component={screens.Map} />
 
       {/* <Stack.Screen name="Food" component={screens.Food} />
       <Stack.Screen name="Help" component={screens.Help} />
@@ -41,16 +42,16 @@ export default HomeStack = () => {
   );
 };
 
-const LocStack = () => {
-  return (
-    <Stack.Navigator
-      initialRouteName="Loc"
-      screenOptions={{animationEnabled: false, headerShown: false}}>
-      <Stack.Screen name="Loc" component={screens.Location} />
-      <Stack.Screen name="Map" component={screens.Map} />
-    </Stack.Navigator>
-  );
-};
+// const LocStack = () => {
+//   return (
+//     <Stack.Navigator
+//       initialRouteName="Loc"
+//       screenOptions={{animationEnabled: false, headerShown: false}}>
+//       <Stack.Screen name="Loc" component={screens.Location} />
+//       <Stack.Screen name="Map" component={screens.Map} />
+//     </Stack.Navigator>
+//   );
+// };
 
 // const OrderStack = () => {
 //   return (

@@ -3,7 +3,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
 #import <GoogleMaps/GoogleMaps.h>
-#import <GooglePlaces/GooglePlaces.h>
+ 
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -90,7 +90,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
    center.delegate = self;
    [GMSServices provideAPIKey:@"AIzaSyAJeMjKbTTRvoZJe0YoJc48VhaqbtoTmug"];
-   [GMSPlacesClient provideAPIKey:@"AIzaSyC75RWT0q9xkASq2YhX2vGi1R-e_p2pnWU"];
+    
   return YES;
 }
 

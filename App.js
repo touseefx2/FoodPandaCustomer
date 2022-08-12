@@ -60,13 +60,13 @@ function App(props) {
             <Stack.Screen name="Splash" component={screens.Splash} />
           )}
 
-          {!store.General.Loading && !store.User.location && (
+          {!store.General.Loading && !store.Resturants.isSetLocOnce && (
             <Stack.Screen name="Locations" component={stack.LocationStack} />
           )}
 
-          {/* {!store.General.Loading && store.User.location && (
+          {!store.General.Loading && store.Resturants.isSetLocOnce && (
             <Stack.Screen name="HomeStack" component={stack.HomeStack} />
-          )} */}
+          )}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

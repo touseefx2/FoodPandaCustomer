@@ -10,51 +10,65 @@ import {
   Keyboard,
   Dimensions,
   StatusBar,
+  // Linking,
+  // PermissionsAndroid,
 } from 'react-native';
 import styles from './styles';
-import {inject, observer} from 'mobx-react';
+import {observer} from 'mobx-react';
 import store from '../../store/index';
 import utils from '../../utils/index';
 import theme from '../../theme';
-import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-easy-toast';
-import MapView, {PROVIDER_GOOGLE, Marker, Polygon} from 'react-native-maps';
-import {isPointInPolygon} from 'geolib';
-import {responsiveWidth} from 'react-native-responsive-dimensions';
-import RNGooglePlaces from 'react-native-google-places';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
-import Geocoder from 'react-native-geocoding';
+import Geocoder from '@timwangdev/react-native-geocoder';
+import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
+// import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 
 export default observer(Map);
 
 function Map(props) {
+  navigator.geolocation = require('react-native-geolocation-service');
   let mapRef = useRef(null);
   const gapikey = 'AIzaSyC75RWT0q9xkASq2YhX2vGi1R-e_p2pnWU';
   const window = Dimensions.get('window');
   const {width, height} = window;
   const LATITUDE_DELTA = 0.0922;
   const LONGITUDE_DELTA = LATITUDE_DELTA + width / height;
-
+  const refGp = useRef();
   let internet = store.General.isInternet;
+  let isLoc = store.General.isLocation;
 
-  // let loc = props.route.params.loc;
-  // const setloc = c => {
-  //   props.route.params.setloc(c);
-  // };
+  let screen = props.route.params.screen || '';
+
+  const toast = useRef(null);
+  const toastduration = 500;
+
   const [issetRegion, setissetRegion] = useState(false);
 
   const [isMapReady, setIsMapReady] = useState(false); //is map is ready check
-  // const [coords, setcoords] = useState(loc?.coords || false);
 
   const [cl, setcl] = useState(false);
   const [loc, setloc] = useState(store.User.location || false);
+  const [isFirstCal, setisFirstCal] = useState(false);
 
-  const [loader, setloader] = useState(false); //for drop down relted to city
+  const [hideList, sethideList] = useState('auto');
+  const [search, setsearch] = useState('');
+
+  const [loader, setloader] = useState(false);
 
   useEffect(() => {
-    Geocoder.init(gapikey, {language: 'en'});
-    getCurrentLocation();
-  }, []);
+    if (isLoc) {
+      getCurrentLocation();
+    }
+  }, [isLoc]);
+
+  useEffect(() => {
+    if (loc) {
+      refGp?.current?.setAddressText(loc.adrs);
+      setsearch(loc.adrs);
+    }
+  }, [loc]);
 
   useEffect(() => {
     if (isMapReady && cl && !loc) {
@@ -63,47 +77,92 @@ function Map(props) {
   }, [isMapReady, cl, loc]);
 
   useEffect(() => {
-    if (isMapReady && loc) {
-      gotoLoc();
+    if (isMapReady && loc && !isFirstCal) {
+      gotoLoc(loc.coords.latitude, loc.coords.longitude);
+      setisFirstCal(true);
     }
-  }, [isMapReady, loc]);
+  }, [isMapReady, loc, isFirstCal]);
 
-  const googleSearch = () => {
-    RNGooglePlaces.openAutocompleteModal(
-      {
-        initialQuery: '',
-        country: 'PK',
-        useOverlay: false,
-      },
-      ['location'],
-      // ['placeID', 'location', 'name', 'address', 'plusCode'],
-      // ['placeID', 'location', 'name', 'address', 'types', 'openingHours', 'plusCode', 'rating', 'userRatingsTotal', 'viewport']
-    )
-      .then(place => {
-        const data = {
-          name: place.name || '',
-          address: place.address || '',
-          location: {
-            latitude: place.location.latitude,
-            longitude: place.location.longitude,
+  const googleSearch = (data, details = null) => {
+    // 'details' is provided when fetchDetails = true
+    let l = details.geometry.location;
+    let t = data.description || '';
+    let add = details.formatted_address;
+    var value = add.split(',');
+    let count = value.length;
+    let country = value[count - 1];
+    let state = value[count - 2];
+    let city = value[count - 3];
+    const cl = {
+      latitude: l.lat,
+      longitude: l.lng,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    };
+    const loc = {
+      state: state,
+      city_name: city,
+      country_name: country,
+      adrs: t,
+      coords: cl,
+    };
+
+    setloc(loc);
+    gotoLoc(loc.coords.latitude, loc.coords.longitude);
+  };
+
+  const renderGooglePlacesInput = () => {
+    return (
+      <GooglePlacesAutocomplete
+        ref={refGp}
+        // currentLocation={true}
+        // currentLocationLabel="Current location"
+        enablePoweredByContainer={false}
+        listViewDisplayed={hideList}
+        textInputProps={{
+          onFocus: () => sethideList(false),
+          onBlur: () => sethideList(true),
+          onChangeText: d => setsearch(d),
+        }}
+        nearbyPlacesAPI={'GoogleReverseGeocoding'}
+        placeholder="Set delivery address"
+        onPress={googleSearch}
+        query={{
+          key: 'AIzaSyC75RWT0q9xkASq2YhX2vGi1R-e_p2pnWU',
+          language: 'en',
+          components: 'country:pk',
+        }}
+        returnKeyType={'default'}
+        fetchDetails={true}
+        styles={{
+          container: {},
+          textInputContainer: {
+            width: '100%',
+            height: 37,
+            borderRadius: 6,
+            paddingRight: 55,
+            backgroundColor: '#E8E8E899',
           },
-        };
-        console.log('google places res true : ');
-        mapRef?.current?.animateToCoordinate(data.location, 1000);
-      })
-      .catch(error => {
-        if (error.code == 4) {
-          Alert.alert(
-            '',
-            'Please enable billing account on your google map api key',
-          );
-        }
-        console.log('gogole placess error : ', error.message);
-      });
+          textInput: {
+            height: 37,
+            color: theme.color.subTitleLight,
+            fontSize: 13,
+            fontFamily: theme.fonts.fontNormal,
+            backgroundColor: '#E8E8E899',
+            borderRadius: 6,
+          },
+          row: {
+            backgroundColor: theme.color.background,
+          },
+        }}
+      />
+    );
   };
 
   const gotoCurrentLoc = () => {
+    Keyboard.dismiss();
     setissetRegion(true);
+    refGp?.current?.blur();
     mapRef?.current?.animateToRegion(
       {
         latitude: cl.coords.latitude,
@@ -115,11 +174,12 @@ function Map(props) {
     );
   };
 
-  const gotoLoc = () => {
+  const gotoLoc = (lat, lng) => {
+    setissetRegion(false);
     mapRef?.current?.animateToRegion(
       {
-        latitude: loc.coords.lat,
-        longitude: loc.coords.long,
+        latitude: lat,
+        longitude: lng,
         latitudeDelta: LATITUDE_DELTA * Number(30 / 1000),
         longitudeDelta: LONGITUDE_DELTA * Number(30 / 1000),
       },
@@ -129,6 +189,115 @@ function Map(props) {
       setissetRegion(true);
     }, 1500);
   };
+
+  // async function requestPermissions() {
+  //   const androidLocationEnablerDialog = c => {
+  //     RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
+  //       interval: 10000,
+  //       fastInterval: 5000,
+  //     })
+  //       .then(data => {
+  //         store.General.setLocation(true);
+  //       })
+  //       .catch(err => {
+  //         toast?.current?.show('Please turn on location');
+  //         console.log('location enabler popup error : ', err);
+  //       });
+  //   };
+
+  //   const hasPermissionIOS = async c => {
+  //     const status = await Geolocation.requestAuthorization('whenInUse');
+
+  //     console.log('In request iOS permissions : ', status);
+  //     if (status === 'granted') {
+  //       store.General.setLocation(true);
+
+  //       return true;
+  //     }
+
+  //     store.General.setLocation(false);
+  //     if (status === 'denied') {
+  //       Alert.alert('Location permission denied');
+  //     }
+
+  //     if (status === 'disabled') {
+  //       Alert.alert(
+  //         `Turn on Location Services to allow Karblock to determine your location.`,
+  //         '',
+  //         [
+  //           {
+  //             text: 'Go to Settings',
+  //             onPress: () => {
+  //               openSetting();
+  //             },
+  //           },
+  //           {text: "Don't Use Location", onPress: () => {}},
+  //         ],
+  //       );
+  //     }
+  //     const openSetting = () => {
+  //       Linking.openSettings().catch(() => {
+  //         Alert.alert('Unable to open settings');
+  //       });
+  //     };
+
+  //     return false;
+  //   };
+
+  //   const hasPermissionAndroid = async c => {
+  //     let g = await PermissionsAndroid.request(
+  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //     );
+  //     console.log('permission result : ', g);
+
+  //     if (g === PermissionsAndroid.RESULTS.GRANTED) {
+  //       androidLocationEnablerDialog();
+  //       return;
+  //     }
+
+  //     store.General.setLocation(false);
+  //     let msg = 'permisiion location';
+  //     if (g === 'denied') {
+  //       msg = 'Please allow permision to use location';
+  //       toast?.current?.show(
+  //         'Please allow permisiion to turn on location',
+  //         1000,
+  //       );
+  //     }
+
+  //     if (g === 'never_ask_again') {
+  //       msg =
+  //         'Please allow permision to use location in  app setting in device allow location permission to continue';
+  //       Alert.alert(``, msg, [
+  //         {
+  //           text: 'Go to Settings',
+  //           onPress: () => {
+  //             openSetting();
+  //           },
+  //         },
+  //         {text: "Don't Use Location", onPress: () => {}},
+  //       ]);
+  //     }
+
+  //     const openSetting = () => {
+  //       Linking.openSettings().catch(() => {
+  //         Alert.alert('Unable to open settings');
+  //       });
+  //     };
+
+  //     return;
+  //   };
+
+  //   if (Platform.OS === 'ios') {
+  //     console.log('Requesting iOS Permissions');
+  //     hasPermissionIOS();
+  //     return;
+  //   }
+  //   if (Platform.OS === 'android') {
+  //     console.log('Requesting Android Permissions');
+  //     hasPermissionAndroid();
+  //   }
+  // }
 
   const getCurrentLocation = () => {
     setloader(true);
@@ -143,57 +312,20 @@ function Map(props) {
           longitudeDelta: LONGITUDE_DELTA,
         };
 
-        const loc = {
+        const locc = {
           city_name: '',
           country_name: '',
+          adrs: '',
+          state: '',
           coords: cl,
         };
 
-        setcl(loc);
+        setcl(locc);
+        setloader(false);
 
-        Geocoder.from({
-          latitude: cl.latitude,
-          longitude: cl.longitude,
-        })
-          .then(json => {
-            setloader(false);
-            let results = json.results;
-            console.log('geocoder json data true : ');
-            let cityName = '';
-            let countryName = '';
-            if (results[0]) {
-              var add = results[0].formatted_address;
-              var value = add.split(',');
-              let count = value.length;
-              let country = value[count - 1];
-              let state = value[count - 2];
-              let city = value[count - 3];
-              cityName = city;
-            } else {
-              console.log(' geocoder json  res : ', 'address not found');
-            }
-
-            const loc = {
-              city_name: cityName,
-              country_name: countryName,
-              coords: cl,
-            };
-
-            setloc(loc);
-
-            return;
-          })
-          .catch(error => {
-            setloader(false);
-            if (error.code == 4) {
-              Alert.alert(
-                '',
-                'Please enable billing account on your google map api key',
-              );
-            }
-            console.warn('geocoder error : ', error);
-            return;
-          });
+        if (!loc) {
+          getCountryCityName(locc.coords, '');
+        }
       },
       error => {
         setloader(false);
@@ -204,7 +336,9 @@ function Map(props) {
         }
 
         if (error.code == 1) {
-          // locationEnabler()
+          // Location permission not granted
+          toast?.current?.show('Please turn on location first', toastduration);
+          // requestPermissions();
         }
 
         console.log('get crnt loc one error : ', error.message);
@@ -217,65 +351,51 @@ function Map(props) {
     );
   };
 
-  const getCountryCityName = c => {
-    setloader(true);
-    Geocoder.from({
-      latitude: c.latitude,
-      longitude: c.longitude,
-    })
-      .then(json => {
-        setloader(false);
-        let results = json.results;
-        console.log('geocoder json data true : ');
-        let cityName = '';
-        let countryName = '';
-        if (results[0]) {
-          var add = results[0].formatted_address;
-          var value = add.split(',');
-          let count = value.length;
-          let country = value[count - 1];
-          let state = value[count - 2];
-          let city = value[count - 3];
-          cityName = city;
-        } else {
-          console.log(' geocoder json  res : ', 'address not found');
-        }
-
+  const getCountryCityName = async (c, chk) => {
+    try {
+      setloader(true);
+      const position = {lat: c.latitude, lng: c.longitude};
+      const option = {apiKey: gapikey};
+      const res = await Geocoder.geocodePosition(position, option);
+      setloader(false);
+      if (res[0]) {
+        let d = res[0];
+        console.log('geocoder get name adress : ', d);
         const loc = {
-          city_name: cityName,
-          country_name: countryName,
+          city_name: d.locality,
+          state: d.adminArea,
+          country_name: d.country,
+          adrs: d.formattedAddress,
           coords: c,
         };
-
         setloc(loc);
-
-        return;
-      })
-      .catch(error => {
-        setloader(false);
-        if (error.code == 4) {
-          Alert.alert(
-            '',
-            'Please enable billing account on your google map api key',
-          );
+        if (chk == '') {
+          gotoLoc(loc.coords.latitude, loc.coords.longitude);
         }
-        console.warn('geocoder error : ', error);
-        return;
-      });
+      }
+    } catch (err) {
+      setloader(false);
+      console.log('geocoder get name adress error : ', err);
+    }
   };
 
-  // const confirmLocation = () => {
-  //   let point = {lat: coords.latitude, long: coords.longitude};
-  //   let obj = {
-  //     area: area,
-  //     city: city,
-  //     coords: point,
-  //   };
-  //   setloc(obj);
-  //   props.route.params.setcity(city);
-  //   props.route.params.setarea(area);
-  //   props.navigation.goBack();
-  // };
+  const confirmLocation = () => {
+    if (!internet) {
+      toast?.current?.show('Please connect internet', toastduration);
+      return;
+    }
+
+    if (!isLoc) {
+      toast?.current?.show('Please turn on location first', toastduration);
+      return;
+    }
+
+    store.User.setLocation(loc);
+    if (screen == 'home') {
+      props.route.params.setloader(true);
+    }
+    closeMap();
+  };
 
   const closeMap = () => {
     props.navigation.goBack();
@@ -284,24 +404,11 @@ function Map(props) {
   const rendercross = () => {
     return (
       <TouchableOpacity style={styles.crossButton} onPress={closeMap}>
-        <utils.vectorIcon.Entypo
-          name="cross"
+        <utils.vectorIcon.Ionicons
+          name="arrow-back-sharp"
           color={theme.color.button1}
           size={27}
         />
-      </TouchableOpacity>
-    );
-  };
-
-  const renderGoogleSearch = () => {
-    return (
-      <TouchableOpacity style={styles.googleSearchBar} onPress={googleSearch}>
-        <utils.vectorIcon.FontAwesome5
-          name="search-location"
-          color={theme.color.button1}
-          size={20}
-        />
-        <Text style={styles.googleSearchBarText}>Search By Google</Text>
       </TouchableOpacity>
     );
   };
@@ -314,8 +421,29 @@ function Map(props) {
         <utils.vectorIcon.MaterialIcons
           name="my-location"
           color={theme.color.button1}
-          size={27}
+          size={20}
         />
+      </TouchableOpacity>
+    );
+  };
+
+  const renderClear = () => {
+    return (
+      <TouchableOpacity
+        style={styles.clearButton}
+        onPress={() => {
+          refGp?.current?.clear();
+          refGp?.current?.blur();
+          refGp?.current?.setAddressText('');
+          setsearch('');
+        }}>
+        <View style={styles.clearButton2}>
+          <utils.vectorIcon.Entypo
+            name="cross"
+            color={theme.color.subTitleLight}
+            size={15}
+          />
+        </View>
       </TouchableOpacity>
     );
   };
@@ -324,8 +452,16 @@ function Map(props) {
     return (
       <View style={styles.headerPosition}>
         {rendercross()}
-        {renderGoogleSearch()}
-        {renderCurrentLocationIndactor()}
+        <View
+          style={{
+            width: '90%',
+            backgroundColor: '#E8E8E899',
+            borderRadius: 6,
+          }}>
+          {renderGooglePlacesInput()}
+          {search != '' && renderClear()}
+          {renderCurrentLocationIndactor()}
+        </View>
       </View>
     );
   };
@@ -338,7 +474,7 @@ function Map(props) {
         <TouchableOpacity
           disabled={loader}
           activeOpacity={0.6}
-          // onPress={ }
+          onPress={confirmLocation}
           style={[
             styles.BottomButton,
             {
@@ -368,10 +504,10 @@ function Map(props) {
       <Marker
         identifier="current location"
         coordinate={cl.coords}
-        pinColor={theme.color.button1}>
+        pinColor={'blue'}>
         <utils.vectorIcon.Ionicons
           name="md-navigate-circle"
-          color={theme.color.button1}
+          color={'blue'}
           size={22}
         />
       </Marker>
@@ -379,13 +515,17 @@ function Map(props) {
   };
 
   const rednerDot = () => {
+    let warnText =
+      !internet && isLoc
+        ? 'No internet connection !'
+        : internet && !isLoc
+        ? 'Please turn on loction'
+        : 'No internet connection !';
     return (
       <View style={styles.dotPosition}>
-        {!internet && (
+        {(!internet || !isLoc) && (
           <View style={styles.dotWarningMessage}>
-            <Text style={styles.dotWarningMessageText}>
-              No internet connection !
-            </Text>
+            <Text style={styles.dotWarningMessageText}>{warnText}</Text>
           </View>
         )}
 
@@ -394,22 +534,23 @@ function Map(props) {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <View
-            style={{
-              position: 'absolute',
-              opacity: 0.8,
-              bottom: 5,
-              width: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <utils.vectorIcon.MaterialIcons
-              name="location-pin"
-              color={'red'}
-              size={25}
-            />
-          </View>
-
+          {loc?.coords && internet && isLoc && (
+            <View
+              style={{
+                position: 'absolute',
+                opacity: 0.8,
+                bottom: 5,
+                width: 24,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <utils.vectorIcon.MaterialIcons
+                name="location-pin"
+                color={'red'}
+                size={25}
+              />
+            </View>
+          )}
           <View
             style={{
               width: 6,
@@ -432,7 +573,7 @@ function Map(props) {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
       };
-      getCountryCityName(point);
+      getCountryCityName(point, 'nill');
     }
   };
 
@@ -475,9 +616,10 @@ function Map(props) {
         }}>
         {cl?.coords && renderCurrentPositionMarker()}
       </MapView>
-      {renderHeader()}
-      {(loc?.coods || cl?.coords) && renderConfirmButton()}
       {rednerDot()}
+      {renderHeader()}
+      {loc?.coords && renderConfirmButton()}
+      <Toast ref={toast} position="center" />
     </SafeAreaView>
   );
 }

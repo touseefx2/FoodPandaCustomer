@@ -3,6 +3,7 @@ import InternetMessage from './InternetMessage';
 import FoodCard from './FoodCard';
 import FooterCart from './FooterCart';
 import Loader from './Loader';
+import Loader2 from './Loader2';
 import FoodVariationModal from './FoodVariationModal';
 import FoodDeleteModal from './FoodDeleteModal';
 import FoodVariationDetailModal from './FoodVariationDetailModal';
@@ -34,6 +35,7 @@ const utils = {
   InternetMessage,
   FoodCard,
   Loader,
+  Loader2,
   FooterCart,
   FoodVariationModal,
   FoodVariationDetailModal,

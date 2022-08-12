@@ -37,8 +37,8 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import {ActivityIndicator} from 'react-native-paper';
 import {ScrollView} from 'react-native-gesture-handler';
 
-export default observer(Home);
-function Home(props) {
+export default observer(Home2);
+function Home2(props) {
   const toast = useRef(null);
   const toastduration = 700;
 
@@ -61,7 +61,7 @@ function Home(props) {
     const onClickDrawer = () => {};
 
     const onClickLoc = () => {
-      props.navigation.navigate('Map', {screen: 'home', setloader});
+      props.navigation.navigate('Map', {screen: 'home2', setloader});
     };
 
     const onClickCart = () => {};
@@ -146,14 +146,6 @@ function Home(props) {
   };
 
   const renderMain = () => {
-    const onclickDelivery = () => {
-      props.navigation.navigate('home2', {screen: 'home2', type: 'delivery'});
-    };
-
-    const onclickPickup = () => {
-      props.navigation.navigate('home2', {screen: 'home2', type: 'pickup'});
-    };
-
     let styl =
       Platform.OS == 'android'
         ? {}
@@ -166,10 +158,7 @@ function Home(props) {
 
     return (
       <>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={onclickDelivery}
-          style={[styles.boxContainer, styl]}>
+        <View style={[styles.boxContainer, styl]}>
           <View style={styles.boxContainerSecton1}>
             <Text style={styles.bcs1Text1}>Food Delivery</Text>
             <Text style={styles.bcs1Text2}>
@@ -183,12 +172,9 @@ function Home(props) {
               style={styles.bcs2Image}
             />
           </View>
-        </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={onclickPickup}
-          style={[styles.boxContainer2, styl]}>
+        <View style={[styles.boxContainer2, styl]}>
           <View style={styles.boxContainerSecton1}>
             <Text style={styles.bcs1Text1}>Pick-up</Text>
             <Text style={styles.bcs1Text2}>
@@ -202,7 +188,7 @@ function Home(props) {
               style={styles.bcs2Image}
             />
           </View>
-        </TouchableOpacity>
+        </View>
       </>
     );
   };

@@ -16,6 +16,7 @@ import messaging from '@react-native-firebase/messaging';
 import {create} from 'mobx-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import theme from '../../theme';
+import ConnectivityManager from 'react-native-connectivity-status';
 
 const getToken = async () => {
   let tok = await messaging().getToken();
@@ -44,12 +45,21 @@ function Splash(props) {
     const hydrate = create({storage: AsyncStorage});
     await hydrate('General', store.General);
     await hydrate('User', store.User);
-    // await hydrate('Downloads', store.Downloads);
+    await hydrate('Resturants', store.Resturants);
   };
 
   const checking = async () => {
     await hydrateStores();
     checkIsUserLogin();
+    if (store.General.isGLocation && Platform.OS == 'android') {
+      isLocation();
+    }
+  };
+
+  const isLocation = async () => {
+    const locationServicesAvailable =
+      await ConnectivityManager.areLocationServicesEnabled();
+    store.General.setLocation(locationServicesAvailable);
   };
 
   const checkIsUserLogin = () => {

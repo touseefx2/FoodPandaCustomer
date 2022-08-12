@@ -2,6 +2,7 @@ import Splash from './Splash';
 import Location from './Location';
 import Map from './Map';
 import Home from './Home';
+import Home2 from './Home2';
 // import Food from './Food';
 // import Help from './Help';
 // import Search from './Search';
@@ -33,6 +34,7 @@ export default screens = {
   Location,
   Map,
   Home,
+  Home2,
   // Food,
   // Help,
   // Search,

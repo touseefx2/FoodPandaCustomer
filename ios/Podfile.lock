@@ -136,8 +136,6 @@ PODS:
   - GoogleMaps/Base (3.1.0)
   - GoogleMaps/Maps (3.1.0):
     - GoogleMaps/Base
-  - GooglePlaces (3.1.0):
-    - GoogleMaps/Base (= 3.1.0)
   - GoogleUtilities/AppDelegateSwizzler (7.7.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -388,16 +386,14 @@ PODS:
     - React-Core
   - react-native-connectivity-status (1.5.1):
     - React
+  - react-native-geocoder (1.0.0-alpha.7):
+    - React
   - react-native-geolocation-service (5.3.0):
     - React
   - react-native-google-maps (1.1.0):
     - Google-Maps-iOS-Utils (= 2.1.0)
     - GoogleMaps (= 3.1.0)
     - React-Core
-  - react-native-google-places (3.1.2):
-    - GoogleMaps (~> 3.1.0)
-    - GooglePlaces (~> 3.1.0)
-    - React
   - react-native-maps (1.1.0):
     - React-Core
   - react-native-multiple-image-picker (0.4.10):
@@ -598,9 +594,9 @@ DEPENDENCIES:
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - react-native-compressor (from `../node_modules/react-native-compressor`)
   - react-native-connectivity-status (from `../node_modules/react-native-connectivity-status`)
+  - "react-native-geocoder (from `../node_modules/@timwangdev/react-native-geocoder`)"
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-google-maps (from `../node_modules/react-native-maps`)
-  - react-native-google-places (from `../node_modules/react-native-google-places`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-multiple-image-picker (from `../node_modules/@baronha/react-native-multiple-image-picker`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -656,7 +652,6 @@ SPEC REPOS:
     - Google-Maps-iOS-Utils
     - GoogleDataTransport
     - GoogleMaps
-    - GooglePlaces
     - GoogleUtilities
     - GTMSessionFetcher
     - libevent
@@ -716,12 +711,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-compressor"
   react-native-connectivity-status:
     :path: "../node_modules/react-native-connectivity-status"
+  react-native-geocoder:
+    :path: "../node_modules/@timwangdev/react-native-geocoder"
   react-native-geolocation-service:
     :path: "../node_modules/react-native-geolocation-service"
   react-native-google-maps:
     :path: "../node_modules/react-native-maps"
-  react-native-google-places:
-    :path: "../node_modules/react-native-google-places"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-multiple-image-picker:
@@ -814,7 +809,6 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
   GoogleMaps: 5c13302e6fe6bb6e686b267196586b91cd594225
-  GooglePlaces: e874db179f2675c4f3eeda0b686b540273a578b0
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
@@ -839,9 +833,9 @@ SPEC CHECKSUMS:
   react-native-blob-util: c3b0faecd2919db568e9d552084396f3e50b57c7
   react-native-compressor: 2b33a85a50fddb4587165df3d4a79f9d9b8e13ef
   react-native-connectivity-status: 2325459ddad171e1f88af01f52a6a1f34ad37102
+  react-native-geocoder: 225895386f04bf37515eaa09c419dea9b923f40b
   react-native-geolocation-service: f32ef48fa665bd710207a3ac39bc127cac9cb993
   react-native-google-maps: 396e05da7e64f35e5f7adad36c3710e9c9029d04
-  react-native-google-places: 34e976a0e13cb55cc9603ef2fa6764ed534af806
   react-native-maps: de23d141fa0289d1896739d0ddc8c5d11d9ca800
   react-native-multiple-image-picker: af1788309fa361fe7c910649d9e24097c34aac6f
   react-native-netinfo: 129bd99f607a2dc5bb096168f3e5c150fd1f1c95
@@ -880,6 +874,6 @@ SPEC CHECKSUMS:
   Yoga: 99652481fcd320aefa4a7ef90095b95acd181952
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: ee26725fa7f25a98dbf40d4bc3020406f491c9c5
+PODFILE CHECKSUM: 91ce7f7444606c2aff2902dd2cb3c38a45b1cd3d
 
 COCOAPODS: 1.11.3

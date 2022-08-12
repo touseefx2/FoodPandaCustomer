@@ -3,7 +3,7 @@ import {User} from './user/index';
 import {Food} from './food/index';
 import {Orders} from './orders/index';
 import {Promos} from './promos/index';
-// import tripstore from "./trip_store";
+import {Resturants} from './resturants';
 // import notificationmanager from "./notificationmanager";
 
 // const userStore = new userstore();
@@ -18,6 +18,7 @@ export default {
   Food,
   Orders,
   Promos,
+  Resturants,
   // userStore,
   // carStore,
   // tripStore,

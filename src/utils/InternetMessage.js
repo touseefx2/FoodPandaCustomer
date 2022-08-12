@@ -12,7 +12,7 @@ export default function InternetMessage(props) {
           alignSelf: 'center',
           color: theme.color.buttonText,
           fontSize: 14,
-          fontFamily: theme.fonts.fontBold,
+          fontFamily: theme.fonts.fontMedium,
         }}>
         No internet connection
       </Text>

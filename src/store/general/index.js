@@ -11,13 +11,14 @@ class general {
   @observable isServerError = false;
   @observable Loading = true;
   @observable isInternet = false;
+  @persist('object') @observable isGLocation = false;
   @observable isLocation = false;
   @observable appState = AppState.currentState;
   @observable selectedFilter = [];
   @observable isUpdateNeeded = false;
-  @persist @observable apiLevel = '';
-  @persist @observable appBuildNumber = '';
-  @persist @observable appVersionNumber = '';
+  @persist('object') @observable apiLevel = '';
+  @persist('object') @observable appBuildNumber = '';
+  @persist('object') @observable appVersionNumber = '';
 
   @action setisUpdateNeeded = obj => {
     this.isUpdateNeeded = obj;
@@ -49,6 +50,10 @@ class general {
 
   @action setLocation = obj => {
     this.isLocation = obj;
+  };
+
+  @action setGLocation = obj => {
+    this.isGLocation = obj;
   };
 
   @action.bound

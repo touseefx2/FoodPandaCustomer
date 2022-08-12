@@ -1,4 +1,5 @@
 rootProject.name = 'FoodPandaC'
+ 
 include ':react-native-google-places'
 project(':react-native-google-places').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-google-places/android')
 include ':react-native-push-notification'

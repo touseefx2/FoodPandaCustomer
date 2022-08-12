@@ -51,7 +51,7 @@ export default function TagLine(props) {
           style={{
             color: theme.color.buttonText,
             fontSize: 12,
-            fontFamily: theme.fonts.fontBold,
+            fontFamily: theme.fonts.fontMedium,
             lineHeight: 17,
           }}>
           {props.tagLine}
