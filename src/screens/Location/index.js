@@ -57,6 +57,7 @@ function Location(props) {
   useEffect(() => {
     if (loc) {
       // store.Resturants.getData(loc, c => setLoader(c));
+      setloader(true);
       setTimeout(() => {
         setloader(false);
         store.Resturants.setisLocOnce(true);

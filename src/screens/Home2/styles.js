@@ -16,15 +16,40 @@ export const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
     elevation: 5,
+  },
+  header1: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     alignItems: 'center',
   },
+  header2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+    // backgroundColor: 'red',
+  },
+  searchContainer: {
+    width: '83%',
+    borderRadius: 20,
+    height: 40,
+    paddingHorizontal: 10,
+    backgroundColor: '#f5f5f5',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  searchContainerText: {
+    fontSize: 14,
+    color: theme.color.subTitleLight,
+    fontFamily: theme.fonts.fontNormal,
+    marginLeft: 10,
+  },
   locContainer: {
     width: '70%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     backgroundColor: 'white',
   },
   locText: {
@@ -41,16 +66,81 @@ export const styles = StyleSheet.create({
     lineHeight: 18,
     textTransform: 'capitalize',
   },
-  boxContainer: {
-    width: '100%',
-    height: responsiveHeight(20),
-    backgroundColor: '#FFC5B2',
+  efcContainer: {
+    width: 220,
+    height: 210,
+    // backgroundColor: '#FFC5B2',
     borderRadius: 8,
-    marginBottom: 20,
+    marginTop: 5,
+  },
+  efc1: {
+    width: '100%',
+    height: 136,
+    // backgroundColor: '#FFC5B2',
+    borderRadius: 8,
     elevation: 1,
-    padding: 15,
+  },
+
+  efcImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    elevation: 1,
+    resizeMode: 'cover',
+  },
+
+  efc2: {
+    width: '100%',
+    height: '100%',
+    // backgroundColor: 'red',
+  },
+
+  efc21: {
+    width: '100%',
+    // backgroundColor: 'grey',
+    marginTop: 5,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  efc21Text1: {
+    fontSize: 14,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.title,
+  },
+
+  efc21Text2: {
+    fontSize: 11,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.title,
+    marginLeft: 2,
+  },
+
+  efc22: {
+    width: '100%',
+    // backgroundColor: 'grey',
+    flexDirection: 'row',
+  },
+
+  efc22Text1: {
+    fontSize: 13,
+    fontFamily: theme.fonts.fontNormal,
+    color: theme.color.subTitleLight,
+    textTransform: 'capitalize',
+  },
+
+  efc33: {
+    width: '100%',
+    // backgroundColor: 'grey',
+    flexDirection: 'row',
+  },
+  efc33Text1: {
+    fontSize: 11,
+    marginLeft: 5,
+    fontFamily: theme.fonts.fontNormal,
+    color: theme.color.subTitleLight,
+    textTransform: 'capitalize',
   },
 
   boxContainer2: {
@@ -90,4 +180,51 @@ export const styles = StyleSheet.create({
     color: theme.color.title,
   },
   bcs2Image: {flex: 1, resizeMode: 'contain', elevation: 5},
+  mainSec1: {
+    width: '100%',
+    // backgroundColor: 'silver',
+  },
+  mainSecText: {
+    fontSize: 16,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.title,
+    marginHorizontal: 20,
+  },
+  mainSec2: {
+    width: '100%',
+    marginTop: 20,
+    // backgroundColor: 'silver',
+  },
+
+  disContaniner: {
+    width: 43,
+    height: 21,
+    borderRadius: 16,
+    backgroundColor: theme.color.background,
+    position: 'absolute',
+    bottom: 5,
+    left: 5,
+    elevation: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  disContaninerText: {
+    fontSize: 9,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.title,
+  },
+
+  heartContaniner: {
+    width: 22,
+    height: 22,
+    borderRadius: 22 / 2,
+    backgroundColor: theme.color.background,
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    elevation: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

@@ -87,7 +87,7 @@ function Home(props) {
           activeOpacity={0.7}
           onPress={onClickLoc}
           style={styles.locContainer}>
-          <View style={{width: '92%'}}>
+          <View style={{}}>
             <Text style={styles.locText} numberOfLines={1} ellipsizeMode="tail">
               {adrs}
             </Text>
@@ -99,17 +99,12 @@ function Home(props) {
             </Text>
           </View>
 
-          <View
-            style={{
-              width: '6%',
-              alignItems: 'flex-end',
-            }}>
-            <utils.vectorIcon.Entypo
-              name="chevron-small-down"
-              color={theme.color.subTitleLight}
-              size={16}
-            />
-          </View>
+          <utils.vectorIcon.Entypo
+            style={{marginLeft: 3}}
+            name="chevron-small-down"
+            color={theme.color.subTitleLight}
+            size={16}
+          />
         </TouchableOpacity>
       );
     };
@@ -147,11 +142,11 @@ function Home(props) {
 
   const renderMain = () => {
     const onclickDelivery = () => {
-      props.navigation.navigate('home2', {screen: 'home2', type: 'delivery'});
+      props.navigation.navigate('Home2', {screen: 'home', type: 'delivery'});
     };
 
     const onclickPickup = () => {
-      props.navigation.navigate('home2', {screen: 'home2', type: 'pickup'});
+      props.navigation.navigate('Home2', {screen: 'home', type: 'pickup'});
     };
 
     let styl =
@@ -207,8 +202,21 @@ function Home(props) {
     );
   };
 
+  const renderStatusBar = () => {
+    return (
+      <>
+        <StatusBar
+          translucent={false}
+          backgroundColor={theme.color.background}
+          barStyle={'dark-content'}
+        />
+      </>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      {renderStatusBar()}
       <utils.Loader2 load={Loader} />
       {!internet && (
         <utils.InternetMessage

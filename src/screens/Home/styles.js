@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
   locContainer: {
     width: '70%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     backgroundColor: 'white',
   },
   locText: {
