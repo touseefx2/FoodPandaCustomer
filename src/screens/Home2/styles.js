@@ -71,7 +71,14 @@ export const styles = StyleSheet.create({
     height: 210,
     // backgroundColor: '#FFC5B2',
     borderRadius: 8,
-    marginTop: 5,
+    marginTop: 10,
+  },
+  efcContainerAll: {
+    width: '100%',
+    height: 225,
+    // backgroundColor: '#FFC5B2',
+    borderRadius: 8,
+    marginTop: 10,
   },
   efc1: {
     width: '100%',
@@ -82,6 +89,22 @@ export const styles = StyleSheet.create({
   },
 
   efcImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    elevation: 1,
+    resizeMode: 'cover',
+  },
+
+  efc1All: {
+    width: '100%',
+    height: 151,
+    // backgroundColor: '#FFC5B2',
+    borderRadius: 8,
+    elevation: 1,
+  },
+
+  efcImageAll: {
     width: '100%',
     height: '100%',
     borderRadius: 8,
@@ -192,7 +215,7 @@ export const styles = StyleSheet.create({
   },
   mainSec2: {
     width: '100%',
-    marginTop: 20,
+    // marginTop: 20,
     // backgroundColor: 'silver',
   },
 
@@ -227,4 +250,34 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  emptySECTION: {
+    alignSelf: 'center',
+    top: '30%',
+    width: '75%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyImg: {
+    width: responsiveWidth(14),
+    height: responsiveHeight(7),
+    resizeMode: 'contain',
+    opacity: 0.5,
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.subTitle,
+    textAlign: 'center',
+  },
+
+  loaderSECTION: {
+    alignSelf: 'center',
+    top: '20%',
+    width: 300,
+    height: 300,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loaderImg: {width: '100%', height: '100%', resizeMode: 'contain'},
 });

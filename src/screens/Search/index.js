@@ -1,199 +1,301 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
   SafeAreaView,
   TouchableOpacity,
   Image,
-  Linking,
-  ScrollView,
-  TextInput,
-  FlatList,
+  TouchableHighlight,
   StatusBar,
+  BackHandler,
+  Alert,
+  Linking,
+  PermissionsAndroid,
+  Platform,
+  Dimensions,
+  FlatList,
+  TextInput,
 } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+import Geocoder from 'react-native-geocoding';
 import {styles} from './styles';
-import {inject, observer} from 'mobx-react';
+import {observer} from 'mobx-react';
 import store from '../../store/index';
 import utils from '../../utils/index';
 import theme from '../../theme';
-import {Searchbar} from 'react-native-paper';
-import {responsiveHeight} from 'react-native-responsive-dimensions';
-import filter from 'lodash.filter';
+import DynamicTabView from 'react-native-dynamic-tab-view';
+import ImageSlider from 'react-native-image-slider';
+import FastImage from 'react-native-fast-image';
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from 'react-native-responsive-dimensions';
+import NetInfo from '@react-native-community/netinfo';
+import Toast from 'react-native-easy-toast';
+import MaskedView from '@react-native-community/masked-view';
+import Svg, {Path} from 'react-native-svg';
+import RBSheet from 'react-native-raw-bottom-sheet';
+
+import {ScrollView} from 'react-native-gesture-handler';
 
 export default observer(Search);
 function Search(props) {
-  const allcategory = props.route.params.data;
-  const [allitems, setallitems] = useState([]);
+  const toast = useRef(null);
+  const toastduration = 700;
+
+  // let screen = props.route.params.screen || '';
+
+  let internet = store.General.isInternet;
+  let loc = store.User.location;
 
   const [search, setsearch] = useState('');
+  const [data, setdata] = useState(props.route.params.data || []);
+  const [filteredData, setfilteredData] = useState([]);
 
-  const [data, setdata] = useState([]);
+  const renderHeader = () => {
+    const onClickBack = () => {
+      props.navigation.goBack();
+    };
 
-  let image = require('../../assets/images/empty/img.png');
-  let emptyText = search == '' ? 'Type to search product' : 'No product found!';
+    const renderBack = () => {
+      return (
+        <TouchableOpacity
+          style={{width: '10%'}}
+          activeOpacity={0.6}
+          onPress={onClickBack}>
+          <utils.vectorIcon.Ionicons
+            name="arrow-back-sharp"
+            color={theme.color.button1}
+            size={24}
+          />
+        </TouchableOpacity>
+      );
+    };
 
-  useEffect(() => {
-    matchData(search);
-  }, [search]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (allcategory.length > 0) {
-        let arr = [];
-        allcategory.map((e, i, a) => {
-          if (e.data.length > 0) {
-            e.data.map((e, i, a) => {
-              arr.push(e);
-            });
-          }
+    const Search = searchText => {
+      setsearch(searchText);
+      if (data.length > 0 && searchText != '') {
+        let fd = data.filter(function (item) {
+          console.log('name : ', item.name);
+          console.log('s : ', searchText.toLowerCase());
+          return item.name.toLowerCase().includes(searchText.toLowerCase());
         });
-        setallitems(arr);
-      }
-    }, 200);
-  }, []);
-
-  const matchData = txt => {
-    console.log('txt : ', txt);
-    if (txt == '') {
-      setdata([]);
-      return;
-    } else {
-      const dt = filter(allcategory, b => {
-        return contains(b, txt);
-      });
-
-      if (dt.length > 0) {
-        let arr = [];
-        dt.map((e, i, a) => {
-          if (e.data.length > 0) {
-            e.data.map((r, i, a) => {
-              arr.push(r);
-            });
-          }
-        });
-        setdata(arr);
-        return;
+        setfilteredData(fd);
       } else {
-        const dt = filter(allitems, b => {
-          return contains2(b, txt);
-        });
-
-        if (dt.length > 0) {
-          let arr = [];
-          dt.map((e, i, a) => {
-            arr.push(e);
-          });
-          setdata(arr);
-          return;
-        } else {
-          setdata([]);
-          return;
-        }
+        setfilteredData([]);
       }
-    }
-  };
+    };
 
-  const goBack = () => {
-    props.navigation.goBack();
-  };
+    const renderSearch = () => {
+      return (
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for restaurants"
+            defaultValue={search}
+            value={search}
+            onChangeText={t => {
+              Search(t);
+            }}
+          />
+          {search != '' && (
+            <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => {
+                setsearch('');
+              }}>
+              <View style={styles.clearButton2}>
+                <utils.vectorIcon.Entypo
+                  name="cross"
+                  color={theme.color.subTitleLight}
+                  size={15}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
+      );
+    };
 
-  const onPressEmail = () => {};
-
-  const onPressPhone = () => {};
-
-  const renderShowData = ({item, index}) => {
+    let styl =
+      Platform.OS == 'android'
+        ? styles.headerConatainer
+        : [
+            styles.headerConatainer,
+            {
+              shadowColor: '#000',
+              shadowOffset: {width: 0, height: 1},
+              shadowOpacity: 0.8,
+              shadowRadius: 1,
+            },
+          ];
     return (
-      <utils.FoodCard
-        data={item}
-        nav={props.navigation}
-        search={true}
-        screen="search"
-      />
+      <View style={styl}>
+        {renderBack()}
+        {renderSearch()}
+      </View>
     );
   };
 
-  const onChangeSearch = text => {
-    const formattedQuery = text.toLowerCase();
-    setsearch(formattedQuery);
-  };
+  const renderMain = () => {
+    const renderResturants = (item, index, dt, c) => {
+      let chk = c || '';
+      let name = item.name || '';
+      let ar = item.rating.average_rating || 0;
+      let tr = item.rating.total_reviews;
+      let type = item.type || '';
+      let dc = item.delivery_charges || 0;
+      let distance = item.distance || 0;
+      let travel_time = item.travel_time || 0;
+      let img = item.image;
 
-  const contains = ({title}, query) => {
-    const s = query.toLowerCase();
-    const sl = s.length;
+      const rednerDistance = () => {
+        return (
+          <View style={styles.disContaniner}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={styles.disContaninerText}>
+              {travel_time} min
+            </Text>
+          </View>
+        );
+      };
 
-    const sname = title.toLowerCase();
-    const sn = sname.substr(0, sl);
+      const renderHeart = () => {
+        return (
+          <View style={styles.heartContaniner}>
+            <utils.vectorIcon.AntDesign
+              name="hearto"
+              color={theme.color.subTitle}
+              size={15}
+            />
+          </View>
+        );
+      };
 
-    if (s == sn) {
-      return true;
-    }
-    return false;
-  };
+      let styl =
+        chk == ''
+          ? [
+              styles.efcContainer,
+              {
+                marginLeft: index <= 0 ? 20 : 10,
+                marginRight: index == dt.length - 1 ? 20 : 0,
+              },
+            ]
+          : [
+              styles.efcContainerAll,
+              {
+                // marginLeft: index <= 0 ? 20 : 10,
+                // marginRight: index == dt.length - 1 ? 20 : 0,
+              },
+            ];
+      let efc1sty = chk == '' ? styles.efc1 : styles.efc1All;
 
-  const contains2 = ({title}, query) => {
-    if (title.toLowerCase().includes(query)) {
-      return true;
-    }
-    return false;
+      return (
+        <View style={styl}>
+          <View style={efc1sty}>
+            <Image source={img} style={styles.efcImage} />
+            {rednerDistance()}
+            {renderHeart()}
+          </View>
+
+          <View style={styles.efc2}>
+            <View style={styles.efc21}>
+              <View style={{width: '63%'}}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.efc21Text1}>
+                  {name}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: '35%',
+                  justifyContent: 'flex-end',
+                  flexDirection: 'row',
+                }}>
+                <utils.vectorIcon.Entypo
+                  name="star"
+                  color={theme.color.rate}
+                  size={14}
+                />
+                <Text style={styles.efc21Text2}>{ar}</Text>
+                <Text
+                  style={[
+                    styles.efc21Text2,
+                    {color: theme.color.subTitleLight},
+                  ]}>
+                  ({tr > 500 ? '500+' : tr})
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.efc22}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.efc22Text1}>
+                $$ • {type}
+              </Text>
+            </View>
+
+            <View style={styles.efc33}>
+              <utils.vectorIcon.MaterialIcons
+                name="delivery-dining"
+                color={theme.color.subTitleLight}
+                size={18}
+              />
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.efc33Text1}>
+                Rs. {dc}
+              </Text>
+            </View>
+          </View>
+        </View>
+      );
+    };
+
+    return (
+      <>
+        {filteredData.length > 0 && (
+          <>
+            <Text style={styles.mainSecText}>
+              {filteredData.length} resturants with "{search}"
+            </Text>
+
+            <FlatList
+              contentContainerStyle={{paddingHorizontal: 20}}
+              showsVerticalScrollIndicator
+              data={filteredData}
+              renderItem={({item, index}) =>
+                renderResturants(item, index, filteredData, 'all')
+              }
+              keyExtractor={(item, index) => {
+                return index.toString();
+              }}
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
+              removeClippedSubviews={true}
+            />
+
+            <View style={{height: 20}} />
+          </>
+        )}
+      </>
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        translucent={false}
-        backgroundColor={theme.color.background}
-        barStyle={'dark-content'}
-      />
-      <View style={styles.header}>
-        <View style={styles.back}>
-          <TouchableOpacity activeOpacity={0.6} onPress={goBack}>
-            <utils.vectorIcon.Ionicons
-              name="chevron-back"
-              color={theme.color.subTitle}
-              size={26}
-            />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.htitle}>Search</Text>
-      </View>
+      {renderHeader()}
+      {renderMain()}
 
-      <View style={{margin: 12}}>
-        <Searchbar
-          placeholder="Search product by name/category"
-          placeholderTextColor={theme.color.subTitle}
-          onChangeText={onChangeSearch}
-          iconColor={theme.color.subTitle}
-          inputStyle={{fontSize: 12, fontFamily: theme.fonts.fontNormal}}
-          value={search}
-          style={{
-            height: responsiveHeight(5.5),
-            backgroundColor: '#e6e6e6',
-            elevation: 5,
-          }}
-        />
-      </View>
-
-      {data.length > 0 && search != '' ? (
-        <FlatList
-          contentContainerStyle={{
-            paddingHorizontal: 12,
-            paddingTop: 10,
-            // paddingBottom: 125,
-          }}
-          showsVerticalScrollIndicator={false}
-          data={data}
-          keyboardDismissMode={'on-drag'}
-          renderItem={renderShowData}
-          keyExtractor={(item, index) => {
-            return index.toString();
-          }}
-          initialNumToRender={10}
-          maxToRenderPerBatch={10}
-          removeClippedSubviews={true}
-        />
-      ) : (
-        <Text style={styles.emptyText}>{emptyText}</Text>
-      )}
+      <Toast ref={toast} position="bottom" />
     </SafeAreaView>
   );
 }

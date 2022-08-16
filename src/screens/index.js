@@ -3,9 +3,11 @@ import Location from './Location';
 import Map from './Map';
 import Home from './Home';
 import Home2 from './Home2';
+import Search from './Search';
+import Filter from './Filter';
+
 // import Food from './Food';
 // import Help from './Help';
-// import Search from './Search';
 
 // import Checkout from './Checkout';
 // import OrderLocation from './OrderLocation';
@@ -35,9 +37,10 @@ export default screens = {
   Map,
   Home,
   Home2,
+  Search,
+  Filter,
   // Food,
   // Help,
-  // Search,
 
   // Checkout,
   // OrderLocation,

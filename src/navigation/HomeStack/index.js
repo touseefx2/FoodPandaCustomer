@@ -11,11 +11,13 @@ export default HomeStack = () => {
       screenOptions={{animationEnabled: false, headerShown: false}}>
       <Stack.Screen name="Home" component={screens.Home} />
       <Stack.Screen name="Home2" component={screens.Home2} />
+      <Stack.Screen name="Search" component={screens.Search} />
+      <Stack.Screen name="Filter" component={screens.Filter} />
       <Stack.Screen name="Map" component={screens.Map} />
 
       {/* <Stack.Screen name="Food" component={screens.Food} />
       <Stack.Screen name="Help" component={screens.Help} />
-      <Stack.Screen name="Search" component={screens.Search} /> */}
+      */}
 
       {/* <Stack.Screen name="Checkout" component={screens.Checkout} />
       <Stack.Screen name="OrderLocation" component={screens.OrderLocation} />
