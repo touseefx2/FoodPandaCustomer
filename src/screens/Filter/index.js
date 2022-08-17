@@ -44,14 +44,13 @@ export default observer(Filter);
 function Filter(props) {
   const toast = useRef(null);
   const toastduration = 700;
-  let filter = store.Resturants.filter;
 
   // let screen = props.route.params.screen || '';
 
   let internet = store.General.isInternet;
   let loc = store.User.location;
 
-  let d = [];
+  let filter = store.Resturants.filter;
 
   const op = [
     {
@@ -61,6 +60,7 @@ function Filter(props) {
         {name: 'top rated', isSel: false},
         {name: 'distance', isSel: false},
       ],
+      isMulti: false,
     },
     {
       name: 'cuisines',
@@ -106,6 +106,7 @@ function Filter(props) {
           isSel: false,
         },
       ],
+      isMulti: true,
     },
     {
       name: 'price',
@@ -114,60 +115,79 @@ function Filter(props) {
         {name: '$$', isSel: false},
         {name: '$$$', isSel: false},
       ],
+      isMulti: true,
     },
   ];
 
-  const [options, setoptions] = useState(op);
+  const [options, setoptions] = useState(filter.length > 0 ? filter : op);
 
-  const [so, setso] = useState(options[0]);
+  // const [so, setso] = useState(options[0]);
 
-  // const [filteredData, setfilteredData] = useState([]);
+  const [FilterLength, setFilterLength] = useState(0);
 
-  const renderTopTab = () => {
-    return (
-      <>
-        <View style={styles.topTabContainer}>
-          {options.length > 0 &&
-            options.map((e, i, a) => {
-              return (
-                <TouchableOpacity
-                  activeOpacity={0.6}
-                  onPress={() => setso(e)}
-                  style={[
-                    styles.topTabOption,
-                    {borderBottomWidth: e.name == so.name ? 2 : 0},
-                  ]}>
-                  <Text
-                    style={[
-                      styles.topTabOptionText,
-                      {
-                        color:
-                          e.name == so.name
-                            ? theme.color.button1
-                            : theme.color.title,
-                      },
-                    ]}>
-                    {e.name}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-        </View>
-      </>
-    );
+  // const renderTopTab = () => {
+  //   return (
+  //     <>
+  //       <View style={styles.topTabContainer}>
+  //         {options.length > 0 &&
+  //           options.map((e, i, a) => {
+  //             return (
+  //               <TouchableOpacity
+  //                 activeOpacity={0.6}
+  //                 onPress={() => setso(e)}
+  //                 style={[
+  //                   styles.topTabOption,
+  //                   {borderBottomWidth: e.name == so.name ? 2 : 0},
+  //                 ]}>
+  //                 <Text
+  //                   style={[
+  //                     styles.topTabOptionText,
+  //                     {
+  //                       color:
+  //                         e.name == so.name
+  //                           ? theme.color.button1
+  //                           : theme.color.title,
+  //                     },
+  //                   ]}>
+  //                   {e.name}
+  //                 </Text>
+  //               </TouchableOpacity>
+  //             );
+  //           })}
+  //       </View>
+  //     </>
+  //   );
+  // };
+
+  useEffect(() => {
+    if (options.length > 0) {
+      let l = 0;
+      options.map((e, i, a) => {
+        if (e.d.length > 0) {
+          e.d.map((ee, ii, aa) => {
+            if (ee.isSel == true) {
+              if (ee.name != 'recommended') {
+                l++;
+              }
+            }
+          });
+        }
+      });
+      setFilterLength(l);
+    }
+  }, [options]);
+
+  const goBack = () => {
+    props.navigation.goBack();
   };
 
   const renderHeader = () => {
-    const onClickBack = () => {
-      props.navigation.goBack();
-    };
-
     const renderBack = () => {
       return (
         <TouchableOpacity
           style={{width: '10%'}}
           activeOpacity={0.6}
-          onPress={onClickBack}>
+          onPress={goBack}>
           <utils.vectorIcon.Ionicons
             name="arrow-back-sharp"
             color={theme.color.button1}
@@ -195,7 +215,7 @@ function Filter(props) {
           {renderBack()}
           <Text style={styles.headerTitle}>Filter</Text>
         </View>
-        {renderTopTab()}
+        {/* {renderTopTab()} */}
       </View>
     );
   };
@@ -203,6 +223,16 @@ function Filter(props) {
   const renderMain = () => {
     const clearAll = () => {
       setoptions(op);
+    };
+
+    const apply = () => {
+      if (FilterLength <= 0) {
+        store.Resturants.setfilter([]);
+        goBack();
+        return;
+      }
+      store.Resturants.setfilter(options);
+      goBack();
     };
 
     const onselect = (fa, sa, isMulti) => {
@@ -329,26 +359,36 @@ function Filter(props) {
       const renderCircle = () => {
         return (
           <View style={styles.circleC}>
-            <Text style={styles.circleCText}>5</Text>
+            <Text style={styles.circleCText}>
+              {FilterLength > 99 ? '99+' : FilterLength}
+            </Text>
           </View>
         );
       };
 
       return (
         <View style={styles.bottomConatiner}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              clearAll();
-            }}>
-            <Text style={styles.bottomConatinerText}>Clear All</Text>
-          </TouchableOpacity>
+          {FilterLength > 0 && (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                clearAll();
+              }}>
+              <Text style={styles.bottomConatinerText}>Clear All</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             activeOpacity={0.6}
-            onPress={() => {}}
-            style={styles.bottomConatinerButC}>
-            <Text style={styles.bottomConatinerButCText}>APPLY FILTERS</Text>
-            {renderCircle()}
+            onPress={apply}
+            style={[
+              styles.bottomConatinerButC,
+              {width: FilterLength > 0 ? '72%' : '100%'},
+            ]}>
+            <Text style={styles.bottomConatinerButCText}>
+              {FilterLength > 0 ? 'APPLY FILTERS' : 'Apply'}
+            </Text>
+            {FilterLength > 0 && renderCircle()}
           </TouchableOpacity>
         </View>
       );

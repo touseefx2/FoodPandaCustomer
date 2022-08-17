@@ -65,7 +65,7 @@ function App(props) {
           )}
 
           {!store.General.Loading && store.Resturants.isSetLocOnce && (
-            <Stack.Screen name="HomeStack" component={stack.HomeStack} />
+            <Stack.Screen name="HomeStack" component={stack.DrawerStack} />
           )}
         </Stack.Navigator>
       </NavigationContainer>

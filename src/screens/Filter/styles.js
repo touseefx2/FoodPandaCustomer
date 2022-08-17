@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.color.background,
     paddingHorizontal: 20,
     paddingTop: 15,
-    // paddingBottom: 15,
+    paddingBottom: 15,
     elevation: 5,
 
     width: '100%',
@@ -394,9 +394,9 @@ export const styles = StyleSheet.create({
     fontFamily: theme.fonts.fontMedium,
   },
   circleC: {
-    width: 25,
-    height: 25,
-    borderRadius: 25 / 2,
+    width: 26,
+    height: 26,
+    borderRadius: 26 / 2,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -406,7 +406,7 @@ export const styles = StyleSheet.create({
     top: 10,
   },
   circleCText: {
-    fontSize: 13,
+    fontSize: 12,
     color: theme.color.buttonText,
     fontFamily: theme.fonts.fontMedium,
     top: 1,

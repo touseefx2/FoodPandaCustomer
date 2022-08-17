@@ -55,10 +55,12 @@ function Home(props) {
       setLoader(c);
       setTimeout(() => {
         setLoader(false);
-      }, 3000);
+      }, 2500);
     };
 
-    const onClickDrawer = () => {};
+    const onClickDrawer = () => {
+      props.navigation.openDrawer();
+    };
 
     const onClickLoc = () => {
       props.navigation.navigate('Map', {screen: 'home', setloader});
@@ -68,7 +70,7 @@ function Home(props) {
 
     const renderDrawer = () => {
       return (
-        <TouchableOpacity activeOpacity={0.6} onPress={onClickDrawer}>
+        <TouchableOpacity activeOpacity={0.4} onPress={onClickDrawer}>
           <utils.vectorIcon.Octicons
             name="three-bars"
             color={theme.color.title}
@@ -111,7 +113,7 @@ function Home(props) {
 
     const renderCart = () => {
       return (
-        <TouchableOpacity activeOpacity={0.6} onPress={onClickCart}>
+        <TouchableOpacity activeOpacity={0.4} onPress={onClickCart}>
           <utils.vectorIcon.Ionicons
             name="ios-cart-outline"
             color={theme.color.subTitle}

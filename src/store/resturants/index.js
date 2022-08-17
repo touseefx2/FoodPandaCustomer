@@ -48,13 +48,14 @@ class resturants {
         {
           name: 'BroadWay Pizza',
           type: 'Pizza',
+          price: '$',
           promotions: true,
           loc: {
             coords: {latitude: 33.62497365767188, longitude: 72.96931675031028},
             address: 'D Chowk, Islamabad',
           },
           rating: {
-            average_rating: 4.5,
+            average_rating: 3.5,
             total_reviews: 555,
             details: [
               {
@@ -95,6 +96,7 @@ class resturants {
         {
           name: 'AB Cuisine',
           type: 'Fast Food',
+          price: '$$',
           promotions: true,
           image: require('../../assets/images/burger/img.jpeg'),
           loc: {
@@ -102,7 +104,7 @@ class resturants {
             address: 'J Mall, Islamabad',
           },
           rating: {
-            average_rating: 3.5,
+            average_rating: 4.5,
             total_reviews: 455,
             details: [
               {
@@ -142,6 +144,7 @@ class resturants {
         {
           name: 'KFC',
           type: 'Fast Food',
+          price: '$$$',
           promotions: false,
           image: require('../../assets/images/kfc/img.jpeg'),
 
@@ -184,12 +187,61 @@ class resturants {
             {day: 'Sun', open: '', close: ''},
           ],
           order_type: 'delivery',
-
+          deals: '',
           delivery_charges: 200,
+        },
+        {
+          name: 'Cheezious Golra Mor',
+          type: 'Pizza',
+          price: '$$',
+          promotions: false,
+          image: require('../../assets/images/kfc/img.jpeg'),
+
+          loc: {
+            coords: {latitude: 33.62501062086861, longitude: 72.96990425307199},
+            address: 'Cheezious Golra Mor Branch, Rawalpindi',
+          },
+          rating: {
+            average_rating: 4.9,
+            total_reviews: 2000,
+            details: [
+              {
+                user_name: 'Imran Khan',
+                rate: 3,
+                comment: 'Taste and quantity were good',
+                created_at: 'Aug 2, 2022',
+              },
+              {
+                user_name: 'Nawaz Shareef',
+                rate: 4,
+                comment:
+                  'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
+                created_at: 'Aug 1, 2022',
+              },
+              {
+                user_name: 'James Bond',
+                rate: 3,
+                comment: '',
+                created_at: 'Aug 1, 2022',
+              },
+            ],
+          },
+          opening_times: [
+            {day: 'Mon', open: '9 am', close: '4 pm'},
+            {day: 'Tue', open: '9 am', close: '5 pm'},
+            {day: 'Wed', open: '9 am', close: '7 pm'},
+            {day: 'Thu', open: '9 am', close: '4 pm'},
+            {day: 'Fri', open: '1 pm', close: '8 pm'},
+            {day: 'Sat', open: '', close: ''},
+            {day: 'Sun', open: '', close: ''},
+          ],
+          order_type: 'delivery',
+          deals: 'Summer deals & discounts',
+          delivery_charges: 350,
         },
       ];
       this.setResturants(arr);
-    }, 2500);
+    }, 4000);
 
     // setLoader(true);
     // setTimeout(() => {

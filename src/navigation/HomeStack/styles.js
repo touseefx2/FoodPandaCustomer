@@ -1,96 +1,139 @@
-import React from "react";
+import React from 'react';
 import {Image} from 'react-native';
-import theme from "../../themes";
-import utils from "../../utils";
+import theme from '../../theme';
+import utils from '../../utils';
 
-const bc=theme.color.borderspilitColor
-const bw=0.6
+const iconSize = 20;
+const focusColor = theme.color.button1;
+const unfocusColor = theme.color.title;
 
+const homeIcon = {
+  drawerLabel: 'Home',
+  headerShown: false,
+  drawerIcon: ({focused, size}) => (
+    <utils.vectorIcon.AntDesign
+      name="home"
+      size={iconSize}
+      color={focused ? focusColor : unfocusColor}
+    />
+  ),
+};
 
-const iconFocusColor=theme.color.AppHeaderTextColor
-const iconunFocusColor=theme.color.unSelectColor
+// const profileIcon = {
+//   // unmountOnBlur:true,
+//   headerShown: false,
+//   drawerIcon: ({ focused, size }) => (
+//     <Image
+//       style={{ width: 22, height: 22 }}
+//       resizeMode="contain"
+//       source={require("../../assets/drawer_items_icon/profile.png")}
+//     />
+//   ),
+// };
 
-//routes
-let r1="Home"
-let r2="Library" 
-let r3="Search"
-let r4="Wishlist"
-let r5="Profile"
+// const skillIcon = {
+//   headerShown: false,
+//   // title:"Categories",
+//   drawerIcon: ({ focused, size }) => (
+//     <Image
+//       style={{ width: 22, height: 22 }}
+//       resizeMode="contain"
+//       source={require("../../assets/drawer_items_icon/skills.png")}
+//     />
+//   ),
+// };
 
-  
-//tab bar screen options
-//   const  BottomTaboptions=({ route }) => ({
+// const cpIcon = {
+//   headerShown: false,
+//   unmountOnBlur: true,
+//   // swipeEnabled: false,
+//   // title:"Categories",
+//   drawerIcon: ({ focused, size }) => (
+//     <Image
+//       style={{ width: 22, height: 22 }}
+//       resizeMode="contain"
+//       source={require("../../assets/drawer_items_icon/skills.png")}
+//     />
+//   ),
+// };
 
-//   tabBarIcon: ({ focused, color, size }) => {
-//     let routes=route.name;
-//     let isize=27
-//     let icolor=focused  ?iconFocusColor:iconunFocusColor
-//     let iconName = 
-//     routes==r1?"home"
-//     :routes==r2?"library-music"
-//     :routes==r3?"search"
-//     :routes==r4?"cards-heart"
-//     :routes==r5?"account-circle"
-//     :""
-    
-//     if(route.name=="Home")
-//     return <utils.vectorIcon.Entypo  name={iconName} size={isize} color={icolor}/>
-//     else if(route.name=="Search")
-//     return  <utils.vectorIcon.Octicons name={iconName} size={isize} color={icolor}/>
-//     else if(route.name=="Library")
-//     return  <utils.vectorIcon.MaterialIcons  name={iconName} size={isize} color={icolor}/>
-//     else if(route.name=="Wishlist")
-//     return  <utils.vectorIcon.MaterialCommunityIcons name={iconName} size={isize} color={icolor}/>
-//     else if(route.name=="Profile")
-//     return  <utils.vectorIcon.MaterialIcons  name={iconName} size={isize} color={icolor}/>
-//   },
-// })
+// const carIcon = {
+//   headerShown: false,
+//   // title:"Categories",
+//   drawerIcon: ({ focused, size }) => (
+//     <utils.vectorIcon.Ionicons
+//       name="ios-car-sport-outline"
+//       color="white"
+//       size={22}
+//     />
+//   ),
+// };
 
-const StackHeaderoption={
-  
-  title: theme.Name.appNameH,
-  headerStyle: {
-    backgroundColor: theme.color.AppHeaderColor,
-    // justifyContent:"center",
-    // alignItems:"center",
-    borderBottomColor:bc,
-    borderWidth:bw,
-    borderColor:theme.color.AppHeaderColor
-  },
-  headerTintColor: theme.color.AppHeaderTextColor,
-  headerTitleStyle: {
-    fontFamily:theme.fonts.fontMedium,
-    alignSelf:"center",
-    color:theme.color.AppHeaderTextColor,
-    textTransform:"capitalize"
-  }
-}
+// const nIcon = {
+//   headerShown: false,
+//   // title:"Categories",
+//   drawerIcon: ({ focused, size }) => (
+//     <utils.vectorIcon.SimpleLineIcons size={22} name="bell" color="white" />
+//   ),
+// };
 
-const StackHeaderoptionLibrary={
-  title: '',
-  headerStyle: {
-    backgroundColor: theme.color.mainColor,
-    borderBottomColor:theme.color.mainColor,
-    borderWidth:bw,
-    borderColor:theme.color.mainColor
-  },
-  headerTintColor: theme.color.mainTextColor,
-  headerTitleStyle: {
-    fontFamily:theme.fonts.fontMedium,
-    color:theme.color.mainTextColor,
-    textTransform:"capitalize"
-  }
-}
+// const reportIcon = {
+//   headerShown: false,
+//   drawerIcon: ({ focused, size }) => (
+//     <Image
+//       style={{ width: 22, height: 22 }}
+//       resizeMode="contain"
+//       source={require("../../assets/drawer_items_icon/reports.png")}
+//     />
+//   ),
+// };
 
- 
- 
-const styles={
-  // BottomTaboptions,
-  StackHeaderoption,
-  StackHeaderoptionLibrary
-}
+// const chatIcon = {
+//   headerShown: false,
+//   drawerIcon: ({ focused, size }) => (
+//     <Image
+//       style={{ width: 22, height: 22 }}
+//       resizeMode="contain"
+//       source={require("../../assets/drawer_items_icon/chat.png")}
+//     />
+//   ),
+// };
 
-export default styles;
+// const rateIcon = {
+//   headerShown: false,
+//   title: "Rate the app",
+//   drawerIcon: ({ focused, size }) => (
+//     <Image
+//       style={{ width: 22, height: 22 }}
+//       resizeMode="contain"
+//       source={require("../../assets/drawer_items_icon/star.png")}
+//     />
+//   ),
+// };
 
+// const logoutIcon = {
+//   headerShown: false,
+//   title: "Sign out",
+//   drawerIcon: ({ focused, size }) => (
+//     <Image
+//       style={{ width: 22, height: 22 }}
+//       resizeMode="contain"
+//       source={require("../../assets/drawer_items_icon/exit.png")}
+//     />
+//   ),
+// };
 
- 
+const icon = {
+  homeIcon,
+  // logoutIcon,
+  // profileIcon,
+  // chatIcon,
+  // skillIcon,
+  // reportIcon,
+  // rateIcon,
+  // nIcon,
+  // carIcon,
+  // cpIcon,
+};
+
+export default icon;

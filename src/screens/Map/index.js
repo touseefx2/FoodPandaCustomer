@@ -10,8 +10,8 @@ import {
   Keyboard,
   Dimensions,
   StatusBar,
-  // Linking,
-  // PermissionsAndroid,
+  Linking,
+  PermissionsAndroid,
 } from 'react-native';
 import styles from './styles';
 import {observer} from 'mobx-react';
@@ -23,7 +23,7 @@ import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from '@timwangdev/react-native-geocoder';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-// import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 
 export default observer(Map);
 
@@ -161,17 +161,25 @@ function Map(props) {
 
   const gotoCurrentLoc = () => {
     Keyboard.dismiss();
-    setissetRegion(true);
-    refGp?.current?.blur();
-    mapRef?.current?.animateToRegion(
-      {
-        latitude: cl.coords.latitude,
-        longitude: cl.coords.longitude,
-        latitudeDelta: LATITUDE_DELTA * Number(30 / 1000),
-        longitudeDelta: LONGITUDE_DELTA * Number(30 / 1000),
-      },
-      1200,
-    );
+    if (cl?.coords) {
+      setissetRegion(true);
+      refGp?.current?.blur();
+      mapRef?.current?.animateToRegion(
+        {
+          latitude: cl.coords.latitude,
+          longitude: cl.coords.longitude,
+          latitudeDelta: LATITUDE_DELTA * Number(30 / 1000),
+          longitudeDelta: LONGITUDE_DELTA * Number(30 / 1000),
+        },
+        1200,
+      );
+    } else {
+      if (!isLoc) {
+        requestPermissions();
+      } else {
+        getCurrentLocation();
+      }
+    }
   };
 
   const gotoLoc = (lat, lng) => {
@@ -190,114 +198,114 @@ function Map(props) {
     }, 1500);
   };
 
-  // async function requestPermissions() {
-  //   const androidLocationEnablerDialog = c => {
-  //     RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
-  //       interval: 10000,
-  //       fastInterval: 5000,
-  //     })
-  //       .then(data => {
-  //         store.General.setLocation(true);
-  //       })
-  //       .catch(err => {
-  //         toast?.current?.show('Please turn on location');
-  //         console.log('location enabler popup error : ', err);
-  //       });
-  //   };
+  async function requestPermissions() {
+    const androidLocationEnablerDialog = () => {
+      RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
+        interval: 10000,
+        fastInterval: 5000,
+      })
+        .then(data => {
+          store.General.setLocation(true);
+        })
+        .catch(err => {
+          toast?.current?.show('Please turn on location');
+          console.log('location enabler popup error : ', err);
+        });
+    };
 
-  //   const hasPermissionIOS = async c => {
-  //     const status = await Geolocation.requestAuthorization('whenInUse');
+    const hasPermissionIOS = async () => {
+      const status = await Geolocation.requestAuthorization('whenInUse');
 
-  //     console.log('In request iOS permissions : ', status);
-  //     if (status === 'granted') {
-  //       store.General.setLocation(true);
+      console.log('In request iOS permissions : ', status);
+      if (status === 'granted') {
+        store.General.setLocation(true);
 
-  //       return true;
-  //     }
+        return true;
+      }
 
-  //     store.General.setLocation(false);
-  //     if (status === 'denied') {
-  //       Alert.alert('Location permission denied');
-  //     }
+      store.General.setLocation(false);
+      if (status === 'denied') {
+        Alert.alert('Location permission denied');
+      }
 
-  //     if (status === 'disabled') {
-  //       Alert.alert(
-  //         `Turn on Location Services to allow Karblock to determine your location.`,
-  //         '',
-  //         [
-  //           {
-  //             text: 'Go to Settings',
-  //             onPress: () => {
-  //               openSetting();
-  //             },
-  //           },
-  //           {text: "Don't Use Location", onPress: () => {}},
-  //         ],
-  //       );
-  //     }
-  //     const openSetting = () => {
-  //       Linking.openSettings().catch(() => {
-  //         Alert.alert('Unable to open settings');
-  //       });
-  //     };
+      if (status === 'disabled') {
+        Alert.alert(
+          `Turn on Location Services to allow Karblock to determine your location.`,
+          '',
+          [
+            {
+              text: 'Go to Settings',
+              onPress: () => {
+                openSetting();
+              },
+            },
+            {text: "Don't Use Location", onPress: () => {}},
+          ],
+        );
+      }
+      const openSetting = () => {
+        Linking.openSettings().catch(() => {
+          Alert.alert('Unable to open settings');
+        });
+      };
 
-  //     return false;
-  //   };
+      return false;
+    };
 
-  //   const hasPermissionAndroid = async c => {
-  //     let g = await PermissionsAndroid.request(
-  //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-  //     );
-  //     console.log('permission result : ', g);
+    const hasPermissionAndroid = async () => {
+      let g = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      console.log('permission result : ', g);
 
-  //     if (g === PermissionsAndroid.RESULTS.GRANTED) {
-  //       androidLocationEnablerDialog();
-  //       return;
-  //     }
+      if (g === PermissionsAndroid.RESULTS.GRANTED) {
+        androidLocationEnablerDialog();
+        return;
+      }
 
-  //     store.General.setLocation(false);
-  //     let msg = 'permisiion location';
-  //     if (g === 'denied') {
-  //       msg = 'Please allow permision to use location';
-  //       toast?.current?.show(
-  //         'Please allow permisiion to turn on location',
-  //         1000,
-  //       );
-  //     }
+      store.General.setLocation(false);
+      let msg = 'permisiion location';
+      if (g === 'denied') {
+        msg = 'Please allow permision to use location';
+        toast?.current?.show(
+          'Please allow permisiion to turn on location',
+          1000,
+        );
+      }
 
-  //     if (g === 'never_ask_again') {
-  //       msg =
-  //         'Please allow permision to use location in  app setting in device allow location permission to continue';
-  //       Alert.alert(``, msg, [
-  //         {
-  //           text: 'Go to Settings',
-  //           onPress: () => {
-  //             openSetting();
-  //           },
-  //         },
-  //         {text: "Don't Use Location", onPress: () => {}},
-  //       ]);
-  //     }
+      if (g === 'never_ask_again') {
+        msg =
+          'Please allow permision to use location in  app setting in device allow location permission to continue';
+        Alert.alert(``, msg, [
+          {
+            text: 'Go to Settings',
+            onPress: () => {
+              openSetting();
+            },
+          },
+          {text: "Don't Use Location", onPress: () => {}},
+        ]);
+      }
 
-  //     const openSetting = () => {
-  //       Linking.openSettings().catch(() => {
-  //         Alert.alert('Unable to open settings');
-  //       });
-  //     };
+      const openSetting = () => {
+        Linking.openSettings().catch(() => {
+          Alert.alert('Unable to open settings');
+        });
+      };
 
-  //     return;
-  //   };
+      return;
+    };
 
-  //   if (Platform.OS === 'ios') {
-  //     console.log('Requesting iOS Permissions');
-  //     hasPermissionIOS();
-  //     return;
-  //   }
-  //   if (Platform.OS === 'android') {
-  //     console.log('Requesting Android Permissions');
-  //     hasPermissionAndroid();
-  //   }
-  // }
+    if (Platform.OS === 'ios') {
+      console.log('Requesting iOS Permissions');
+      hasPermissionIOS();
+      return;
+    }
+    if (Platform.OS === 'android') {
+      console.log('Requesting Android Permissions');
+      hasPermissionAndroid();
+    }
+  }
 
   const getCurrentLocation = () => {
     setloader(true);
@@ -579,6 +587,7 @@ function Map(props) {
 
   console.log('loader : ', loader);
   console.log('loc : ', loc);
+  console.log('cl : ', cl);
 
   const renderStatusBar = () => {
     return (

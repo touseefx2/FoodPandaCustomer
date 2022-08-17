@@ -45,6 +45,7 @@ function Home2(props) {
 
   const [Loader, setLoader] = useState(false);
 
+  const [dataf, setDataf] = useState([]); //all resturants
   const [data, setData] = useState(false); //all resturants
   const [exclusiveData, setexclusiveData] = useState([]);
   const [summerDealsData, setsummerDealsData] = useState([]);
@@ -52,6 +53,10 @@ function Home2(props) {
   const gapikey = 'AIzaSyC75RWT0q9xkASq2YhX2vGi1R-e_p2pnWU';
   let Resturants = store.Resturants.Resturants;
   let isDataLoad = store.Resturants.dataLoader;
+  let filter = store.Resturants.filter;
+
+  const [FilterData, setFilterData] = useState([]);
+  const [FilterLength, setFilterLength] = useState(0);
 
   let screen = props.route.params.screen || '';
   let type = props.route.params.type || '';
@@ -59,8 +64,41 @@ function Home2(props) {
   let loc = store.User.location;
 
   useEffect(() => {
+    if (filter.length > 0) {
+      let l = 0;
+      let arr = [];
+      filter.map((e, i, a) => {
+        if (e.d.length > 0) {
+          let c = [];
+          e.d.map((ee, ii, aa) => {
+            if (ee.isSel == true) {
+              console.log('sel : ', ee.isSel);
+              if (ee.name != 'recommended') {
+                l++;
+
+                c.push(ee.name);
+              }
+            }
+          });
+
+          if (c.length > 0) {
+            arr.push({name: e.name, value: c});
+          }
+        }
+      });
+
+      setFilterLength(l);
+      setFilterData(arr);
+    } else {
+      setFilterLength(0);
+      setFilterData([]);
+    }
+  }, [filter]);
+
+  useEffect(() => {
     store.Resturants.setResturants(false);
     return () => {
+      store.Resturants.setfilter([]);
       store.Resturants.setResturants(false);
     };
   }, []);
@@ -81,7 +119,57 @@ function Home2(props) {
   }, [Resturants]);
 
   useEffect(() => {
+    if (FilterData.length > 0) {
+      let ar = data.slice();
+
+      let cuisines = FilterData.filter(d => d.name === 'cuisines');
+      let price = FilterData.filter(d => d.name === 'price');
+
+      if (cuisines.length > 0 || price.length > 0) {
+        if (ar.length > 0) {
+          ar = ar.filter(function (d) {
+            if (cuisines.length > 0 && price.length <= 0) {
+              return cuisines[0].value.includes(d.type.toLowerCase());
+            } else if (cuisines.length <= 0 && price.length > 0) {
+              return price[0].value.includes(d.price);
+            } else if (cuisines.length > 0 && price.length > 0) {
+              return (
+                cuisines[0].value.includes(d.type.toLowerCase()) &&
+                price[0].value.includes(d.price)
+              );
+            }
+          });
+
+          console.log('g  : ', ar.length);
+        }
+      }
+
+      //sort
+      let sort = FilterData.filter(d => d.name === 'sort');
+      if (sort.length > 0) {
+        let value = sort[0].value[0];
+        if (value == 'distance') {
+          if (ar.length > 0) {
+            ar.sort(function (a, b) {
+              return a.travel_time - b.travel_time;
+            });
+          }
+        } else {
+          if (ar.length > 0) {
+            ar.sort(function (a, b) {
+              return b.rating.average_rating - a.rating.average_rating;
+            });
+          }
+        }
+      }
+
+      setDataf(ar);
+    }
+  }, [FilterData]);
+
+  useEffect(() => {
     if (data.length > 0) {
+      console.warn('again data calllllll');
       let er = [];
       let sd = [];
       data.map((e, i, a) => {
@@ -101,6 +189,7 @@ function Home2(props) {
   const renderHeader = () => {
     const onClickBack = () => {
       store.Resturants.setResturants(false);
+      store.Resturants.setfilter([]);
       props.navigation.goBack();
     };
 
@@ -115,7 +204,7 @@ function Home2(props) {
     };
 
     const onClickOption = () => {
-      props.navigation.navigate('Filter');
+      props.navigation.navigate('Filter', {screen: 'home2', type: type});
     };
 
     const renderBack = () => {
@@ -177,6 +266,16 @@ function Home2(props) {
     };
 
     const renderSeacrh = () => {
+      const renderCircle = () => {
+        return (
+          <View style={styles.circleC}>
+            <Text style={styles.circleCText}>
+              {FilterLength > 99 ? '99+' : FilterLength}
+            </Text>
+          </View>
+        );
+      };
+
       return (
         <View style={styles.header2}>
           <TouchableOpacity
@@ -199,6 +298,7 @@ function Home2(props) {
               color={theme.color.button1}
               size={26}
             />
+            {FilterLength > 0 && renderCircle()}
           </TouchableOpacity>
         </View>
       );
@@ -234,7 +334,7 @@ function Home2(props) {
 
       //static
       e.total_distance = 20;
-      e.travel_time = i + 15;
+      e.travel_time = 20 - i;
       arr.push(e);
       if (i == a.length - 1) {
         console.log('arr :  ', arr);
@@ -301,6 +401,7 @@ function Home2(props) {
     let distance = item.distance || 0;
     let travel_time = item.travel_time || 0;
     let img = item.image;
+    let price = item.price || '';
 
     const rednerDistance = () => {
       return (
@@ -387,7 +488,7 @@ function Home2(props) {
               numberOfLines={1}
               ellipsizeMode="tail"
               style={styles.efc22Text1}>
-              $$ • {type}
+              {price} • {type}
             </Text>
           </View>
 
@@ -413,7 +514,7 @@ function Home2(props) {
     return (
       <>
         <ScrollView contentContainerStyle={{paddingVertical: 20}}>
-          {exclusiveData.length > 0 && (
+          {exclusiveData.length > 0 && FilterLength <= 0 && (
             <>
               <View style={styles.mainSec1}>
                 <Text style={styles.mainSecText}>Exclusives</Text>
@@ -436,7 +537,7 @@ function Home2(props) {
             </>
           )}
 
-          {summerDealsData.length > 0 && (
+          {summerDealsData.length > 0 && FilterLength <= 0 && (
             <>
               <View style={styles.mainSec2}>
                 <Text style={styles.mainSecText}>Summer deals & discounts</Text>
@@ -461,13 +562,24 @@ function Home2(props) {
 
           <>
             <View style={styles.mainSec2}>
-              <Text style={styles.mainSecText}>All Resturants</Text>
+              {FilterLength <= 0 ? (
+                <Text style={styles.mainSecText}>All Resturants</Text>
+              ) : (
+                <Text style={styles.mainSecText}>
+                  "{dataf.length}" filter result
+                </Text>
+              )}
               <FlatList
                 contentContainerStyle={{paddingHorizontal: 20}}
                 showsVerticalScrollIndicator
-                data={data}
+                data={FilterLength <= 0 ? data : dataf}
                 renderItem={({item, index}) =>
-                  renderResturants(item, index, data, 'all')
+                  renderResturants(
+                    item,
+                    index,
+                    FilterLength <= 0 ? data : dataf,
+                    'all',
+                  )
                 }
                 keyExtractor={(item, index) => {
                   return index.toString();
@@ -506,7 +618,7 @@ function Home2(props) {
     return (
       <View style={styles.loaderSECTION}>
         <Image
-          source={require('../../assets/gif/lottie.gif')}
+          source={require('../../assets/gif/burger.gif')}
           style={styles.loaderImg}
         />
       </View>

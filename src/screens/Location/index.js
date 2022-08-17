@@ -61,7 +61,7 @@ function Location(props) {
       setTimeout(() => {
         setloader(false);
         store.Resturants.setisLocOnce(true);
-      }, 3000);
+      }, 2500);
     }
   }, [loc]);
 

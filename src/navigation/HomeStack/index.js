@@ -1,10 +1,51 @@
 import React, {useEffect, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import screens from '../../screens/index';
+import {
+  responsiveHeight,
+  responsiveWidth,
+} from 'react-native-responsive-dimensions';
+import icon from './styles';
+import CustomDrawerContent from './CustomDrawerContent';
+import theme from '../../theme';
 
+const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
-export default HomeStack = () => {
+export default DrawerStack = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Homes"
+      screenOptions={{
+        // swipeEnabled: true,
+        headerShown: false,
+        drawerStyle: {
+          backgroundColor: theme.color.background,
+          width: theme.window.Width - 100,
+          height: theme.window.Height,
+        },
+      }}
+      drawerContentOptions={{
+        // activeTintColor: 'red',
+        // activeBackgroundColor: 'yellow',
+        // inactiveTintColor: 'blue',
+        // inactiveBackgroundColor: 'white',
+        labelStyle: {
+          color: 'white',
+        },
+      }}
+      drawerContent={props => <CustomDrawerContent {...props} />}>
+      <Drawer.Screen
+        name="Homes"
+        component={HomeStack}
+        options={icon.homeIcon}
+      />
+    </Drawer.Navigator>
+  );
+};
+
+const HomeStack = () => {
   return (
     <Stack.Navigator
       initialRouteName="Home"

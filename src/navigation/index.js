@@ -1,8 +1,8 @@
-import HomeStack from './HomeStack';
+import DrawerStack from './HomeStack/index';
 import LocationStack from './LocationStack';
 
 const stack = {
-  HomeStack,
+  DrawerStack,
   LocationStack,
 };
 
