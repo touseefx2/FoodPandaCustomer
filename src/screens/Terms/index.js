@@ -16,8 +16,8 @@ import utils from '../../utils/index';
 import theme from '../../theme';
 import DynamicTabView from 'react-native-dynamic-tab-view';
 
-export default observer(Help);
-function Help(props) {
+export default observer(Terms);
+function Terms(props) {
   // const data = props.route.params.food;
   let image = require('../../assets/images/logo/img.png');
   let title = 'Food Panda';
@@ -36,6 +36,19 @@ function Help(props) {
     Linking.openURL(`tel:${phone}`);
   };
 
+  const renderLine = () => {
+    return (
+      <View
+        style={{
+          width: '100%',
+          height: 0.6,
+          backgroundColor: theme.color.subTitleLight,
+          opacity: 0.5,
+        }}
+      />
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -44,29 +57,21 @@ function Help(props) {
             <utils.vectorIcon.Ionicons
               name="chevron-back"
               color={theme.color.button1}
-              size={26}
+              size={24}
             />
           </TouchableOpacity>
         </View>
-        <Text style={styles.htitle}>Contact us</Text>
+        <Text style={styles.htitle}>More</Text>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.section1}>
-          <Image style={styles.logo} source={image} />
-          <Text style={styles.title}>{title}</Text>
-
-          <Text style={styles.title2}>Support Center</Text>
-
-          <Text style={styles.title3}>For queries, please contact us at:</Text>
-
-          <TouchableOpacity activeOpacity={0.7} onPress={onPressEmail}>
-            <Text style={styles.title4}>{email}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity activeOpacity={0.7} onPress={onPressPhone}>
-            <Text style={styles.title5}>{phone}</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity activeOpacity={0.4} style={styles.section1}>
+          <Text style={styles.sectionText}>Terms & conditions</Text>
+        </TouchableOpacity>
+        {renderLine()}
+        <TouchableOpacity activeOpacity={0.4} style={styles.section1}>
+          <Text style={styles.sectionText}>Data policy</Text>
+        </TouchableOpacity>
+        {renderLine()}
       </ScrollView>
     </SafeAreaView>
   );

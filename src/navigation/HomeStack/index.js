@@ -12,6 +12,8 @@ import theme from '../../theme';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
+// react navigation v5 work dangerouslyGetParent()
+// react navigation v6 work getParent()
 
 export default DrawerStack = () => {
   return (
@@ -19,10 +21,11 @@ export default DrawerStack = () => {
       initialRouteName="Homes"
       screenOptions={{
         // swipeEnabled: true,
+        // unmountOnBlur: true,
         headerShown: false,
         drawerStyle: {
           backgroundColor: theme.color.background,
-          width: theme.window.Width - 100,
+          width: theme.window.Width - 50,
           height: theme.window.Height,
         },
       }}
@@ -41,6 +44,16 @@ export default DrawerStack = () => {
         component={HomeStack}
         options={icon.homeIcon}
       />
+      <Drawer.Screen
+        name="Help"
+        component={screens.Help}
+        options={icon.helpIcon}
+      />
+      <Drawer.Screen
+        name="Terms"
+        component={screens.Terms}
+        options={icon.tcIcon}
+      />
     </Drawer.Navigator>
   );
 };
@@ -49,9 +62,30 @@ const HomeStack = () => {
   return (
     <Stack.Navigator
       initialRouteName="Home"
-      screenOptions={{animationEnabled: false, headerShown: false}}>
-      <Stack.Screen name="Home" component={screens.Home} />
-      <Stack.Screen name="Home2" component={screens.Home2} />
+      screenOptions={{
+        animationEnabled: false,
+        headerShown: false,
+      }}>
+      <Stack.Screen
+        name="Home"
+        component={screens.Home}
+        options={props => {
+          let parent = props.navigation.getParent();
+          parent.setOptions({
+            swipeEnabled: true,
+          });
+        }}
+      />
+      <Stack.Screen
+        name="Home2"
+        component={screens.Home2}
+        options={props => {
+          let parent = props.navigation.getParent();
+          parent.setOptions({
+            swipeEnabled: false,
+          });
+        }}
+      />
       <Stack.Screen name="Search" component={screens.Search} />
       <Stack.Screen name="Filter" component={screens.Filter} />
       <Stack.Screen name="Map" component={screens.Map} />

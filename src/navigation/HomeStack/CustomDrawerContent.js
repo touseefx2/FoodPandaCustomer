@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import {
   DrawerContentScrollView,
@@ -14,6 +15,8 @@ import {
 import theme from '../../theme/index';
 import {inject, observer} from 'mobx-react';
 import utils from '../../utils/index';
+import {responsiveHeight} from 'react-native-responsive-dimensions';
+import {ScrollView} from 'react-native-gesture-handler';
 
 export default observer(CustomDrawerContent);
 function CustomDrawerContent(props) {
@@ -31,212 +34,86 @@ function CustomDrawerContent(props) {
     }
   };
 
+  const renderSection1 = () => {
+    return (
+      <View style={styles.Section1}>
+        <Text style={styles.Section1Text}>Log in / Create account</Text>
+      </View>
+    );
+  };
+
+  const renderSection2 = () => {
+    return (
+      <ScrollView>
+        <View style={styles.Section2}>
+          <DrawerItemList {...props} />
+        </View>
+      </ScrollView>
+    );
+  };
+
+  const renderBottom = () => {
+    return (
+      <View style={styles.bottomContainer}>
+        <Text style={styles.bottomContainerText}>Legal</Text>
+        <Text style={styles.bottomContainerText}>Version 1.0</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <DrawerContentScrollView
         {...props}
-        contentContainerStyle={{
-          backgroundColor: theme.color.button1,
-          padding: 15,
-        }}
-        showsVerticalScrollIndicator={false}>
-        <Text>asas</Text>
-
-        <DrawerItemList {...props} />
+        contentContainerStyle={styles.drwaerContentContainer}>
+        {renderSection1()}
+        {renderSection2()}
       </DrawerContentScrollView>
-
-      {/* <View style={{height: hp('94%')}}>
-        <DrawerContentScrollView
-          showsVerticalScrollIndicator={false}
-          style={{padding: 10}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            {(!user.profile_image || user.profile_image == '') && (
-              <utils.vectorIcon.FontAwesome
-                name="user-circle"
-                color="white"
-                size={90}
-              />
-            )}
-            {user.profile_image && user.profile_image !== '' && (
-              <View
-                style={{
-                  width: 90,
-                  height: 90,
-                  borderColor: 'white',
-                  borderRadius: 45,
-                  borderWidth: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Image
-                  onLoad={() => {
-                    setimgLoad(true);
-                  }}
-                  style={{width: 89, height: 89, borderRadius: 44.5}}
-                  source={{uri: user.profile_image}}
-                />
-                {imgLoad == false && (
-                  <ActivityIndicator
-                    size={19}
-                    color="white"
-                    style={{top: 35, position: 'absolute'}}
-                  />
-                )}
-              </View>
-            )}
-
-            <View style={{width: '63%', marginLeft: 7}}>
-              <theme.Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 18,
-                  fontFamily: theme.fonts.fontMedium,
-                  textTransform: 'capitalize',
-                  lineHeight: 28,
-                  color: 'white',
-                }}>
-                {user.fullname}
-              </theme.Text>
-              <theme.Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 16,
-                  color: theme.color.mainPlaceholderColor,
-                  textTransform: 'capitalize',
-                  lineHeight: 26,
-                }}>
-                {carnum}
-              </theme.Text>
-            </View>
-          </View>
-
-          <Text
-            style={{
-              fontSize: 12,
-              color: 'white',
-              marginLeft: 15,
-              marginTop: '12%',
-            }}>
-            DASHBOARD
-          </Text>
-
-          <View style={{marginTop: '6%'}}>
-            <View
-              style={{
-                width: '90%',
-                height: 0.5,
-                backgroundColor: 'white',
-                alignSelf: 'center',
-                marginBottom: 10,
-              }}
-            />
-
-            <DrawerItemList state={newState} {...rest} />
-
-            <View
-              style={{
-                width: '90%',
-                height: 0.5,
-                backgroundColor: 'white',
-                marginTop: '6%',
-                marginBottom: 10,
-                alignSelf: 'center',
-              }}
-            />
-
-            <TouchableOpacity
-              style={styles.drawerItem}
-              onPress={() => {
-                onClick('rate');
-              }}>
-              <Image
-                style={{width: 22, height: 22}}
-                resizeMode="contain"
-                source={require('../../assets/drawer_items_icon/star.png')}
-              />
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 14,
-                  color: 'white',
-                  marginLeft: 30,
-                  lineHeight: 20,
-                }}>
-                Rate the app
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.drawerItem, {marginBottom: 10}]}
-              onPress={() => {
-                onClick('logout');
-              }}>
-              <Image
-                style={{width: 22, height: 22}}
-                resizeMode="contain"
-                source={require('../../assets/drawer_items_icon/exit.png')}
-              />
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 14,
-                  color: 'white',
-                  marginLeft: 30,
-                  lineHeight: 20,
-                }}>
-                Sign out
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </DrawerContentScrollView>
-      </View>
-
-      <View
-        style={{
-          height: hp('6%'),
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingLeft: 10,
-          paddingRight: 10,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}>
-          <Text style={{fontSize: 12, color: 'white', marginLeft: 15}}>
-            Legal
-          </Text>
-          <Text style={{fontSize: 12, color: 'white', marginLeft: 15}}>
-            Version 1.0
-          </Text>
-        </View>
-      </View> */}
+      {renderBottom()}
     </View>
   );
 }
 
+const pH = 15;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: 'white',
   },
-  name: {
-    fontSize: 15.5,
-    fontWeight: 'bold',
-    color: 'white',
-    textTransform: 'capitalize',
+  drwaerContentContainer: {
+    flex: 1,
   },
-  drawerItem: {
-    flexDirection: 'row',
+  Section1: {
     width: '100%',
-    height: 50,
+    height: responsiveHeight(27),
+    backgroundColor: theme.color.button1,
+    paddingHorizontal: pH,
+    paddingVertical: 15,
+    justifyContent: 'flex-end',
+    marginTop: -5,
+  },
+  Section1Text: {
+    fontSize: 14,
+    color: theme.color.buttonText,
+    fontFamily: theme.fonts.fontMedium,
+  },
+  Section2: {
+    flex: 1,
+    backgroundColor: theme.color.background,
+    paddingVertical: 15,
+  },
+
+  bottomContainer: {
+    flexDirection: 'row',
+
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: pH,
+    paddingVertical: Platform.OS == 'android' ? 10 : theme.window.APPBAR_HEIGHT,
+  },
+  bottomContainerText: {
+    fontSize: 12,
+    color: theme.color.subTitle,
+    fontFamily: theme.fonts.fontNormal,
   },
 });

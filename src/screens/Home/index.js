@@ -38,6 +38,7 @@ import {ActivityIndicator} from 'react-native-paper';
 import {ScrollView} from 'react-native-gesture-handler';
 
 export default observer(Home);
+
 function Home(props) {
   const toast = useRef(null);
   const toastduration = 700;

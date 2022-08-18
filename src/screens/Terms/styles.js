@@ -11,10 +11,13 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.color.background,
   },
   section1: {
-    marginTop: '12%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 20,
+  },
+  sectionText: {
+    fontSize: 13,
+    fontFamily: theme.fonts.fontNormal,
+    color: theme.color.subTitle,
   },
   logo: {
     width: responsiveWidth(30),
@@ -22,7 +25,7 @@ export const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   htitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: theme.fonts.fontMedium,
     color: theme.color.title,
     alignSelf: 'center',
@@ -69,13 +72,7 @@ export const styles = StyleSheet.create({
   },
 
   back: {
-    width: responsiveWidth(12),
-
-    justifyContent: 'center',
-    position: 'absolute',
-    top: 10,
-    left: 12,
-    right: 12,
+    width: 40,
   },
   titleSection: {
     width: '100%',
@@ -92,10 +89,12 @@ export const styles = StyleSheet.create({
   },
   header: {
     width: responsiveWidth(100),
-    paddingHorizontal: 12,
+    paddingHorizontal: 15,
     elevation: 10,
     backgroundColor: theme.color.background,
     paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerSection1: {
     width: '45%',

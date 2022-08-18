@@ -5,9 +5,10 @@ import Home from './Home';
 import Home2 from './Home2';
 import Search from './Search';
 import Filter from './Filter';
+import Help from './Help';
+import Terms from './Terms';
 
 // import Food from './Food';
-// import Help from './Help';
 
 // import Checkout from './Checkout';
 // import OrderLocation from './OrderLocation';
@@ -39,8 +40,9 @@ export default screens = {
   Home2,
   Search,
   Filter,
+  Help,
+  Terms,
   // Food,
-  // Help,
 
   // Checkout,
   // OrderLocation,

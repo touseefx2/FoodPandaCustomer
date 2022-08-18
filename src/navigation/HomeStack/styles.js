@@ -9,10 +9,36 @@ const unfocusColor = theme.color.title;
 
 const homeIcon = {
   drawerLabel: 'Home',
-  headerShown: false,
+  // headerShown: false,
+  // swipeEnabled: true,
+  // unmountOnBlur: true,
   drawerIcon: ({focused, size}) => (
     <utils.vectorIcon.AntDesign
       name="home"
+      size={iconSize}
+      color={focused ? focusColor : unfocusColor}
+    />
+  ),
+};
+
+const helpIcon = {
+  drawerLabel: 'Help',
+  swipeEnabled: false,
+  drawerIcon: ({focused, size}) => (
+    <utils.vectorIcon.AntDesign
+      name="questioncircleo"
+      size={iconSize}
+      color={focused ? focusColor : unfocusColor}
+    />
+  ),
+};
+
+const tcIcon = {
+  drawerLabel: 'Terms & Conditions / Privacy',
+  swipeEnabled: false,
+  drawerIcon: ({focused, size}) => (
+    <utils.vectorIcon.AntDesign
+      name="questioncircleo"
       size={iconSize}
       color={focused ? focusColor : unfocusColor}
     />
@@ -125,6 +151,8 @@ const homeIcon = {
 
 const icon = {
   homeIcon,
+  helpIcon,
+  tcIcon,
   // logoutIcon,
   // profileIcon,
   // chatIcon,
