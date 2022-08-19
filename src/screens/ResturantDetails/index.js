@@ -12,6 +12,7 @@ import {
   Platform,
   Alert,
   Linking,
+  FlatList,
 } from 'react-native';
 import {styles} from './styles';
 import {observer} from 'mobx-react';
@@ -29,9 +30,13 @@ import ImageSlider from 'react-native-image-slider';
 export default observer(ResturantDetails);
 function ResturantDetails(props) {
   const rbSheet = useRef(null);
+  const scrollRef = useRef(null);
+  const scroll2Ref = useRef(null);
   let maxItem = 5;
 
   const [num, setNum] = useState(1);
+
+  const [isScrollDisable, setisScrollDisable] = useState(false);
 
   const windowWidth = theme.window.Width;
   const imageAspectWidth = 375;
@@ -49,34 +54,18 @@ function ResturantDetails(props) {
 
   let cart = store.User.cart;
 
-  let sliderImages = store.Food.sliderImages;
-  const [img, setImg] = useState(
-    sliderImages.appCover ? sliderImages.appCover : [],
-  );
-
-  const resturant = store.User.rd;
-  let name = resturant.name || '';
-  // let avgRate = resturant.rating.average_rating || 0;
-  // let totalRaters = resturant.rating.total_reviews || 0;
-  let address = resturant.loc.address || '';
-  let times = resturant.opening_times || [];
-
-  const goBack = () => {
-    props.navigation.goBack();
-  };
+  let screen = props.route.params.screen || '';
+  let d = props.route.params.data || [];
+  let img = d.slider_images || [];
+  let name = d.name || '';
+  let avgRate = d.rating.average_rating || 0;
+  let totalRaters = d.rating.total_reviews || 0;
+  let reviews = d.rating.details || [];
+  let coords = d.loc.coords || [];
+  let address = d.loc.address || '';
+  let times = d.opening_times || [];
 
   const renderTitleSection = () => {
-    const renderSep = () => {
-      return (
-        <View
-          style={{
-            width: 0,
-            height: 15,
-          }}
-        />
-      );
-    };
-
     const renderTimes = () => {
       const t = times.map((e, i, a) => {
         let title = e.day || '';
@@ -96,7 +85,7 @@ function ResturantDetails(props) {
               ellipsizeMode="tail"
               style={{
                 fontSize: 14,
-                fontFamily: theme.fonts.fontMedium,
+                fontFamily: theme.fonts.fontNormal,
                 color: theme.color.subTitle,
                 lineHeight: 22,
                 textTransform: 'capitalize',
@@ -109,8 +98,8 @@ function ResturantDetails(props) {
               ellipsizeMode="tail"
               style={{
                 fontSize: 14,
-                fontFamily: theme.fonts.fontMedium,
-                color: theme.color.subTitleLight,
+                fontFamily: theme.fonts.fontNormal,
+                color: theme.color.subTitle,
                 lineHeight: 22,
                 textTransform: 'capitalize',
               }}>
@@ -124,10 +113,8 @@ function ResturantDetails(props) {
     };
 
     const navigatetoGoogleMaps = () => {
-      let label = resturant.name;
-
-      let dest = resturant.loc.coords;
-
+      let label = name;
+      let dest = coords;
       let latLng = `${dest.latitude},${dest.longitude}`;
 
       const scheme = Platform.select({
@@ -161,151 +148,205 @@ function ResturantDetails(props) {
 
     let sty = {
       paddingHorizontal: 15,
-      marginBottom: 15,
       backgroundColor: theme.color.background,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.23,
+      shadowRadius: 2.62,
+      elevation: 3,
+    };
+
+    let styy = {
+      backgroundColor: theme.color.background,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.23,
+      shadowRadius: 2.62,
+      elevation: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 15,
+      paddingVertical: 15,
     };
 
     return (
-      <View style={sty}>
-        {renderSep()}
-        <View style={{width: '100%'}}>
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={{
-              fontSize: 18,
-              fontFamily: theme.fonts.fontBold,
-              color: theme.color.title,
-              textTransform: 'capitalize',
-              lineHeight: 22,
-            }}>
-            {name}
-          </Text>
-        </View>
-        {renderSep()}
-        {/* <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <utils.vectorIcon.Entypo
-            name="star-outlined"
-            color={theme.color.button1}
-            size={22}
-          />
-          <View style={{width: '92%'}}>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
+      <>
+        {!isScrollDisable && (
+          <View style={sty}>
+            {renderSep()}
+            <View style={{width: '100%'}}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={{
+                  fontSize: 19,
+                  fontFamily: theme.fonts.fontMedium,
+                  color: theme.color.title,
+                  // textTransform: 'capitalize',
+                  lineHeight: 22,
+                }}>
+                {name}
+              </Text>
+            </View>
+            {renderSep()}
+            <View
               style={{
-                fontSize: 15,
-                fontFamily: theme.fonts.fontMedium,
-                color: theme.color.subTitle,
-                textTransform: 'capitalize',
-                lineHeight: 22,
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
               }}>
-              {avgRate}
-            </Text>
+              <utils.vectorIcon.Entypo
+                name="star-outlined"
+                color={theme.color.button1}
+                size={22}
+              />
+              <View style={{width: '92%'}}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={{
+                    fontSize: 15,
+                    fontFamily: theme.fonts.fontMedium,
+                    color: theme.color.subTitle,
+                    textTransform: 'capitalize',
+                    lineHeight: 22,
+                  }}>
+                  {avgRate}
+                </Text>
 
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={{
+                    fontSize: 14,
+                    fontFamily: theme.fonts.fontNormal,
+                    color: theme.color.subTitle,
+                    lineHeight: 22,
+                  }}>
+                  {totalRaters} people rated
+                </Text>
+              </View>
+            </View>
+            {renderSep()}
+            <View
               style={{
-                fontSize: 14,
-                fontFamily: theme.fonts.fontMedium,
-                color: theme.color.subTitleLight,
-                lineHeight: 22,
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
               }}>
-              {totalRaters} people rated
-            </Text>
+              <utils.vectorIcon.Ionicons
+                name="ios-location-outline"
+                color={theme.color.button1}
+                size={22}
+              />
+              <View style={{width: '92%'}}>
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={navigatetoGoogleMaps}>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{
+                      fontSize: 15,
+                      fontFamily: theme.fonts.fontMedium,
+                      color: theme.color.subTitle,
+                      lineHeight: 22,
+                    }}>
+                    {address}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {renderSep()}
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <utils.vectorIcon.Ionicons
+                name="time-outline"
+                color={theme.color.button1}
+                size={22}
+              />
+              <View style={{width: '92%', paddingRight: 15}}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={{
+                    fontSize: 15,
+                    fontFamily: theme.fonts.fontMedium,
+                    color: theme.color.subTitle,
+                    lineHeight: 22,
+                  }}>
+                  Opening times
+                </Text>
+                {times.length > 0 && renderTimes()}
+                {times.length <= 0 && (
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{
+                      fontSize: 15,
+                      fontFamily: theme.fonts.fontNormal,
+                      color: theme.color.subTitleLight,
+                      lineHeight: 22,
+                    }}>
+                    Null
+                  </Text>
+                )}
+              </View>
+            </View>
+            {renderSep()}
           </View>
-        </View>
-        {renderSep()} */}
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <utils.vectorIcon.Ionicons
-            name="ios-location-outline"
-            color={theme.color.button1}
-            size={22}
-          />
-          <View style={{width: '92%'}}>
+        )}
+
+        {isScrollDisable && (
+          <View style={styy}>
             <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={navigatetoGoogleMaps}>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 15,
-                  fontFamily: theme.fonts.fontMedium,
-                  color: theme.color.subTitle,
-                  lineHeight: 22,
-                }}>
-                {address}
-              </Text>
+              style={styles.iconn}
+              activeOpacity={0.6}
+              onPress={goBack}>
+              <utils.vectorIcon.Ionicons
+                name="arrow-back-sharp"
+                color={theme.color.button1}
+                size={25}
+              />
             </TouchableOpacity>
-          </View>
-        </View>
-        {renderSep()}
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <utils.vectorIcon.Ionicons
-            name="time-outline"
-            color={theme.color.button1}
-            size={22}
-          />
-          <View style={{width: '92%', paddingRight: 15}}>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={{
-                fontSize: 15,
-                fontFamily: theme.fonts.fontMedium,
-                color: theme.color.subTitle,
-                lineHeight: 22,
-              }}>
-              Opening times
-            </Text>
-            {times.length > 0 && renderTimes()}
-            {times.length <= 0 && (
+
+            <View style={{width: '87%'}}>
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={{
-                  fontSize: 15,
+                  fontSize: 19,
                   fontFamily: theme.fonts.fontMedium,
-                  color: theme.color.subTitleLight,
+                  color: theme.color.title,
+                  // textTransform: 'capitalize',
                   lineHeight: 22,
                 }}>
-                Null
+                {name}
               </Text>
-            )}
+            </View>
           </View>
-        </View>
-        {renderSep()}
-      </View>
+        )}
+      </>
     );
   };
 
-  const sep = () => {
+  const renderSep = () => {
     return (
       <View
         style={{
-          width: '95%',
-          alignSelf: 'center',
-          height: 1.5,
-          backgroundColor: theme.color.subTitle,
-          marginTop: 15,
-          opacity: 0.1,
+          width: 0,
+          height: 15,
         }}
       />
     );
@@ -313,118 +354,115 @@ function ResturantDetails(props) {
 
   const renderStatusBar = () => {
     return (
-      <StatusBar
-        translucent={Platform.OS == 'ios' ? false : true}
-        backgroundColor={
-          Platform.OS == 'ios' ? theme.color.background : 'transparent'
-        }
-        barStyle={Platform.OS == 'ios' ? 'dark-content' : 'light-content'}
-      />
+      <>
+        {!isScrollDisable && (
+          <StatusBar
+            translucent={Platform.OS == 'ios' ? false : true}
+            backgroundColor={
+              Platform.OS == 'ios' ? theme.color.background : 'transparent'
+            }
+            barStyle={Platform.OS == 'ios' ? 'dark-content' : 'light-content'}
+          />
+        )}
+
+        {isScrollDisable && (
+          <StatusBar
+            translucent={false}
+            backgroundColor={theme.color.background}
+            barStyle={'dark-content'}
+          />
+        )}
+      </>
     );
   };
 
-  // const renderCoverImage = () => {
-  //   return (
-
-  //     // <View style={styles.imageConatiner}>
-  //     //   <TouchableOpacity
-  //     //     activeOpacity={0.5}
-  //     //     onPress={() => {
-  //     //       setfullImgUri(image);
-  //     //       setfullImgModal(true);
-  //     //     }}>
-  //     //     <FastImage
-  //     //       style={styles.image}
-  //     //       source={image}
-  //     //       resizeMode={FastImage.resizeMode.cover}
-  //     //     />
-  //     //   </TouchableOpacity>
-  //     // </View>
-  //   );
-  // };
-
-  const renderImageSliderBoxIos = () => {
+  const renderImageSliderBox = () => {
     return (
-      <MaskedView
-        style={[
-          styles.mask,
-          {
-            height: controlPointY - curveCenterPointY,
-          },
-        ]}
-        maskElement={
-          <Svg height="100%" width="100%">
-            <Path
-              d={`M0 0 L${windowWidth} 0 L${windowWidth} ${maskHeight} Q${controlPointX} ${controlPointY} 0 ${maskHeight} Z`}
-              fill={'#fff'}
+      <>
+        {Platform.OS == 'ios' && (
+          <MaskedView
+            style={[
+              styles.mask,
+              {
+                height: controlPointY - curveCenterPointY,
+              },
+            ]}
+            maskElement={
+              <Svg height="100%" width="100%">
+                <Path
+                  d={`M0 0 L${windowWidth} 0 L${windowWidth} ${maskHeight} Q${controlPointX} ${controlPointY} 0 ${maskHeight} Z`}
+                  fill={'#fff'}
+                />
+              </Svg>
+            }>
+            <ImageSlider
+              autoPlayWithInterval={2000}
+              images={img}
+              style={{
+                backgroundColor: theme.color.background,
+                elevation: 5,
+              }}
+              customSlide={({index, item, style, width}) => (
+                <TouchableOpacity
+                  style={style}
+                  activeOpacity={0.7}
+                  disabled
+                  key={index}>
+                  <FastImage
+                    style={{
+                      flex: 1,
+                      resizeMode: 'stretch',
+                    }}
+                    source={{
+                      uri: item,
+                      priority: FastImage.priority.high,
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                </TouchableOpacity>
+              )}
             />
-          </Svg>
-        }>
-        <ImageSlider
-          autoPlayWithInterval={2000}
-          images={img}
-          style={{
-            backgroundColor: theme.color.background,
-            elevation: 5,
-          }}
-          customSlide={({index, item, style, width}) => (
-            <TouchableOpacity
-              style={style}
-              activeOpacity={0.7}
-              disabled
-              key={index}>
-              <FastImage
-                style={{
-                  flex: 1,
-                  resizeMode: 'stretch',
-                }}
-                source={{
-                  uri: item,
-                  priority: FastImage.priority.high,
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-            </TouchableOpacity>
-          )}
-        />
-      </MaskedView>
+          </MaskedView>
+        )}
+
+        {Platform.OS == 'android' && (
+          <View style={styles.imageConatiner}>
+            <ImageSlider
+              autoPlayWithInterval={2000}
+              images={img}
+              style={{
+                backgroundColor: theme.color.background,
+                elevation: 5,
+              }}
+              customSlide={({index, item, style, width}) => (
+                <TouchableOpacity
+                  style={style}
+                  activeOpacity={0.7}
+                  disabled
+                  key={index}>
+                  <FastImage
+                    style={{
+                      flex: 1,
+                      resizeMode: 'stretch',
+                    }}
+                    source={{
+                      uri: item,
+                      priority: FastImage.priority.high,
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        )}
+      </>
     );
   };
 
-  const renderImageSliderBoxAndroid = () => {
-    return (
-      <View style={styles.imageConatiner}>
-        <ImageSlider
-          autoPlayWithInterval={2000}
-          images={img}
-          style={{
-            backgroundColor: theme.color.background,
-            elevation: 5,
-          }}
-          customSlide={({index, item, style, width}) => (
-            <TouchableOpacity
-              style={style}
-              activeOpacity={0.7}
-              disabled
-              key={index}>
-              <FastImage
-                style={{
-                  flex: 1,
-                  resizeMode: 'stretch',
-                }}
-                source={{
-                  uri: item,
-                  priority: FastImage.priority.high,
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-    );
+  const goBack = () => {
+    props.navigation.goBack();
   };
-
   const renderHeader = () => {
     return (
       <View style={styles.header}>
@@ -433,7 +471,7 @@ function ResturantDetails(props) {
           activeOpacity={0.6}
           onPress={goBack}>
           <utils.vectorIcon.Ionicons
-            name="ios-chevron-back-sharp"
+            name="arrow-back-sharp"
             color={theme.color.button1}
             size={25}
           />
@@ -453,32 +491,164 @@ function ResturantDetails(props) {
     );
   };
 
+  const renderRatings = () => {
+    const formateDateTime = d => {
+      let date = new Date(d);
+      var tt = moment(date).format('hh:mm a');
+      var dd = moment(date).format('D MMM Y');
+      return dd;
+    };
+
+    const renderSepLine = () => {
+      return (
+        <View
+          style={{
+            width: '100%',
+            alignSelf: 'center',
+            height: 0.6,
+            backgroundColor: theme.color.subTitleLight,
+            marginVertical: 10,
+            opacity: 0.5,
+          }}
+        />
+      );
+    };
+
+    const renderData = (item, index) => {
+      let name = item.user_name || '';
+      let rate = item.rate || 0;
+      let date = item.created_at || '';
+      let comment = item.comment || 'No review';
+
+      return (
+        <>
+          <View style={{}}>
+            <View style={styles.rsec1}>
+              <View style={styles.rsec11}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.rsec11Text}>
+                  {name}
+                </Text>
+              </View>
+
+              <View style={styles.rsec12}>
+                <View style={styles.rsec121}>
+                  <utils.vectorIcon.Entypo
+                    name="star"
+                    color={theme.color.rate}
+                    size={15}
+                  />
+
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={styles.rsec121Text}>
+                    {rate.toFixed(1)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.rsec2}>
+              <Text style={styles.rsec2Text1}>
+                {date != '' ? date : '----'}
+              </Text>
+              <Text style={styles.rsec2Text2}>{comment}</Text>
+            </View>
+          </View>
+          {renderSepLine()}
+        </>
+      );
+    };
+
+    return (
+      <>
+        <Text style={styles.sec2Ttitle}>Reviews & Ratings</Text>
+        <FlatList
+          ref={scroll2Ref}
+          contentContainerStyle={{
+            paddingHorizontal: 15,
+            paddingVertical: 15,
+          }}
+          // onScrollEndDrag={handleScroll2}
+          showsVerticalScrollIndicator={false}
+          data={reviews}
+          renderItem={({item, index}) => renderData(item, index)}
+          keyExtractor={(item, index) => {
+            return index.toString();
+          }}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          removeClippedSubviews={true}
+        />
+      </>
+    );
+  };
+
+  const handleScroll = event => {
+    let num = event.nativeEvent.contentOffset.y;
+    if (num <= 172) {
+      scrollRef?.current.scrollTo(0);
+    }
+    if (num > 172) {
+      setisScrollDisable(true);
+    }
+    console.log('scrol 1 : ', num);
+  };
+
+  const handleScroll2 = event => {
+    let num = event.nativeEvent.contentOffset.y;
+    if (num <= 0) {
+      setisScrollDisable(false);
+    }
+
+    console.log('scrol 2 : ', num);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {renderStatusBar()}
-      {/* <View>{renderCoverImage()}</View> */}
-      <View>
-        {Platform.OS == 'android'
-          ? renderImageSliderBoxAndroid()
-          : renderImageSliderBoxIos()}
-        {renderTitleSection()}
-      </View>
-      {renderHeader()}
-      {/* <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 15,
-        }}
+
+      {/* {!isScrollDisable && ( */}
+      <ScrollView
+        ref={scrollRef}
+        // onScrollEndDrag={handleScroll}
         showsVerticalScrollIndicator={false}>
-        {renderTitleSection()}
-        {sep()}
+        <View>
+          {renderImageSliderBox()}
+          {renderTitleSection()}
+        </View>
 
-        {(baseV.length > 0 || addV.length > 0) && renderVariantSection()}
-
-        {renderProductAvailability()}
+        {reviews.length > 0 && (
+          <>
+            {renderSep()}
+            {renderRatings()}
+          </>
+        )}
       </ScrollView>
-      {renderFullImage()} */}
+      {/* )} */}
 
+      {renderHeader()}
+      {/* {!isScrollDisable && renderHeader()} */}
       <Toast ref={toast} position="bottom" />
     </SafeAreaView>
   );
 }
+
+// {isScrollDisable && (
+//       <>
+//         <View>
+//           {/* {renderImageSliderBox()} */}
+//           {renderTitleSection()}
+//         </View>
+
+//         {reviews.length > 0 && (
+//           <>
+//             {renderSep()}
+//             {renderRatings()}
+//           </>
+//         )}
+//       </>
+//     )}

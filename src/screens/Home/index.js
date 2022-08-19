@@ -48,6 +48,7 @@ function Home(props) {
   let internet = store.General.isInternet;
 
   let loc = store.User.location;
+  let cart = store.User.cart;
 
   let tagLine = '';
 
@@ -67,7 +68,11 @@ function Home(props) {
       props.navigation.navigate('Map', {screen: 'home', setloader});
     };
 
-    const onClickCart = () => {};
+    const onClickCart = () => {
+      if (cart.data.length <= 0) {
+        props.navigation.navigate('CheckoutEmpty', {screen: 'home'});
+      }
+    };
 
     const renderDrawer = () => {
       return (

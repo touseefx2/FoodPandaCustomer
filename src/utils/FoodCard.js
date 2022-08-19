@@ -307,6 +307,7 @@ function FoodCard(props) {
     <>
       {renderBottomSheet()}
       <TouchableOpacity
+        disabled
         activeOpacity={0.7}
         onPress={() => onPressFoodCard(d)}
         style={styles.foodCard}>
@@ -327,7 +328,6 @@ function FoodCard(props) {
           <View style={styles.fcBottom}>
             <TouchableOpacity
               disabled
-              onPress={onPressAddcart}
               activeOpacity={0.6}
               style={styles.addcart}>
               <Text
@@ -338,111 +338,7 @@ function FoodCard(props) {
                 {rs.toFixed()}
               </Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.4}
-              onPress={() => onPressHeart(!isFav ? 'add' : 'remove')}
-              style={styles.likecart}>
-              <utils.vectorIcon.AntDesign
-                name={!isFav ? 'hearto' : 'heart'}
-                color={theme.color.button1}
-                size={20}
-              />
-            </TouchableOpacity>
           </View>
-
-          {/* <View style={styles.fcBottom}>
-            {cztmzText == '' ? (
-              <Text
-                style={styles.foodCardTitle3}
-                numberOfLines={1}
-                ellipsizeMode="tail">
-                Rs {rs.toFixed()}
-              </Text>
-            ) : (
-              <View style={{}}>
-                <View style={{width: '63%'}}>
-                  <Text
-                    style={styles.foodCardTitle3}
-                    numberOfLines={1}
-                    ellipsizeMode="tail">
-                    {baseV.length <= 0 ? 'Rs. ' : 'from Rs. '}
-                    {rs.toFixed()}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    width: '34%',
-
-                    alignItems: 'flex-end',
-                  }}>
-                  <Text
-                    style={styles.foodCardTitle3cztmz}
-                    numberOfLines={1}
-                    ellipsizeMode="tail">
-                    {cztmzText}
-                  </Text>
-                </View>
-              </View>
-            )}
-
-            <View style={styles.foodCardBottom}>
-              {!isinCart ? (
-                <TouchableOpacity
-                  onPress={onPressAddcart}
-                  activeOpacity={0.6}
-                  style={styles.addcart}>
-                  <utils.vectorIcon.AntDesign
-                    name="shoppingcart"
-                    color={theme.color.buttonText}
-                    size={15}
-                  />
-                  <Text style={styles.foodCardButtonText}>ADD</Text>
-                </TouchableOpacity>
-              ) : (
-                <View style={styles.addcart2Container}>
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    onPress={onPressSubItem}>
-                    <utils.vectorIcon.AntDesign
-                      name="minussquare"
-                      color={theme.color.cartbutton}
-                      size={26}
-                    />
-                  </TouchableOpacity>
-                  <View style={{width: '40%'}}>
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={[styles.foodCardTitle1, {textAlign: 'center'}]}>
-                      {item}
-                    </Text>
-                  </View>
-
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    onPress={onPressAddItem}>
-                    <utils.vectorIcon.AntDesign
-                      name="plussquare"
-                      color={theme.color.cartbutton}
-                      size={26}
-                    />
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              <TouchableOpacity
-                activeOpacity={0.4}
-                onPress={() => onPressHeart(!isFav ? 'add' : 'remove')}
-                style={styles.likecart}>
-                <utils.vectorIcon.AntDesign
-                  name={!isFav ? 'hearto' : 'heart'}
-                  color={theme.color.heart}
-                  size={22}
-                />
-              </TouchableOpacity>
-            </View>
-          </View> */}
         </View>
 
         <View style={styles.foodCardImgConatiner}>
@@ -499,7 +395,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     resizeMode: 'cover',
     backgroundColor: theme.color.background,
-    elevation: 3,
+    elevation: 1.5,
   },
   ImageLoader: {
     height: '30%',
@@ -508,7 +404,7 @@ const styles = StyleSheet.create({
   },
   foodCardTitle1: {
     fontSize: 15,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.subTitle,
     lineHeight: 18,
     textTransform: 'capitalize',
@@ -522,7 +418,7 @@ const styles = StyleSheet.create({
   },
   foodCardTitle3: {
     fontSize: 13,
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     color: theme.color.subTitle,
     lineHeight: 16,
   },
@@ -536,13 +432,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
 
   addcart: {
-    width: '70%',
+    width: '100%',
     // backgroundColor: 'red',
   },
   addcart2Container: {
@@ -584,7 +477,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: theme.color.buttonText,
 
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     lineHeight: 15,
   },
 });

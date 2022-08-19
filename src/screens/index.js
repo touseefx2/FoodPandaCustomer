@@ -3,14 +3,17 @@ import Location from './Location';
 import Map from './Map';
 import Home from './Home';
 import Home2 from './Home2';
+import Home3 from './Home3';
 import Search from './Search';
 import Filter from './Filter';
 import Help from './Help';
 import Terms from './Terms';
+// import Checkout from './Checkout';
+import CheckoutEmpty from './CheckoutEmpty';
+import ResturantDetails from './ResturantDetails/index';
 
 // import Food from './Food';
 
-// import Checkout from './Checkout';
 // import OrderLocation from './OrderLocation';
 // import CheckLogin from './CheckLogin';
 // import Signup from './Signup';
@@ -24,7 +27,6 @@ import Terms from './Terms';
 // import OrderIndication from './OrderIndication';
 // import Promo from './Promo';
 // import PromoDetails from './PromoDetails';
-// import ResturantDetails from './ResturantDetails/index';
 
 // import Notification from "./Notification/index";
 // import Notification_Detail from "./Notification_Detail/index";
@@ -38,13 +40,16 @@ export default screens = {
   Map,
   Home,
   Home2,
+  Home3,
   Search,
   Filter,
   Help,
   Terms,
+  // Checkout,
+  CheckoutEmpty,
+  ResturantDetails,
   // Food,
 
-  // Checkout,
   // OrderLocation,
   // Signup,
   // CheckLogin,

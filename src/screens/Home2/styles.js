@@ -83,16 +83,15 @@ export const styles = StyleSheet.create({
   efc1: {
     width: '100%',
     height: 136,
-    // backgroundColor: '#FFC5B2',
+    backgroundColor: theme.color.background,
     borderRadius: 8,
-    elevation: 1,
   },
 
   efcImage: {
     width: '100%',
     height: '100%',
     borderRadius: 8,
-    elevation: 1,
+    elevation: 2,
     resizeMode: 'cover',
   },
 

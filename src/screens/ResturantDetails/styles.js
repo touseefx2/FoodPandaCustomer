@@ -51,6 +51,14 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 10,
+  },  iconn: {
+    width: 30,
+    height: 30,
+    borderRadius: 30 / 2,
+    backgroundColor: theme.color.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+ 
   },
   icondisable: {
     width: 30,
@@ -477,5 +485,59 @@ export const styles = StyleSheet.create({
     fontFamily: theme.fonts.fontBold,
     lineHeight: 20,
     // textTransform: 'capitalize',
+  },
+  sec2Ttitle: {
+    fontSize: 19,
+    color: theme.color.subTitle,
+    fontFamily: theme.fonts.fontMedium,
+    marginHorizontal: 15,
+  },
+  rsec1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  rsec11: {
+    width: '75%',
+  },
+  rsec11Text: {
+    fontSize: 13,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.subTitle,
+    textTransform: 'capitalize',
+  },
+  rsec12: {
+    width: '20%',
+    alignItems: 'flex-end',
+  },
+  rsec121: {
+    flexDirection: 'row',
+  },
+
+  rsec121Text: {
+    fontSize: 12,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.subTitle,
+    textTransform: 'capitalize',
+    marginLeft: 3,
+  },
+
+  rsec2: {
+    width: '95%',
+
+    marginTop: -3,
+  },
+  rsec2Text1: {
+    fontSize: 13,
+    fontFamily: theme.fonts.fontNormal,
+    color: theme.color.subTitleLight,
+    textTransform: 'capitalize',
+  },
+  rsec2Text2: {
+    fontSize: 13,
+    fontFamily: theme.fonts.fontMedium,
+    color: theme.color.subTitleLight,
+    marginTop: 7,
   },
 });

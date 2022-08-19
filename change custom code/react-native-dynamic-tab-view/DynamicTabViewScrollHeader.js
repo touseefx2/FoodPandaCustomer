@@ -53,7 +53,11 @@ class DynamicTabViewScrollHeader extends React.Component {
         onPress={this._onPressHeader.bind(this, index)}
         style={[
           this.defaultStyle.tabItemContainer,
-          {backgroundColor: this.props.headerBackgroundColor},
+          {
+            backgroundColor: this.props.headerBackgroundColor,
+            borderBottomColor: theme.color.button1,
+            borderBottomWidth: isTabActive ? 2 : 0,
+          },
         ]}
         underlayColor={'#00000033'}>
         <View>
@@ -66,13 +70,13 @@ class DynamicTabViewScrollHeader extends React.Component {
                 {
                   color: isTabActive
                     ? theme.color.button1
-                    : theme.color.subTitle,
+                    : theme.color.subTitleLight,
                 },
               ],
             ]}>
             {item['title']}
           </Text>
-          {this._renderHighlight(isTabActive)}
+          {/* {this._renderHighlight(isTabActive)} */}
         </View>
       </TouchableHighlight>
     );

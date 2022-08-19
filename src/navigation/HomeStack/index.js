@@ -86,10 +86,15 @@ const HomeStack = () => {
           });
         }}
       />
+      <Stack.Screen name="Home3" component={screens.Home3} />
       <Stack.Screen name="Search" component={screens.Search} />
       <Stack.Screen name="Filter" component={screens.Filter} />
       <Stack.Screen name="Map" component={screens.Map} />
-
+      <Stack.Screen name="CheckoutEmpty" component={screens.CheckoutEmpty} />
+      <Stack.Screen
+        name="ResturantDetails"
+        component={screens.ResturantDetails}
+      />
       {/* <Stack.Screen name="Food" component={screens.Food} />
       <Stack.Screen name="Help" component={screens.Help} />
       */}

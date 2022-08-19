@@ -62,6 +62,7 @@ function Home2(props) {
   let type = props.route.params.type || '';
   let internet = store.General.isInternet;
   let loc = store.User.location;
+  let cart = store.User.cart;
 
   useEffect(() => {
     if (filter.length > 0) {
@@ -169,7 +170,6 @@ function Home2(props) {
 
   useEffect(() => {
     if (data.length > 0) {
-      console.warn('again data calllllll');
       let er = [];
       let sd = [];
       data.map((e, i, a) => {
@@ -197,7 +197,11 @@ function Home2(props) {
       props.navigation.navigate('Map', {screen: 'home2'});
     };
 
-    const onClickCart = () => {};
+    const onClickCart = () => {
+      if (cart.data.length <= 0) {
+        props.navigation.navigate('CheckoutEmpty', {screen: 'home2'});
+      }
+    };
 
     const onClickSearch = () => {
       props.navigation.navigate('Search', {data: data});
@@ -333,7 +337,7 @@ function Home2(props) {
       let a = Resturants;
 
       //static
-      e.total_distance = 20;
+      e.total_distance = 30 - i;
       e.travel_time = 20 - i;
       arr.push(e);
       if (i == a.length - 1) {
@@ -389,6 +393,10 @@ function Home2(props) {
       //   console.log('fetchdsistancematric catch error ', error);
       // }
     }
+  };
+
+  const onClickResturant = item => {
+    props.navigation.navigate('Home3', {screen: 'home2', data: item});
   };
 
   const renderResturants = (item, index, dt, c) => {
@@ -447,7 +455,10 @@ function Home2(props) {
     let efc1sty = chk == '' ? styles.efc1 : styles.efc1All;
 
     return (
-      <View style={styl}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => onClickResturant(item)}
+        style={styl}>
         <View style={efc1sty}>
           <Image source={img} style={styles.efcImage} />
           {rednerDistance()}
@@ -506,7 +517,7 @@ function Home2(props) {
             </Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
