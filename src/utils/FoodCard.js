@@ -37,6 +37,7 @@ function FoodCard(props) {
   const d = props.data;
   // console.log('ddd : ', d);
   let pid = d._id;
+
   let nav = props.nav;
   let name = d.title || '';
   let detail = d.description || '---';
@@ -46,6 +47,9 @@ function FoodCard(props) {
     : require('../assets/images/burger/img.jpeg');
   let imgLoader = require('../assets/images/imgLoader/img.gif');
   let search = props.search || false;
+
+  let resturant = props.resturant;
+
   let baseV = d.base_variation || [];
   let addV = d.additional_variation || [];
   let cztmzText = baseV.length <= 0 && addV.length <= 0 ? '' : 'Customize';
@@ -97,6 +101,7 @@ function FoodCard(props) {
       isinCart: isinCart,
       item: item,
       screen: screen,
+      resturant: resturant,
     });
   };
 
@@ -293,6 +298,7 @@ function FoodCard(props) {
             },
           }}>
           <utils.BotomModal
+            resturant={resturant}
             data={d}
             screen={screen}
             isinCart={isinCart}
@@ -307,7 +313,6 @@ function FoodCard(props) {
     <>
       {renderBottomSheet()}
       <TouchableOpacity
-        disabled
         activeOpacity={0.7}
         onPress={() => onPressFoodCard(d)}
         style={styles.foodCard}>
@@ -477,7 +482,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: theme.color.buttonText,
 
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     lineHeight: 15,
   },
 });

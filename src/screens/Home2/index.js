@@ -64,6 +64,8 @@ function Home2(props) {
   let loc = store.User.location;
   let cart = store.User.cart;
 
+  let totalItems = cart.data.length > 0 ? cart.totalitems : 0;
+
   useEffect(() => {
     if (filter.length > 0) {
       let l = 0;
@@ -104,11 +106,16 @@ function Home2(props) {
     };
   }, []);
 
-  useEffect(() => {
-    if (internet) {
+  useEffect(
+    () => {
+      // if (internet) {
       store.Resturants.getData(loc, type);
-    }
-  }, [internet]);
+      // }
+    },
+    [
+      // internet
+    ],
+  );
 
   useEffect(() => {
     if (Resturants.length > 0) {
@@ -200,7 +207,9 @@ function Home2(props) {
     const onClickCart = () => {
       if (cart.data.length <= 0) {
         props.navigation.navigate('CheckoutEmpty', {screen: 'home2'});
+        return;
       }
+      props.navigation.navigate('Checkout', {screen: 'home2'});
     };
 
     const onClickSearch = () => {
@@ -258,6 +267,16 @@ function Home2(props) {
     };
 
     const renderCart = () => {
+      const renderCirclecart = () => {
+        return (
+          <View style={styles.circleCart}>
+            <Text style={styles.circleCartText}>
+              {totalItems > 99 ? '99+' : totalItems}
+            </Text>
+          </View>
+        );
+      };
+
       return (
         <TouchableOpacity activeOpacity={0.6} onPress={onClickCart}>
           <utils.vectorIcon.Ionicons
@@ -265,6 +284,7 @@ function Home2(props) {
             color={theme.color.button1}
             size={26}
           />
+          {totalItems > 0 && renderCirclecart()}
         </TouchableOpacity>
       );
     };

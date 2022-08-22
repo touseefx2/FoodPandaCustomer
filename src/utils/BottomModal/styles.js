@@ -148,7 +148,7 @@ export const styles = StyleSheet.create({
   },
   foodCardTitle1: {
     fontSize: 18,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.title,
     textTransform: 'capitalize',
     lineHeight: 22,
@@ -161,7 +161,7 @@ export const styles = StyleSheet.create({
   },
   foodCardDetails: {
     fontSize: 13,
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     color: theme.color.subTitle,
     lineHeight: 17,
   },
@@ -236,20 +236,20 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   mask: {
-    backgroundColor: theme.color.button1,
+    backgroundColor: theme.color.background,
     width: '100%',
     marginTop: -30,
   },
   ButtonText: {
     fontSize: 15,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.buttonText,
     lineHeight: 18,
   },
   cartCountText: {
     fontSize: 16,
     fontFamily: theme.fonts.fontMedium,
-    color: theme.color.title,
+    color: theme.color.subTitle,
     textTransform: 'capitalize',
     lineHeight: 20,
     textAlign: 'center',
@@ -468,7 +468,7 @@ export const styles = StyleSheet.create({
   buttonTextBottom: {
     color: theme.color.buttonText,
     fontSize: 16,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     lineHeight: 20,
     // textTransform: 'capitalize',
   },

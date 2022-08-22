@@ -41,8 +41,7 @@ function StatusIndicator2(props) {
         let bcColor = i <= index ? theme.color.button1 : '#D9D9D9';
         let textColor = i <= index ? theme.color.buttonText : theme.color.title;
         let bcLineColor = i <= index ? theme.color.button1 : '#D9D9D9';
-        let tc =
-          i <= index + 1 ? theme.color.subTitle : theme.color.subTitleLight;
+        let tc = i <= index + 1 ? theme.color.title : theme.color.subTitle;
         return (
           <View
             style={{
@@ -78,8 +77,9 @@ function StatusIndicator2(props) {
               <Text
                 style={{
                   fontSize: 12,
-                  fontFamily: theme.fonts.fontBold,
+                  fontFamily: theme.fonts.fontMedium,
                   color: i == index + 1 ? theme.color.buttonText : textColor,
+                  top: 1,
                 }}>
                 {i + 1}
               </Text>
@@ -89,7 +89,7 @@ function StatusIndicator2(props) {
               ellipsizeMode="tail"
               style={{
                 fontSize: 10,
-                fontFamily: theme.fonts.fontBold,
+                fontFamily: theme.fonts.fontMedium,
                 color: tc,
                 textTransform: 'capitalize',
                 lineHeight: 12,

@@ -64,7 +64,10 @@ function Home3(props) {
   let internet = store.General.isInternet;
   let tagLine = d.tagline || '';
   let foodCategory = d.food_menu || [];
-  let resturantName = d.name || '';
+
+  let resturant = {...d};
+  delete resturant.food_menu;
+
   let distance = d.total_distance || 0;
   let rs = d.price || '';
   let deliverTime = d.estimatedDeliveryTime || '';
@@ -77,6 +80,7 @@ function Home3(props) {
     if (d.name != 'empty') {
       return (
         <utils.FoodCard
+          resturant={resturant}
           data={d}
           nav={props.navigation}
           call="home"
@@ -287,7 +291,7 @@ function Home3(props) {
                 // textTransform: 'capitalize',
                 lineHeight: 22,
               }}>
-              {resturantName}
+              {d.name}
             </Text>
           </View>
 
@@ -344,7 +348,7 @@ function Home3(props) {
             {deliverTime} min delivery
           </Text>
           {renderLine()}
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{flexDirection: 'row'}}>
             <utils.vectorIcon.Entypo
               name="star"
               color={theme.color.rate}
@@ -507,7 +511,7 @@ function Home3(props) {
         />
       )}
       {tagLine != '' && <utils.TagLine tagLine={tagLine} />}
-      {/* {renderBottomSheet()} */}
+      {renderBottomSheet()}
       {img.length > 0 && (
         <View>
           {renderImageSliderBox()}

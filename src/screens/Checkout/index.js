@@ -56,6 +56,7 @@ function Checkout(props) {
   let contact = store.Food.sliderImages;
 
   let cart = store.User.cart;
+  let screen = props.route.params.screen || '';
   let subtotal = cart.totalbill;
   let tax = 0;
 
@@ -63,7 +64,7 @@ function Checkout(props) {
 
   let internet = store.General.isInternet;
   let user = store.User.user;
-  console.log('user : ', user);
+  console.log('cart  : ', cart.data);
 
   const mobileReg = /^[3]\d{9}$/ || /^[0][3]\d{9}$/;
 
@@ -91,31 +92,35 @@ function Checkout(props) {
 
   const [edt, setedt] = useState(
     dType == 'delivery'
-      ? contact.estimatedDeliveryTime
-      : contact.estimatedPickupTime,
+      ? cart.data[0].resturant.estimatedDeliveryTime
+      : cart.data[0].resturant.estimatedPickupTime,
   );
+  let resturantName = cart.data[0].resturant.name || '';
 
-  const [resturantName, setresturantName] = useState('Cheezious');
   const [promoCode, setpromoCode] = useState('');
   const [isPromoApply, setisPromoApply] = useState(false);
 
-  const [dc, setdc] = useState(
-    dType == 'delivery' ? parseFloat(contact.deliveryCharges) : 0,
-  ); //delivery charges
-  const [t, sett] = useState(parseFloat(contact.tax || 0)); //tax percent
+  const [dc, setdc] = useState(cart.data[0].resturant.delivery_charges || 0);
+  const [t, sett] = useState(cart.data[0].resturant.tax || 0);
+
   const [tP, settP] = useState(parseFloat(0)); //tax price;
   const [discount, setdiscount] = useState(0); //promo discount price;
   const [total, settotal] = useState(parseFloat(0)); //tax price;
 
-  useEffect(() => {
-    setedt(
-      dType == 'delivery'
-        ? contact.estimatedDeliveryTime
-        : contact.estimatedPickupTime,
-    );
-    setdc(dType == 'delivery' ? parseFloat(contact.deliveryCharges) : 0);
-    sett(parseFloat(contact.tax || 0));
-  }, [contact, dType]);
+  useEffect(
+    () => {
+      // setedt(
+      //   dType == 'delivery'
+      //     ? contact.estimatedDeliveryTime
+      //     : contact.estimatedPickupTime,
+      // );
+      // setdc(dType == 'delivery' ? parseFloat(contact.deliveryCharges) : 0);
+      // sett(parseFloat(contact.tax || 0));
+    },
+    [
+      // contact, dType
+    ],
+  );
 
   useEffect(() => {
     let d = isPromoApply ? subtotal - discount : subtotal;
@@ -853,6 +858,8 @@ function Checkout(props) {
     }
   };
 
+  console.log('cart  : ', cart);
+
   const onPressSubItem = ind => {
     let objIndex = ind;
 
@@ -898,22 +905,17 @@ function Checkout(props) {
     };
 
     return (
-      <View
-        style={Platform.OS == 'android' ? styles.foodCard : styles.foodCardios}>
+      <View style={styles.foodCard}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-
             width: '90%',
             alignSelf: 'center',
-            marginBottom: 7,
+            marginBottom: 10,
           }}>
           <View style={{width: '40%'}}>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={styles.sectionsTitle}>
+            <Text style={styles.sectionsTitle}>
               Total{' '}
               <Text
                 numberOfLines={1}
@@ -989,7 +991,7 @@ function Checkout(props) {
               <Text
                 style={{
                   textTransform: 'capitalize',
-                  fontFamily: theme.fonts.fontBold,
+                  fontFamily: theme.fonts.fontNormal,
                   fontSize: 12,
                   color: theme.color.title,
                   lineHeight: 15,
@@ -1001,7 +1003,7 @@ function Checkout(props) {
             <View style={{width: '55%'}}>
               <Text
                 style={{
-                  fontFamily: theme.fonts.fontBold,
+                  fontFamily: theme.fonts.fontMedium,
                   fontSize: 12,
                   color: theme.color.subTitleLight,
                   lineHeight: 15,
@@ -1045,7 +1047,7 @@ function Checkout(props) {
             <View style={{width: '70%'}}>
               <Text
                 style={{
-                  fontFamily: theme.fonts.fontBold,
+                  fontFamily: theme.fonts.fontMedium,
                   fontSize: 12,
                   color: theme.color.title,
                   lineHeight: 20,
@@ -1055,7 +1057,7 @@ function Checkout(props) {
 
               <Text
                 style={{
-                  fontFamily: theme.fonts.fontBold,
+                  fontFamily: theme.fonts.fontMedium,
                   fontSize: 12,
                   color: theme.color.subTitleLight,
                   lineHeight: 20,
@@ -1841,6 +1843,47 @@ function Checkout(props) {
     );
   };
 
+  const renderHeader = () => {
+    return (
+      <View style={styles.header}>
+        <View style={styles.header1}>
+          <View style={styles.header11}>
+            <TouchableOpacity activeOpacity={0.6} onPress={goBack}>
+              <utils.vectorIcon.AntDesign
+                name="close"
+                color={theme.color.subTitle}
+                size={20}
+              />
+            </TouchableOpacity>
+
+            <View style={{marginLeft: 15}}>
+              <Text style={styles.htitle}>Cart</Text>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.htitle2}>
+                {resturantName}
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity activeOpacity={0.6} onPress={deleteCart}>
+            <utils.vectorIcon.AntDesign
+              name="delete"
+              color={theme.color.subTitle}
+              size={20}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <utils.StatusIndicator2
+          data={['menu', 'cart', 'checkout']}
+          status={status}
+        />
+      </View>
+    );
+  };
+
   let pstyle = isPromoApply
     ? {
         marginTop: 10,
@@ -1891,31 +1934,7 @@ function Checkout(props) {
         load={load2 || load}
       />
       {!internet && <utils.InternetMessage />}
-      <View style={styles.header}>
-        <View style={styles.header1}>
-          <TouchableOpacity activeOpacity={0.6} onPress={goBack}>
-            <utils.vectorIcon.AntDesign
-              name="close"
-              color={theme.color.subTitle}
-              size={20}
-            />
-          </TouchableOpacity>
-
-          <Text style={styles.htitle}>Cart</Text>
-
-          <TouchableOpacity activeOpacity={0.6} onPress={deleteCart}>
-            <utils.vectorIcon.AntDesign
-              name="delete"
-              color={theme.color.subTitle}
-              size={20}
-            />
-          </TouchableOpacity>
-        </View>
-        <utils.StatusIndicator2
-          data={['menu', 'cart', 'checkout']}
-          status={status}
-        />
-      </View>
+      {renderHeader()}
       <KeyboardAvoidingView style={{flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {!isCart && (

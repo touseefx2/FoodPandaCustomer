@@ -296,4 +296,24 @@ export const styles = StyleSheet.create({
     fontFamily: theme.fonts.fontMedium,
     top: 1,
   },
+
+  circleCart: {
+    width: 18,
+    height: 18,
+    borderRadius: 218 / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.color.buttonText,
+    position: 'absolute',
+    right: -7,
+    bottom: -1,
+    backgroundColor: theme.color.button1,
+  },
+  circleCartText: {
+    fontSize: 8,
+    color: theme.color.buttonText,
+    fontFamily: theme.fonts.fontMedium,
+    top: 1,
+  },
 });

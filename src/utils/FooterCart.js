@@ -29,7 +29,7 @@ function FooterCart(props) {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
-        style={Platform.OS == 'android' ? styles.foodCard : styles.foodCardios}>
+        style={styles.foodCard}>
         <View style={styles.foodCardLinear}>
           <View style={{width: '24%'}}>
             <View style={styles.section1}>
@@ -66,26 +66,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     paddingHorizontal: 15,
-    paddingVertical: 15,
-  },
-  foodCardios: {
-    width: '100%',
-    elevation: 20,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    bottom: 0,
-    paddingHorizontal: 15,
-    paddingVertical: theme.window.APPBAR_HEIGHT,
+    paddingVertical: Platform.OS == 'android' ? 15 : theme.window.APPBAR_HEIGHT,
     shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.44,
+    shadowRadius: 10.32,
 
-    shadowOffset: {width: 0, height: 1},
-
-    shadowOpacity: 0.6,
-
-    shadowRadius: 1,
+    elevation: 16,
   },
+
   foodCardLinear: {
     height: responsiveHeight(6),
     width: '100%',
@@ -129,7 +121,7 @@ const styles = StyleSheet.create({
   t1: {
     fontSize: 12,
     color: theme.color.buttonText,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     lineHeight: 17,
   },
   t2: {
@@ -147,7 +139,7 @@ const styles = StyleSheet.create({
   t4: {
     fontSize: 14,
     color: theme.color.buttonText,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     lineHeight: 20,
   },
 });

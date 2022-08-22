@@ -22,13 +22,17 @@ export const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   htitle: {
-    fontSize: 16,
-    fontFamily: theme.fonts.fontBold,
+    fontSize: 15,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.title,
-    alignSelf: 'center',
-    textAlign: 'center',
     textTransform: 'capitalize',
-    marginLeft: 15,
+  },
+  htitle2: {
+    fontSize: 11,
+    fontFamily: theme.fonts.fontNormal,
+    color: theme.color.subTitle,
+    // textTransform: 'capitalize',
+    lineHeight: 14,
   },
   title: {
     fontSize: 12,
@@ -71,8 +75,8 @@ export const styles = StyleSheet.create({
     width: responsiveWidth(100),
     elevation: 10,
     backgroundColor: theme.color.background,
-    paddingVertical: 10,
 
+    paddingVertical: 10,
     elevation: 10,
     marginBottom: 5,
   },
@@ -80,6 +84,14 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 12,
     justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+
+  header11: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '80%',
     // backgroundColor: 'red',
   },
   back: {},
@@ -217,29 +229,23 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sectionsTitle: {
-    fontSize: 16,
-    fontFamily: theme.fonts.fontBold,
+    fontSize: 15,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.subTitle,
     textTransform: 'capitalize',
-    lineHeight: 19,
+    lineHeight: 18,
+    top: 5,
   },
   sectionsTitlee: {
     fontSize: 11,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.subTitleLight,
     textTransform: 'capitalize',
-    lineHeight: 15,
   },
+
   sectionsTitle2: {
-    fontSize: 11,
-    fontFamily: theme.fonts.fontBold,
-    color: theme.color.subTitle,
-    textTransform: 'capitalize',
-    lineHeight: 17,
-  },
-  sectionsTitle2: {
-    fontSize: 13,
-    fontFamily: theme.fonts.fontMedium,
+    fontSize: 12,
+    fontFamily: theme.fonts.fontNormal,
     color: theme.color.subTitle,
     textTransform: 'capitalize',
     lineHeight: 16,
@@ -301,16 +307,16 @@ export const styles = StyleSheet.create({
     elevation: 2,
   },
   mainSeccText1: {
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     fontSize: 12,
     lineHeight: 20,
     color: theme.color.subTitleLight,
   },
   mainSeccText2: {
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     fontSize: 14,
     lineHeight: 30,
-    color: theme.color.title,
+    color: theme.color.subTitle,
   },
 
   mainSec: {
@@ -361,7 +367,7 @@ export const styles = StyleSheet.create({
   },
   addTitle1: {
     fontSize: 12,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.subTitleLight,
     textTransform: 'capitalize',
   },
@@ -407,7 +413,7 @@ export const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   ami: {
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     fontSize: 13,
     color: theme.color.button1,
     marginLeft: 5,
@@ -420,26 +426,17 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    // borderTopWidth: 0.3,
-    // borderTopColor: 'silver',
-  },
-  foodCardios: {
-    width: '100%',
-    elevation: 20,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
     shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.44,
+    shadowRadius: 10.32,
 
-    shadowOffset: {width: 0, height: 0.5},
-
-    shadowOpacity: 0.5,
-
-    shadowRadius: 1,
-    // borderTopWidth: 0.3,
-    // borderTopColor: 'silver',
+    elevation: 16,
   },
+
   foodCardLinear: {
     height: 46,
     width: '90%',
@@ -485,7 +482,7 @@ export const styles = StyleSheet.create({
   t1: {
     fontSize: 15,
     color: theme.color.buttonText,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     lineHeight: 18,
   },
   t2: {

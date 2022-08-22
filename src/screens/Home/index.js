@@ -49,7 +49,7 @@ function Home(props) {
 
   let loc = store.User.location;
   let cart = store.User.cart;
-
+  let totalItems = cart.data.length > 0 ? cart.totalitems : 0;
   let tagLine = '';
 
   const renderHeader = () => {
@@ -71,7 +71,9 @@ function Home(props) {
     const onClickCart = () => {
       if (cart.data.length <= 0) {
         props.navigation.navigate('CheckoutEmpty', {screen: 'home'});
+        return;
       }
+      props.navigation.navigate('Checkout', {screen: 'home'});
     };
 
     const renderDrawer = () => {
@@ -118,6 +120,16 @@ function Home(props) {
     };
 
     const renderCart = () => {
+      const renderCircle = () => {
+        return (
+          <View style={styles.circleC}>
+            <Text style={styles.circleCText}>
+              {totalItems > 99 ? '99+' : totalItems}
+            </Text>
+          </View>
+        );
+      };
+
       return (
         <TouchableOpacity activeOpacity={0.4} onPress={onClickCart}>
           <utils.vectorIcon.Ionicons
@@ -125,6 +137,7 @@ function Home(props) {
             color={theme.color.subTitle}
             size={26}
           />
+          {totalItems > 0 && renderCircle()}
         </TouchableOpacity>
       );
     };

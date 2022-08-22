@@ -8,11 +8,11 @@ import Search from './Search';
 import Filter from './Filter';
 import Help from './Help';
 import Terms from './Terms';
-// import Checkout from './Checkout';
+import Checkout from './Checkout';
 import CheckoutEmpty from './CheckoutEmpty';
 import ResturantDetails from './ResturantDetails/index';
 
-// import Food from './Food';
+import Food from './Food';
 
 // import OrderLocation from './OrderLocation';
 // import CheckLogin from './CheckLogin';
@@ -45,10 +45,10 @@ export default screens = {
   Filter,
   Help,
   Terms,
-  // Checkout,
+  Checkout,
   CheckoutEmpty,
   ResturantDetails,
-  // Food,
+  Food,
 
   // OrderLocation,
   // Signup,

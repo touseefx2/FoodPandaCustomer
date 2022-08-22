@@ -12,8 +12,8 @@ import {
   Platform,
   Alert,
   Linking,
-  FlatList,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {styles} from './styles';
 import {observer} from 'mobx-react';
 import store from '../../store/index';
@@ -56,16 +56,21 @@ function ResturantDetails(props) {
 
   let screen = props.route.params.screen || '';
   let d = props.route.params.data || [];
-  let img = d.slider_images || [];
-  let name = d.name || '';
-  let avgRate = d.rating.average_rating || 0;
-  let totalRaters = d.rating.total_reviews || 0;
-  let reviews = d.rating.details || [];
-  let coords = d.loc.coords || [];
-  let address = d.loc.address || '';
-  let times = d.opening_times || [];
 
-  const renderTitleSection = () => {
+  const data = [
+    {
+      img: d.slider_images || [],
+      name: d.name || '',
+      avgRate: d.rating.average_rating || 0,
+      totalRaters: d.rating.total_reviews || 0,
+      reviews: d.rating.details || [],
+      coords: d.loc.coords || [],
+      address: d.loc.address || '',
+      times: d.opening_times || [],
+    },
+  ];
+
+  const renderTitleSection = item => {
     const renderTimes = () => {
       const t = times.map((e, i, a) => {
         let title = e.day || '';
@@ -176,38 +181,86 @@ function ResturantDetails(props) {
       paddingVertical: 15,
     };
 
+    let name = item.name || '';
+    let avgRate = item.avgRate;
+    let totalRaters = item.totalRaters;
+    let coords = item.coords;
+    let address = item.address || '';
+    let times = item.times;
+
     return (
       <>
-        {!isScrollDisable && (
-          <View style={sty}>
-            {renderSep()}
-            <View style={{width: '100%'}}>
+        <View style={sty}>
+          {renderSep()}
+          <View style={{width: '100%'}}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{
+                fontSize: 19,
+                fontFamily: theme.fonts.fontMedium,
+                color: theme.color.title,
+                // textTransform: 'capitalize',
+                lineHeight: 22,
+              }}>
+              {name}
+            </Text>
+          </View>
+          {renderSep()}
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <utils.vectorIcon.Entypo
+              name="star-outlined"
+              color={theme.color.button1}
+              size={22}
+            />
+            <View style={{width: '92%'}}>
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={{
-                  fontSize: 19,
+                  fontSize: 15,
                   fontFamily: theme.fonts.fontMedium,
-                  color: theme.color.title,
-                  // textTransform: 'capitalize',
+                  color: theme.color.subTitle,
+                  textTransform: 'capitalize',
                   lineHeight: 22,
                 }}>
-                {name}
+                {avgRate}
+              </Text>
+
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={{
+                  fontSize: 14,
+                  fontFamily: theme.fonts.fontNormal,
+                  color: theme.color.subTitle,
+                  lineHeight: 22,
+                }}>
+                {totalRaters} people rated
               </Text>
             </View>
-            {renderSep()}
-            <View
-              style={{
-                width: '100%',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <utils.vectorIcon.Entypo
-                name="star-outlined"
-                color={theme.color.button1}
-                size={22}
-              />
-              <View style={{width: '92%'}}>
+          </View>
+          {renderSep()}
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <utils.vectorIcon.Ionicons
+              name="ios-location-outline"
+              color={theme.color.button1}
+              size={22}
+            />
+            <View style={{width: '92%'}}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={navigatetoGoogleMaps}>
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -215,128 +268,55 @@ function ResturantDetails(props) {
                     fontSize: 15,
                     fontFamily: theme.fonts.fontMedium,
                     color: theme.color.subTitle,
-                    textTransform: 'capitalize',
                     lineHeight: 22,
                   }}>
-                  {avgRate}
+                  {address}
                 </Text>
-
+              </TouchableOpacity>
+            </View>
+          </View>
+          {renderSep()}
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <utils.vectorIcon.Ionicons
+              name="time-outline"
+              color={theme.color.button1}
+              size={22}
+            />
+            <View style={{width: '92%', paddingRight: 15}}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={{
+                  fontSize: 15,
+                  fontFamily: theme.fonts.fontMedium,
+                  color: theme.color.subTitle,
+                  lineHeight: 22,
+                }}>
+                Opening times
+              </Text>
+              {times.length > 0 && renderTimes()}
+              {times.length <= 0 && (
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={{
-                    fontSize: 14,
+                    fontSize: 15,
                     fontFamily: theme.fonts.fontNormal,
-                    color: theme.color.subTitle,
+                    color: theme.color.subTitleLight,
                     lineHeight: 22,
                   }}>
-                  {totalRaters} people rated
+                  Null
                 </Text>
-              </View>
-            </View>
-            {renderSep()}
-            <View
-              style={{
-                width: '100%',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <utils.vectorIcon.Ionicons
-                name="ios-location-outline"
-                color={theme.color.button1}
-                size={22}
-              />
-              <View style={{width: '92%'}}>
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  onPress={navigatetoGoogleMaps}>
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={{
-                      fontSize: 15,
-                      fontFamily: theme.fonts.fontMedium,
-                      color: theme.color.subTitle,
-                      lineHeight: 22,
-                    }}>
-                    {address}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            {renderSep()}
-            <View
-              style={{
-                width: '100%',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <utils.vectorIcon.Ionicons
-                name="time-outline"
-                color={theme.color.button1}
-                size={22}
-              />
-              <View style={{width: '92%', paddingRight: 15}}>
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={{
-                    fontSize: 15,
-                    fontFamily: theme.fonts.fontMedium,
-                    color: theme.color.subTitle,
-                    lineHeight: 22,
-                  }}>
-                  Opening times
-                </Text>
-                {times.length > 0 && renderTimes()}
-                {times.length <= 0 && (
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={{
-                      fontSize: 15,
-                      fontFamily: theme.fonts.fontNormal,
-                      color: theme.color.subTitleLight,
-                      lineHeight: 22,
-                    }}>
-                    Null
-                  </Text>
-                )}
-              </View>
-            </View>
-            {renderSep()}
-          </View>
-        )}
-
-        {isScrollDisable && (
-          <View style={styy}>
-            <TouchableOpacity
-              style={styles.iconn}
-              activeOpacity={0.6}
-              onPress={goBack}>
-              <utils.vectorIcon.Ionicons
-                name="arrow-back-sharp"
-                color={theme.color.button1}
-                size={25}
-              />
-            </TouchableOpacity>
-
-            <View style={{width: '87%'}}>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 19,
-                  fontFamily: theme.fonts.fontMedium,
-                  color: theme.color.title,
-                  // textTransform: 'capitalize',
-                  lineHeight: 22,
-                }}>
-                {name}
-              </Text>
+              )}
             </View>
           </View>
-        )}
+          {renderSep()}
+        </View>
       </>
     );
   };
@@ -376,7 +356,7 @@ function ResturantDetails(props) {
     );
   };
 
-  const renderImageSliderBox = () => {
+  const renderImageSliderBox = image => {
     return (
       <>
         {Platform.OS == 'ios' && (
@@ -397,7 +377,7 @@ function ResturantDetails(props) {
             }>
             <ImageSlider
               autoPlayWithInterval={2000}
-              images={img}
+              images={image}
               style={{
                 backgroundColor: theme.color.background,
                 elevation: 5,
@@ -429,7 +409,7 @@ function ResturantDetails(props) {
           <View style={styles.imageConatiner}>
             <ImageSlider
               autoPlayWithInterval={2000}
-              images={img}
+              images={image}
               style={{
                 backgroundColor: theme.color.background,
                 elevation: 5,
@@ -491,7 +471,28 @@ function ResturantDetails(props) {
     );
   };
 
-  const renderRatings = () => {
+  const renderMainData = (item, index) => {
+    let img = item.img || [];
+    let reviews = item.reviews;
+
+    return (
+      <>
+        <View>
+          {renderImageSliderBox(img)}
+          {renderTitleSection(item)}
+        </View>
+
+        {reviews.length > 0 && (
+          <>
+            {renderSep()}
+            {renderRatings(reviews)}
+          </>
+        )}
+      </>
+    );
+  };
+
+  const renderRatings = reviews => {
     const formateDateTime = d => {
       let date = new Date(d);
       var tt = moment(date).format('hh:mm a');
@@ -568,7 +569,7 @@ function ResturantDetails(props) {
         <Text style={styles.sec2Ttitle}>Reviews & Ratings</Text>
         <FlatList
           ref={scroll2Ref}
-          contentContainerStyle={{
+          style={{
             paddingHorizontal: 15,
             paddingVertical: 15,
           }}
@@ -589,20 +590,20 @@ function ResturantDetails(props) {
 
   const handleScroll = event => {
     let num = event.nativeEvent.contentOffset.y;
-    if (num <= 172) {
-      scrollRef?.current.scrollTo(0);
-    }
-    if (num > 172) {
-      setisScrollDisable(true);
-    }
+    // if (num <= 172) {
+    //   scrollRef?.current.scrollTo(0);
+    // }
+    // if (num > 172) {
+    //   setisScrollDisable(true);
+    // }
     console.log('scrol 1 : ', num);
   };
 
   const handleScroll2 = event => {
     let num = event.nativeEvent.contentOffset.y;
-    if (num <= 0) {
-      setisScrollDisable(false);
-    }
+    // if (num <= 0) {
+    //   setisScrollDisable(false);
+    // }
 
     console.log('scrol 2 : ', num);
   };
@@ -611,44 +612,21 @@ function ResturantDetails(props) {
     <SafeAreaView style={styles.container}>
       {renderStatusBar()}
 
-      {/* {!isScrollDisable && ( */}
-      <ScrollView
+      <FlatList
         ref={scrollRef}
+        nestedScrollEnabled={true}
         // onScrollEndDrag={handleScroll}
-        showsVerticalScrollIndicator={false}>
-        <View>
-          {renderImageSliderBox()}
-          {renderTitleSection()}
-        </View>
-
-        {reviews.length > 0 && (
-          <>
-            {renderSep()}
-            {renderRatings()}
-          </>
-        )}
-      </ScrollView>
-      {/* )} */}
+        showsVerticalScrollIndicator={false}
+        data={data}
+        renderItem={({item, index}) => renderMainData(item, index)}
+        keyExtractor={(item, index) => {
+          return index.toString();
+        }}
+      />
 
       {renderHeader()}
-      {/* {!isScrollDisable && renderHeader()} */}
+
       <Toast ref={toast} position="bottom" />
     </SafeAreaView>
   );
 }
-
-// {isScrollDisable && (
-//       <>
-//         <View>
-//           {/* {renderImageSliderBox()} */}
-//           {renderTitleSection()}
-//         </View>
-
-//         {reviews.length > 0 && (
-//           <>
-//             {renderSep()}
-//             {renderRatings()}
-//           </>
-//         )}
-//       </>
-//     )}

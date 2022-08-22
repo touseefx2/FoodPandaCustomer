@@ -46,6 +46,7 @@ class resturants {
     setTimeout(() => {
       let arr = [
         {
+          _id: 1,
           name: 'BroadWay Pizza',
           type: 'Pizza',
           price: '$',
@@ -72,13 +73,32 @@ class resturants {
             total_reviews: 555,
             details: [
               {
-                user_name: 'Imran Khan',
+                user_name: 'Imran ismail',
                 rate: 3,
                 comment: 'Taste and quantity were good',
                 created_at: 'Aug 2, 2022',
               },
               {
-                user_name: 'Nawaz Shareef',
+                user_name: 'Nawaz golra',
+                rate: 4,
+                comment:
+                  'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
+                created_at: 'Aug 1, 2022',
+              },
+              {
+                user_name: 'James Bond',
+                rate: 3,
+                comment: '',
+                created_at: 'Aug 1, 2022',
+              },
+              {
+                user_name: 'Imran ismail',
+                rate: 3,
+                comment: 'Taste and quantity were good',
+                created_at: 'Aug 2, 2022',
+              },
+              {
+                user_name: 'Nawaz golra',
                 rate: 4,
                 comment:
                   'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
@@ -250,6 +270,7 @@ class resturants {
           ],
         },
         {
+          _id: 2,
           name: 'AB Cuisine',
           type: 'Fast Food',
           price: '$$',
@@ -275,13 +296,32 @@ class resturants {
             total_reviews: 455,
             details: [
               {
-                user_name: 'Imran Khan',
+                user_name: 'Imran ismail',
                 rate: 3,
                 comment: 'Taste and quantity were good',
                 created_at: 'Aug 2, 2022',
               },
               {
-                user_name: 'Nawaz Shareef',
+                user_name: 'Nawaz golra',
+                rate: 4,
+                comment:
+                  'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
+                created_at: 'Aug 1, 2022',
+              },
+              {
+                user_name: 'James Bond',
+                rate: 3,
+                comment: '',
+                created_at: 'Aug 1, 2022',
+              },
+              {
+                user_name: 'Imran ismail',
+                rate: 3,
+                comment: 'Taste and quantity were good',
+                created_at: 'Aug 2, 2022',
+              },
+              {
+                user_name: 'Nawaz golra',
                 rate: 4,
                 comment:
                   'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
@@ -452,6 +492,7 @@ class resturants {
           delivery_charges: 50,
         },
         {
+          _id: 3,
           name: 'KFC',
           type: 'Fast Food',
           price: '$$$',
@@ -476,13 +517,13 @@ class resturants {
             total_reviews: 200,
             details: [
               {
-                user_name: 'Imran Khan',
+                user_name: 'Imran ismail',
                 rate: 3,
                 comment: 'Taste and quantity were good',
                 created_at: 'Aug 2, 2022',
               },
               {
-                user_name: 'Nawaz Shareef',
+                user_name: 'Nawaz golra',
                 rate: 4,
                 comment:
                   'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
@@ -495,13 +536,13 @@ class resturants {
                 created_at: 'Aug 1, 2022',
               },
               {
-                user_name: 'Imran Khan',
+                user_name: 'Imran ismail',
                 rate: 3,
                 comment: 'Taste and quantity were good',
                 created_at: 'Aug 2, 2022',
               },
               {
-                user_name: 'Nawaz Shareef',
+                user_name: 'Nawaz golra',
                 rate: 4,
                 comment:
                   'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
@@ -672,6 +713,7 @@ class resturants {
           delivery_charges: 200,
         },
         {
+          _id: 4,
           name: 'Cheezious Golra Mor',
           type: 'Pizza',
           price: '$$',
@@ -696,13 +738,32 @@ class resturants {
             total_reviews: 2000,
             details: [
               {
-                user_name: 'Imran Khan',
+                user_name: 'Imran ismail',
                 rate: 3,
                 comment: 'Taste and quantity were good',
                 created_at: 'Aug 2, 2022',
               },
               {
-                user_name: 'Nawaz Shareef',
+                user_name: 'Nawaz golra',
+                rate: 4,
+                comment:
+                  'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',
+                created_at: 'Aug 1, 2022',
+              },
+              {
+                user_name: 'James Bond',
+                rate: 3,
+                comment: '',
+                created_at: 'Aug 1, 2022',
+              },
+              {
+                user_name: 'Imran ismail',
+                rate: 3,
+                comment: 'Taste and quantity were good',
+                created_at: 'Aug 2, 2022',
+              },
+              {
+                user_name: 'Nawaz golra',
                 rate: 4,
                 comment:
                   'Urna libero massa in pulvinar aliquet morbi eu, cursus pulvinar duis molestie at enim euismod vitae ipsum risus tincidunt tellus donec risus',

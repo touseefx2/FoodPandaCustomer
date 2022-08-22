@@ -28,7 +28,7 @@ export default observer(Food);
 function Food(props) {
   const rbSheet = useRef(null);
   let maxItem = 5;
-
+  const scrollRef = useRef(null);
   const [num, setNum] = useState(1);
 
   const windowWidth = theme.window.Width;
@@ -52,6 +52,8 @@ function Food(props) {
   const d = props.route.params.food;
   let isinCart = props.route.params.isinCart;
   let item = 0;
+
+  let resturant = props.route.params.resturant;
 
   let name = d.title;
   let pid = d._id;
@@ -352,7 +354,9 @@ function Food(props) {
     let ibill = bill;
     bill = isRequired ? bill * num : (bill + d.price) * num;
     let fb = isRequired ? ibill * 1 : (ibill + d.price) * 1;
+
     const objj = {
+      resturant: resturant,
       productId: d._id,
       productName: d.title,
       description: d.description || '---',
@@ -488,16 +492,7 @@ function Food(props) {
     });
   };
   const onPressAddcart = () => {
-    // store.Food.setselectedProduct(d);
-    // // let baseV = d.base_variation || [];
-    // // let addV = d.additional_variation || [];
-    // console.log('baseV: ', baseV);
-    // console.log('ADDV: ', addV);
-
-    // if (cztmz) {
-
     addProductinCart();
-    // }
   };
 
   const onPressAddItem = () => {
@@ -870,16 +865,23 @@ function Food(props) {
         style={{
           width: '100%',
           height: responsiveHeight(Platform.OS == 'android' ? 10 : 14),
-          elevation: 20,
-          backgroundColor: 'white',
+          backgroundColor: theme.color.background,
           alignItems: 'center',
           justifyContent: 'center',
           position: 'absolute',
           bottom: 0,
-          // borderTopWidth: 0.3,
-          // borderTopColor: 'silver',
+
           paddingHorizontal: 15,
           paddingVertical: 5,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 7,
+          },
+          shadowOpacity: 0.41,
+          shadowRadius: 9.11,
+
+          elevation: 14,
         }}>
         <View
           style={{
@@ -1024,7 +1026,7 @@ function Food(props) {
             <View>
               <Text
                 style={{
-                  fontFamily: theme.fonts.fontBold,
+                  fontFamily: theme.fonts.fontMedium,
                   color: theme.color.title,
                   fontSize: 20,
                   marginBottom: 12,
@@ -1069,7 +1071,7 @@ function Food(props) {
                             color: theme.color.title,
                             fontSize: 15,
                             lineHeight: 18,
-                            fontFamily: theme.fonts.fontMedium,
+                            fontFamily: theme.fonts.fontNormal,
                           }}>
                           {e}
                         </Text>
@@ -1096,7 +1098,7 @@ function Food(props) {
               color: theme.color.title,
               fontSize: 17,
               lineHeight: 20,
-              fontFamily: theme.fonts.fontBold,
+              fontFamily: theme.fonts.fontMedium,
             }}>
             If this product is not available
           </Text>
@@ -1124,7 +1126,7 @@ function Food(props) {
                 numberOfLines={2}
                 ellipsizeMode="tail"
                 style={{
-                  color: theme.color.title,
+                  color: theme.color.subTitle,
                   fontSize: 14,
                   lineHeight: 17,
                   fontFamily: theme.fonts.fontMedium,
@@ -1153,6 +1155,7 @@ function Food(props) {
   const renderStatusBar = () => {
     return (
       <StatusBar
+        animated={false}
         translucent={Platform.OS == 'ios' ? false : true}
         backgroundColor={
           Platform.OS == 'ios' ? theme.color.background : 'transparent'
@@ -1162,50 +1165,56 @@ function Food(props) {
     );
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {renderStatusBar()}
-
-      <View>{renderCoverImage()}</View>
-
+  const renderHeader = () => {
+    return (
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.icon}
           activeOpacity={0.6}
           onPress={goBack}>
           <utils.vectorIcon.Ionicons
-            name="ios-chevron-back-sharp"
+            name="arrow-back-sharp"
             color={theme.color.button1}
             size={25}
           />
         </TouchableOpacity>
         <TouchableOpacity
+          disabled
           activeOpacity={0.6}
-          onPress={() => onPressHeart(!isFav ? 'add' : 'remove')}
-          style={styles.icon}>
-          <utils.vectorIcon.AntDesign
-            name={!isFav ? 'hearto' : 'heart'}
-            color={theme.color.heart}
-            size={23}
-          />
+          // onPress={() => onPressHeart(!isFav ? 'add' : 'remove')}
+          style={styles.icondisable}>
+          {/* <utils.vectorIcon.AntDesign
+          name={!isFav ? 'hearto' : 'heart'}
+          color={theme.color.heart}
+          size={23}
+        /> */}
         </TouchableOpacity>
       </View>
+    );
+  };
 
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 15,
-          paddingBottom: responsiveHeight(17),
-        }}
-        showsVerticalScrollIndicator={false}>
-        {renderTitleSection()}
-        {sep()}
+  return (
+    <SafeAreaView style={styles.container}>
+      {renderStatusBar()}
 
-        {(baseV.length > 0 || addV.length > 0) && renderVariantSection()}
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false}>
+        {renderCoverImage()}
+        <View
+          style={{
+            paddingHorizontal: 15,
+            paddingBottom: responsiveHeight(17),
+          }}>
+          {renderTitleSection()}
+          {sep()}
 
-        {renderProductAvailability()}
+          {(baseV.length > 0 || addV.length > 0) && renderVariantSection()}
+
+          {renderProductAvailability()}
+        </View>
       </ScrollView>
       {renderFullImage()}
       {renderBottom()}
+      {renderHeader()}
       <Toast ref={toast} position="bottom" />
     </SafeAreaView>
   );

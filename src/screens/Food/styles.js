@@ -40,6 +40,20 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     position: 'absolute',
+    // backgroundColor: theme.color.background,
+    // elevation: 5,
+  },
+  headerShow: {
+    width: responsiveWidth(100),
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: theme.color.background,
+    // backgroundColor: theme.color.background,
+    // elevation: 5,
   },
   icon: {
     width: 30,
@@ -148,26 +162,26 @@ export const styles = StyleSheet.create({
   },
   foodCardTitle1: {
     fontSize: 18,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.title,
     textTransform: 'capitalize',
     lineHeight: 22,
   },
   foodCardTitle2: {
     fontSize: 14,
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     color: theme.color.subTitle,
     lineHeight: 18,
   },
   foodCardDetails: {
     fontSize: 13,
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     color: theme.color.subTitle,
     lineHeight: 17,
   },
   foodCardTitle3: {
     fontSize: 18,
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     color: theme.color.button1,
     lineHeight: 20,
   },
@@ -241,13 +255,13 @@ export const styles = StyleSheet.create({
   },
   ButtonText: {
     fontSize: 15,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     color: theme.color.buttonText,
     lineHeight: 18,
   },
   cartCountText: {
     fontSize: 16,
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     color: theme.color.title,
     textTransform: 'capitalize',
     lineHeight: 20,
@@ -294,7 +308,7 @@ export const styles = StyleSheet.create({
     color: theme.color.title,
     fontSize: 15,
     lineHeight: 18,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     textTransform: 'capitalize',
   },
   headerSectionText11: {
@@ -433,10 +447,10 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.color.disableBack,
   },
   chooseButtonText: {
-    color: theme.color.subTitle,
+    color: theme.color.title,
     fontSize: 10,
     lineHeight: 12,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     textTransform: 'capitalize',
   },
 
@@ -451,7 +465,7 @@ export const styles = StyleSheet.create({
     color: theme.color.title,
     fontSize: 13,
     lineHeight: 15,
-    fontFamily: theme.fonts.fontMedium,
+    fontFamily: theme.fonts.fontNormal,
     textTransform: 'capitalize',
   },
 
@@ -468,7 +482,7 @@ export const styles = StyleSheet.create({
   buttonTextBottom: {
     color: theme.color.buttonText,
     fontSize: 16,
-    fontFamily: theme.fonts.fontBold,
+    fontFamily: theme.fonts.fontMedium,
     lineHeight: 20,
     // textTransform: 'capitalize',
   },

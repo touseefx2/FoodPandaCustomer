@@ -58,6 +58,9 @@ function BottomModal(props) {
   let cart = store.User.cart;
 
   const d = props.data;
+
+  let resturant = props.resturant;
+
   let isinCart = props.isinCart;
 
   const closeBootomSheet = () => {
@@ -215,6 +218,8 @@ function BottomModal(props) {
 
   const addProductinCart = () => {
     const objj = {
+      resturant: resturant,
+
       productId: d._id,
       productName: d.title,
       description: d.description || '---',
@@ -315,12 +320,6 @@ function BottomModal(props) {
     console.log('ADDV: ', addV);
 
     addProductinCart();
-
-    // if (cztmz) {
-    //   store.User.setisAddModal(true);
-    // } else {
-    //   addProductinCart();
-    // }
   };
 
   const onPressAddItem = () => {
@@ -396,19 +395,11 @@ function BottomModal(props) {
             />
           </Svg>
         }>
-        {/* <TouchableOpacity
-          style={{flex: 1}}
-          activeOpacity={0.5}
-          onPress={() => {
-            setfullImgUri(image);
-            setfullImgModal(true);
-          }}> */}
         <FastImage
           style={styles.image}
           source={image}
           resizeMode={FastImage.resizeMode.cover}
         />
-        {/* </TouchableOpacity> */}
       </MaskedView>
     );
   };
@@ -876,7 +867,7 @@ function BottomModal(props) {
             <View>
               <Text
                 style={{
-                  fontFamily: theme.fonts.fontBold,
+                  fontFamily: theme.fonts.fontMedium,
                   color: theme.color.title,
                   fontSize: 20,
                   marginBottom: 12,
@@ -921,7 +912,7 @@ function BottomModal(props) {
                             color: theme.color.title,
                             fontSize: 15,
                             lineHeight: 18,
-                            fontFamily: theme.fonts.fontMedium,
+                            fontFamily: theme.fonts.fontNormal,
                           }}>
                           {e}
                         </Text>
@@ -948,7 +939,7 @@ function BottomModal(props) {
               color: theme.color.title,
               fontSize: 16,
               lineHeight: 19,
-              fontFamily: theme.fonts.fontBold,
+              fontFamily: theme.fonts.fontMedium,
             }}>
             If this product is not available
           </Text>
@@ -976,7 +967,7 @@ function BottomModal(props) {
                 numberOfLines={2}
                 ellipsizeMode="tail"
                 style={{
-                  color: theme.color.title,
+                  color: theme.color.subTitle,
                   fontSize: 13,
                   lineHeight: 16,
                   fontFamily: theme.fonts.fontMedium,

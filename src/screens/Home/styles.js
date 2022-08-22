@@ -90,4 +90,23 @@ export const styles = StyleSheet.create({
     color: theme.color.title,
   },
   bcs2Image: {flex: 1, resizeMode: 'contain', elevation: 5},
+  circleC: {
+    width: 18,
+    height: 18,
+    borderRadius: 218 / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.color.buttonText,
+    position: 'absolute',
+    right: -7,
+    bottom: -1,
+    backgroundColor: theme.color.button1,
+  },
+  circleCText: {
+    fontSize: 8,
+    color: theme.color.buttonText,
+    fontFamily: theme.fonts.fontMedium,
+    top: 1,
+  },
 });

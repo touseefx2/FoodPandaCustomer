@@ -95,9 +95,9 @@ const HomeStack = () => {
         name="ResturantDetails"
         component={screens.ResturantDetails}
       />
-      {/* <Stack.Screen name="Food" component={screens.Food} />
-      <Stack.Screen name="Help" component={screens.Help} />
-      */}
+      <Stack.Screen name="Food" component={screens.Food} />
+      <Stack.Screen name="Checkout" component={screens.Checkout} />
+      {/* <Stack.Screen name="Help" component={screens.Help} /> */}
 
       {/* <Stack.Screen name="Checkout" component={screens.Checkout} />
       <Stack.Screen name="OrderLocation" component={screens.OrderLocation} />
