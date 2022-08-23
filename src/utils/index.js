@@ -11,6 +11,7 @@ import FoodVariationDetailModal from './FoodVariationDetailModal';
 import OtpModal from './OtpModal';
 import BotomModal from './BottomModal/index';
 import BottomModalCheck from './BottomModalCheck/index';
+import BottomModalLogin from './BottomModalLogin/index';
 import StatusIndicator from './StatusIndicator';
 import StatusIndicatorR from './StatusIndicatorR';
 import StatusIndicator2 from './StatusIndicator2';
@@ -46,6 +47,7 @@ const utils = {
   OtpModal,
   BotomModal,
   BottomModalCheck,
+  BottomModalLogin,
   ServerRes,
   TagLine,
   TagLineModal,

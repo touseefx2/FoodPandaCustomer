@@ -39,7 +39,6 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 
 export default observer(Checkout);
 function Checkout(props) {
-  const rbSheet = useRef(null);
   const gapikey = 'AIzaSyC75RWT0q9xkASq2YhX2vGi1R-e_p2pnWU';
   const toast = useRef(null);
   const toastduration = 700;
@@ -107,6 +106,14 @@ function Checkout(props) {
   const [discount, setdiscount] = useState(0); //promo discount price;
   const [total, settotal] = useState(parseFloat(0)); //tax price;
 
+  const rbSheet = useRef(null);
+  const OpenSheet = () => {
+    rbSheet?.current?.open();
+  };
+  const CloseSheet = () => {
+    rbSheet?.current?.close();
+  };
+
   useEffect(
     () => {
       // setedt(
@@ -146,103 +153,6 @@ function Checkout(props) {
     let tt = parseFloat(subtotal) + parseFloat(dc) + parseFloat(tP);
     settotal(tt.toFixed() - discount);
   }, [tP, dc, subtotal, discount]);
-
-  const renderBottomSheet = () => {
-    const Login = () => {
-      rbSheet?.current?.close();
-      props.navigation.navigate('Login', {s: 'checkout'});
-    };
-
-    const Guest = () => {
-      rbSheet?.current?.close();
-      setisCart(true);
-    };
-
-    const renderLoginButton = () => {
-      return (
-        <>
-          <TouchableOpacity
-            activeOpacity={0.6}
-            onPress={() => {
-              Login();
-            }}
-            style={styles.BottomButton}>
-            <Text style={styles.buttonTextBottom}>
-              Continue with phone number
-            </Text>
-          </TouchableOpacity>
-        </>
-      );
-    };
-
-    const renderGuestButton = () => {
-      return (
-        <>
-          <TouchableOpacity
-            activeOpacity={0.6}
-            onPress={() => {
-              Guest();
-            }}
-            style={styles.BottomButton2}>
-            <Text
-              style={[styles.buttonTextBottom, {color: theme.color.button1}]}>
-              Continue as Guest
-            </Text>
-          </TouchableOpacity>
-        </>
-      );
-    };
-
-    return (
-      <>
-        <RBSheet
-          ref={rbSheet}
-          height={responsiveHeight(35)}
-          closeOnPressBack={true}
-          openDuration={250}
-          screen={'checkout'}
-          closeOnDragDown={true}
-          closeOnPressMask={true}
-          KeyboardAvoidingView={true}
-          customStyles={{
-            wrapper: {
-              flex: 1,
-              // backgroundColor: 'transparent',
-            },
-            container: {
-              backgroundColor: theme.color.background,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              elevation: 5,
-            },
-            draggableIcon: {
-              // backgroundColor: theme.color.cartbutton,
-            },
-          }}>
-          <View
-            style={{
-              marginHorizontal: 15,
-            }}>
-            <Text
-              style={{
-                fontFamily: theme.fonts.fontBold,
-                color: theme.color.title,
-                fontSize: 18,
-              }}>
-              Sign up or log in
-            </Text>
-
-            <View style={{marginTop: 30}}>
-              {renderLoginButton()}
-
-              <Text style={styles.titleText2}>or</Text>
-              {renderGuestButton()}
-            </View>
-          </View>
-        </RBSheet>
-      </>
-    );
-  };
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
@@ -857,8 +767,6 @@ function Checkout(props) {
       store.User.setcart(cartt);
     }
   };
-
-  console.log('cart  : ', cart);
 
   const onPressSubItem = ind => {
     let objIndex = ind;
@@ -1909,7 +1817,13 @@ function Checkout(props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {renderBottomSheet()}
+      <utils.BottomModalLogin
+        rbSheet={rbSheet}
+        nav={props.navigation}
+        OpenSheet={() => OpenSheet()}
+        CloseSheet={() => CloseSheet()}
+        screen={'checkout'}
+      />
       {isConfirm && renderConfirmation()}
       <StatusBar
         translucent={false}

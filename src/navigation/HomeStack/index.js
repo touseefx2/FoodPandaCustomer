@@ -97,6 +97,7 @@ const HomeStack = () => {
       />
       <Stack.Screen name="Food" component={screens.Food} />
       <Stack.Screen name="Checkout" component={screens.Checkout} />
+      <Stack.Screen name="Login" component={screens.Login} />
       {/* <Stack.Screen name="Help" component={screens.Help} /> */}
 
       {/* <Stack.Screen name="Checkout" component={screens.Checkout} />
@@ -123,36 +124,3 @@ const HomeStack = () => {
     </Stack.Navigator>
   );
 };
-
-// const LocStack = () => {
-//   return (
-//     <Stack.Navigator
-//       initialRouteName="Loc"
-//       screenOptions={{animationEnabled: false, headerShown: false}}>
-//       <Stack.Screen name="Loc" component={screens.Location} />
-//       <Stack.Screen name="Map" component={screens.Map} />
-//     </Stack.Navigator>
-//   );
-// };
-
-// const OrderStack = () => {
-//   return (
-//     <Stack.Navigator
-//       initialRouteName="Orders"
-//       screenOptions={{animationEnabled: false, headerShown: false}}>
-//       <Stack.Screen name="Orders" component={screens.Orders} />
-//       <Stack.Screen name="OrdersDetails" component={screens.OrdersDetails} />
-//     </Stack.Navigator>
-//   );
-// };
-
-// const PromoStack = () => {
-//   return (
-//     <Stack.Navigator
-//       initialRouteName="Promo"
-//       screenOptions={{animationEnabled: false, headerShown: false}}>
-//       <Stack.Screen name="Promo" component={screens.Promo} />
-//       <Stack.Screen name="PromoDetails" component={screens.PromoDetails} />
-//     </Stack.Navigator>
-//   );
-// };

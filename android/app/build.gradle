@@ -263,6 +263,10 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+
+//facebook login
+implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 

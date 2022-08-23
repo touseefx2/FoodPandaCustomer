@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -17,12 +17,13 @@ import {inject, observer} from 'mobx-react';
 import utils from '../../utils/index';
 import {responsiveHeight} from 'react-native-responsive-dimensions';
 import {ScrollView} from 'react-native-gesture-handler';
+import store from '../../store';
 
 export default observer(CustomDrawerContent);
 function CustomDrawerContent(props) {
-  const {state, ...rest} = props;
+  const {navigation, state, ...rest} = props;
   const newState = {...state}; //copy from state before applying any filter. do not change original state
-  //   newState.routes = newState.routes.filter(item => item.name !== 'Homes'); //replace "Login' with your route name
+  // newState.routes = newState.routes.filter(item => item.name !== 'Logins'); //replace "Login' with your route name
 
   const onClick = c => {
     if (c == 'logout') {
@@ -34,10 +35,17 @@ function CustomDrawerContent(props) {
     }
   };
 
+  const Login = () => {
+    navigation.closeDrawer();
+    store.General.setisSheetOpen(true);
+  };
+
   const renderSection1 = () => {
     return (
       <View style={styles.Section1}>
-        <Text style={styles.Section1Text}>Log in / Create account</Text>
+        <TouchableOpacity activeOpacity={0.7} onPress={Login}>
+          <Text style={styles.Section1Text}>Log in / Create account</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -93,7 +101,7 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   Section1Text: {
-    fontSize: 14,
+    fontSize: 15,
     color: theme.color.buttonText,
     fontFamily: theme.fonts.fontMedium,
   },

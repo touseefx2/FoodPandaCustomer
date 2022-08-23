@@ -19,6 +19,11 @@ class general {
   @persist('object') @observable apiLevel = '';
   @persist('object') @observable appBuildNumber = '';
   @persist('object') @observable appVersionNumber = '';
+  @observable isSheetOpen = false;
+
+  @action setisSheetOpen = obj => {
+    this.isSheetOpen = obj;
+  };
 
   @action setisUpdateNeeded = obj => {
     this.isUpdateNeeded = obj;

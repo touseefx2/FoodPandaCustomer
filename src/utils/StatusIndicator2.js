@@ -39,7 +39,8 @@ function StatusIndicator2(props) {
         const st = e.toLowerCase();
 
         let bcColor = i <= index ? theme.color.button1 : '#D9D9D9';
-        let textColor = i <= index ? theme.color.buttonText : theme.color.title;
+        let textColor =
+          i <= index ? theme.color.buttonText : theme.color.subTitle;
         let bcLineColor = i <= index ? theme.color.button1 : '#D9D9D9';
         let tc = i <= index + 1 ? theme.color.title : theme.color.subTitle;
         return (
@@ -77,7 +78,7 @@ function StatusIndicator2(props) {
               <Text
                 style={{
                   fontSize: 12,
-                  fontFamily: theme.fonts.fontMedium,
+                  fontFamily: theme.fonts.fontNormal,
                   color: i == index + 1 ? theme.color.buttonText : textColor,
                   top: 1,
                 }}>

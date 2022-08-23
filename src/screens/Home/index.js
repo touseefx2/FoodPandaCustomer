@@ -42,10 +42,24 @@ export default observer(Home);
 function Home(props) {
   const toast = useRef(null);
   const toastduration = 700;
-
   const [Loader, setLoader] = useState(false);
-
   let internet = store.General.isInternet;
+
+  let isSheetOpen = store.General.isSheetOpen;
+  useEffect(() => {
+    if (isSheetOpen) {
+      OpenSheet();
+      store.General.setisSheetOpen(false);
+    }
+  }, [isSheetOpen]);
+
+  const rbSheet = useRef(null);
+  const OpenSheet = () => {
+    rbSheet?.current?.open();
+  };
+  const CloseSheet = () => {
+    rbSheet?.current?.close();
+  };
 
   let loc = store.User.location;
   let cart = store.User.cart;
@@ -237,6 +251,13 @@ function Home(props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <utils.BottomModalLogin
+        rbSheet={rbSheet}
+        nav={props.navigation}
+        OpenSheet={() => OpenSheet()}
+        CloseSheet={() => CloseSheet()}
+        screen={'home'}
+      />
       {renderStatusBar()}
       <utils.Loader2 load={Loader} />
       {!internet && (

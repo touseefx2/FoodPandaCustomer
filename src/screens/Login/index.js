@@ -50,7 +50,7 @@ function Login(props) {
   const [d1, setd1] = useState(false);
   const [d2, setd2] = useState(false);
 
-  let s = props.route.params.s || '';
+  let s = props.route.params.screen || '';
 
   const goBack = () => {
     props.navigation.goBack();

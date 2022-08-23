@@ -11,14 +11,14 @@ import Terms from './Terms';
 import Checkout from './Checkout';
 import CheckoutEmpty from './CheckoutEmpty';
 import ResturantDetails from './ResturantDetails/index';
-
+import Login from './Login';
 import Food from './Food';
 
 // import OrderLocation from './OrderLocation';
 // import CheckLogin from './CheckLogin';
 // import Signup from './Signup';
 // import OTP from './OTP';
-// import Login from './Login';
+
 // import Setting from './Setting';
 // import ChangePassword from './ChangePassword';
 // import Favourite from './Favourite';
@@ -49,6 +49,7 @@ export default screens = {
   CheckoutEmpty,
   ResturantDetails,
   Food,
+  Login,
 
   // OrderLocation,
   // Signup,
@@ -56,7 +57,7 @@ export default screens = {
   // OTP,
   // Setting,
   // Orders,
-  // Login,
+
   // ChangePassword,
   // Favourite,
   // OrdersDetails,

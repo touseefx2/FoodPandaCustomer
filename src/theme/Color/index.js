@@ -18,7 +18,7 @@
 
 const background = '#FCFCFC';
 const title = '#000000';
-const subTitle = 'rgba(0, 0, 0, 0.8)';
+const subTitle = 'rgba(0, 0, 0, 0.7)';
 const subTitleLight = 'rgba(0, 0, 0, 0.5)';
 const button1 = '#FE774C';
 const button2 = '#39377F';

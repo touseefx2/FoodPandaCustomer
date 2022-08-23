@@ -34,7 +34,6 @@ import Toast from 'react-native-easy-toast';
 import MaskedView from '@react-native-community/masked-view';
 import Svg, {Path} from 'react-native-svg';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import {ActivityIndicator} from 'react-native-paper';
 
 export default observer(Home3);
 function Home3(props) {
